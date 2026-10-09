@@ -1,0 +1,19 @@
+{
+  "name": "solopilot",
+  "version": "0.1.0",
+  "description": "Project steering for solo developers: a versioned backlog, an honest projection, a dashboard and a Slack digest, wired into Claude Code.",
+  "type": "module",
+  "license": "MIT",
+  "author": "Yeloxtv",
+  "repository": { "type": "git", "url": "git+https://github.com/Yeloxtv/solopilot.git" },
+  "homepage": "https://github.com/Yeloxtv/solopilot#readme",
+  "keywords": ["project-management", "backlog", "solo", "freelance", "dashboard", "claude-code", "planning", "forecast"],
+  "bin": { "solopilot": "bin/solopilot.mjs" },
+  "files": ["bin", "src", "locales", "templates", "claude", "examples/demo/solopilot.yaml"],
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "test": "node --test",
+    "demo": "node bin/solopilot.mjs build --dir examples/demo --today 2026-10-21"
+  },
+  "dependencies": { "yaml": "^2.5.0" }
+}

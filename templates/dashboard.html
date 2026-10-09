@@ -1,0 +1,703 @@
+<meta charset="utf-8">
+<title>__TITLE__</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Archivo+Narrow:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Dark cockpit. One appearance on purpose: the page stays dark whatever the reader's theme. */
+:root {
+  --bg: #121617; --card: #1a1f21; --card-2: #20272a;
+  --line: #262d30; --line-soft: #232a2d; --line-strong: #343c40; --line-sprint: #3a4246;
+  --text: #e6eaeb; --text-2: #c3cacd; --muted: #9ba4a8;
+  --link: #93b3f0; --link-hover: #c6d7f8;
+  --accent: oklch(0.74 0.11 255); --accent-bg: oklch(0.74 0.11 255 / 0.16); --accent-row: oklch(0.74 0.11 255 / 0.06); --accent-ink: #0f1a2e;
+  --ok: oklch(0.82 0.13 155); --ok-line: oklch(0.76 0.13 155); --ok-bg: oklch(0.76 0.13 155 / 0.14);
+  --warn: oklch(0.85 0.13 75); --warn-line: oklch(0.8 0.13 75); --warn-bg: oklch(0.8 0.13 75 / 0.14);
+  --urgent: oklch(0.8 0.12 30); --urgent-solid: oklch(0.7 0.15 30); --urgent-bg: oklch(0.7 0.15 30 / 0.12); --urgent-ink: #1a0d08;
+  --font: "Archivo", system-ui, -apple-system, sans-serif;
+  --font-title: "Archivo Narrow", "Archivo", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+  color-scheme: dark;
+}
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.45; -webkit-font-smoothing: antialiased; }
+a { color: var(--link); text-decoration: none; }
+a:hover { color: var(--link-hover); }
+button, input { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.mono { font-family: var(--font-mono); }
+.page { max-width: 1240px; margin: 0 auto; padding: 24px 32px 96px; display: flex; flex-direction: column; gap: 28px; }
+h2 { margin: 0; font: 700 22px/1.1 var(--font-title); text-wrap: balance; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; }
+.empty { color: var(--muted); padding: 14px 18px; margin: 0; }
+
+/* Header */
+.top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; padding-bottom: 16px; border-bottom: 1px solid var(--line); }
+.brand { display: flex; align-items: center; gap: 12px; margin: 0; font-size: 14px; font-weight: 400; }
+.brand b { font: 700 15px/1 var(--font); letter-spacing: -0.01em; }
+.brand i { width: 1px; height: 14px; background: var(--line-strong); }
+.brand span { color: var(--muted); }
+.today { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; font-size: 13px; color: var(--muted); }
+.today .pill { display: inline-flex; align-items: center; gap: 8px; }
+.today .pill::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+.today strong { color: var(--text); font-weight: 600; }
+
+/* How to read the page: the answer, then work against the calendar */
+.explain { padding: 24px; display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+.thesis { font: 700 30px/1.15 var(--font-title); letter-spacing: -0.01em; max-width: 34ch; }
+.thesis em { font-style: normal; color: var(--ok); }
+.thesis em.warn { color: var(--warn); }
+.explain-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr)); gap: 20px 32px; align-items: start; }
+.explain-text { display: flex; flex-direction: column; gap: 10px; color: var(--text-2); line-height: 1.55; max-width: 66ch; }
+.explain-text p { margin: 0; text-wrap: pretty; }
+.explain-text strong { color: var(--text); }
+.calc-table { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+.calc-table th { text-align: left; font-weight: 600; font-size: 12px; color: var(--muted); padding: 0 10px 8px 0; border-bottom: 1px solid var(--line-strong); }
+.calc-table td { padding: 9px 10px 9px 0; border-bottom: 1px solid var(--line); vertical-align: baseline; }
+.calc-table td:first-child { font-weight: 600; }
+.calc-table td.ok { color: var(--ok); font-weight: 600; }
+.calc-table td.warn { color: var(--warn); font-weight: 600; }
+.calc-table tr.available td { color: var(--text); background: var(--card-2); }
+.calc-table tr.available td:first-child { padding-left: 8px; }
+.calc-note { margin: 8px 0 0; font-size: 12px; color: var(--muted); }
+
+/* Projection and counters */
+.hero { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 16px; }
+.projection { padding: 22px 24px; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.projection.off-target { border-color: oklch(0.8 0.13 75 / 0.35); }
+.projection.late { border-color: oklch(0.7 0.15 30 / 0.4); }
+.eyebrow { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.caps { font: 600 12px/1 var(--font); text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+.chip { font: 600 12px/1 var(--font); padding: 5px 9px; border-radius: 99px; white-space: nowrap; }
+.chip.ok { background: var(--ok-bg); color: var(--ok); }
+.chip.warn { background: var(--warn-bg); color: var(--warn); }
+.chip.urgent { background: var(--urgent-bg); color: var(--urgent); }
+.figure { font: 700 44px/1 var(--font-title); letter-spacing: -0.01em; }
+.sentence { color: var(--text-2); line-height: 1.5; text-wrap: pretty; }
+.sentence strong { color: var(--text); }
+.sentence strong.warn { color: var(--warn); }
+.gauge { margin-top: auto; display: flex; flex-direction: column; gap: 6px; }
+.gauge-track { position: relative; height: 6px; background: var(--line); border-radius: 3px; }
+.gauge-track > span { position: absolute; left: 0; top: 0; bottom: 0; background: var(--accent); border-radius: 3px; }
+.gauge-track > i { position: absolute; top: -4px; bottom: -4px; width: 2px; background: var(--text); }
+.gauge-track > i.warn { background: var(--warn-line); }
+.gauge-legend { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; color: var(--muted); }
+.kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.kpi { background: var(--card); padding: 16px 18px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.kpi-name, .kpi-sub { font-size: 12px; color: var(--muted); }
+.kpi-value { display: flex; align-items: baseline; gap: 6px; }
+.kpi-value b { font: 700 28px/1 var(--font-title); }
+.kpi-value span { font-size: 13px; color: var(--muted); }
+.kpi-bar { height: 3px; background: var(--line); border-radius: 2px; }
+.kpi-bar span { display: block; height: 100%; background: var(--accent); border-radius: 2px; }
+
+/* Plan calendar */
+.timeline-card { padding: 20px 24px 22px; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.title-row { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 12px; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12px; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { display: inline-block; }
+.l-done { width: 10px; height: 10px; border-radius: 2px; background: var(--accent); }
+.l-current { width: 10px; height: 10px; border-radius: 2px; border: 1.5px solid var(--accent); }
+.l-tight { width: 10px; height: 3px; background: var(--warn-line); }
+.l-client, .mark-client { width: 7px; height: 7px; transform: rotate(45deg); background: var(--text); }
+.l-checkpoint, .mark-checkpoint { width: 7px; height: 7px; border-radius: 50%; border: 1.5px solid var(--muted); }
+.scroll { overflow-x: auto; }
+.timeline { display: grid; column-gap: 3px; row-gap: 6px; }
+.tl-sprint { border-top: 2px solid var(--line-sprint); padding-top: 6px; font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tl-sprint strong { color: var(--text); font-weight: 600; }
+.day-btn {
+  height: 46px; padding: 5px 0 0; border-radius: 4px; border: 1.5px solid var(--card-2); background: var(--card-2); color: var(--muted);
+  font: 500 11px/1 var(--font-mono); display: flex; flex-direction: column; align-items: center; justify-content: space-between; overflow: hidden;
+}
+.day-btn:hover { filter: brightness(1.25); }
+.day-btn.done { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.day-btn.current { background: oklch(0.74 0.11 255 / 0.18); border-color: var(--accent); color: var(--text); }
+.day-btn > i { width: 100%; height: 3px; }
+.day-btn.tight > i { background: oklch(0.8 0.13 75 / 0.85); }
+.tl-mark { height: 12px; display: flex; justify-content: center; align-items: center; }
+.tl-band { border-top: 2px solid var(--line-sprint); padding-top: 6px; font-size: 12px; color: var(--text-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tl-band.core { border-top-color: var(--ok-line); }
+.tl-band.core strong { color: var(--ok); }
+.tl-band.rest { border-top-color: var(--warn-line); }
+.tl-band.rest strong { color: var(--warn); }
+.tl-band.later { border-top-style: dashed; color: var(--muted); text-align: center; }
+.milestones { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr)); gap: 8px; margin-top: 4px; }
+.milestone { padding: 10px 12px; border-radius: 6px; background: var(--card-2); display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.milestone-head { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; color: var(--muted); }
+.milestone-head b { font: 600 12px var(--font-mono); color: var(--text); }
+.milestone-title { font-size: 13px; line-height: 1.35; text-wrap: pretty; }
+.milestone-type { font-size: 11px; color: var(--muted); }
+
+/* To settle now, risks */
+.duo { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 520px), 1fr)); gap: 16px; align-items: start; }
+.panel { padding: 20px 24px; display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.panel.urgent { border-color: oklch(0.7 0.15 30 / 0.4); }
+.panel-head { display: flex; flex-direction: column; gap: 6px; }
+.panel-head > div:first-child { display: flex; align-items: center; gap: 10px; }
+.count { font: 700 13px/1 var(--font-mono); padding: 4px 8px; border-radius: 4px; background: var(--urgent-solid); color: var(--urgent-ink); }
+.panel-sub { color: var(--text-2); }
+.urgent-groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 16px; }
+.urgent-group { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.group-head { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; padding-bottom: 6px; border-bottom: 1px solid var(--line-strong); }
+.group-head span + span { color: var(--muted); }
+.urgent-item { padding: 10px 12px; border-radius: 6px; background: oklch(0.7 0.15 30 / 0.09); display: flex; flex-direction: column; gap: 5px; }
+.urgent-item > div { display: flex; gap: 8px; align-items: baseline; }
+.urgent-item .id { color: var(--urgent); font-weight: 600; font-size: 12px; flex: none; }
+.urgent-item .blocks { font-size: 12px; color: var(--muted); }
+.next-btn { align-self: flex-start; border: 1px solid var(--line-strong); background: transparent; border-radius: 6px; padding: 9px 12px; font-size: 13px; text-align: left; }
+.next-btn:hover { background: var(--card-2); }
+.risk { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 12px; padding: 12px 0; border-top: 1px solid var(--line); }
+.level { align-self: start; font: 600 11px/1 var(--font); text-transform: uppercase; letter-spacing: 0.06em; padding: 5px 0; text-align: center; border-radius: 4px; background: var(--line); color: var(--muted); }
+.level.high { background: var(--urgent-bg); color: var(--urgent); }
+.level.medium { background: var(--warn-bg); color: var(--warn); }
+.risk-body { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.risk-title { font-weight: 600; line-height: 1.35; text-wrap: pretty; }
+.risk-detail { font-size: 13px; color: var(--muted); text-wrap: pretty; }
+.link-btn { align-self: flex-start; border: 0; background: none; padding: 2px 0; color: var(--link); font-size: 13px; }
+.link-btn:hover { color: var(--link-hover); }
+
+/* Detail tabs */
+.detail { display: flex; flex-direction: column; gap: 16px; scroll-margin-top: 16px; }
+.tabs { display: flex; flex-wrap: wrap; gap: 4px; border-bottom: 1px solid var(--line); }
+.tab { border: 0; background: none; padding: 12px 14px; margin-bottom: -1px; border-bottom: 2px solid transparent; color: var(--muted); font: 600 15px/1 var(--font); display: flex; gap: 8px; align-items: center; }
+.tab:hover, .tab[aria-selected="true"] { color: var(--text); }
+.tab[aria-selected="true"] { border-bottom-color: var(--text); }
+.tab span { font: 500 12px var(--font-mono); color: var(--muted); }
+.view { display: flex; flex-direction: column; gap: 18px; }
+.tools { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; align-items: center; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.filter { border: 1px solid var(--line-strong); background: transparent; color: var(--text-2); border-radius: 99px; padding: 7px 12px; font-size: 13px; font-weight: 600; display: inline-flex; gap: 6px; }
+.filter[aria-pressed="true"] { background: var(--text); border-color: var(--text); color: var(--bg); }
+.filter span { opacity: 0.7; }
+.search { border: 1px solid var(--line-strong); background: var(--card); border-radius: 6px; padding: 7px 10px; font-size: 13px; width: 240px; max-width: 100%; min-width: 0; }
+.check { display: flex; gap: 8px; align-items: center; font-size: 13px; color: var(--text-2); cursor: pointer; }
+.list { background: var(--card); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.lede { font-size: 14px; color: var(--muted); margin: 0; }
+
+/* Foldable rows: days and areas */
+.fold + .fold { border-top: 1px solid var(--line-soft); }
+.fold.current { background: var(--accent-row); }
+.row-btn { width: 100%; border: 0; background: none; display: grid; gap: 14px; align-items: center; padding: 12px 18px; text-align: left; }
+.row-btn:hover { background: var(--card-2); }
+.row-day { grid-template-columns: 52px minmax(0, 1fr) 80px minmax(80px, 160px) 56px 16px; }
+.row-area { grid-template-columns: minmax(0, 1fr) minmax(120px, 240px) 70px 110px 16px; }
+.day-num { font: 700 20px/1 var(--font-title); }
+.day-num.current { color: var(--accent); }
+.day-num.done { color: var(--muted); }
+.row-title { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.row-title > span:first-child { font-weight: 600; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.row-title small { font-size: 12px; color: var(--muted); }
+.day-status { font-size: 11px; font-weight: 600; }
+.day-status.done { color: var(--ok); }
+.day-status.current { color: var(--accent); }
+.day-status.waiting { color: var(--warn); }
+.points { font-size: 12px; color: var(--muted); text-align: right; }
+.ratio { font: 500 12px var(--font-mono); color: var(--text-2); text-align: right; }
+.bar { height: 5px; background: var(--line); border-radius: 3px; overflow: hidden; }
+.bar span { display: block; height: 100%; background: var(--accent); }
+.chevron { color: var(--muted); font-size: 12px; }
+.waiting-chip { justify-self: end; font-size: 12px; font-weight: 600; padding: 4px 8px; border-radius: 4px; white-space: nowrap; background: var(--line); color: var(--muted); }
+.waiting-chip.medium { background: var(--warn-bg); color: var(--warn); }
+.waiting-chip.high { background: var(--urgent-bg); color: var(--urgent); }
+.day-body { padding: 4px 18px 18px 84px; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 20px; }
+.area-body { padding: 0 18px 14px; }
+.col { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.col-title { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.task { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 10px; padding: 7px 0; border-top: 1px solid var(--line); }
+.task .id { font: 500 12px var(--font-mono); color: var(--muted); }
+.task-body { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.task-title { font-size: 13px; line-height: 1.4; }
+.task.done .task-title { color: var(--muted); }
+.task.deferred .task-title { color: var(--muted); text-decoration: line-through; }
+.task-meta { font-size: 12px; color: var(--muted); line-height: 1.4; }
+.st-done { color: var(--ok); }
+.st-doing { color: var(--accent); font-weight: 600; }
+.st-blocked { color: var(--urgent); font-weight: 600; }
+.waits { font-size: 12px; line-height: 1.4; color: var(--muted); }
+.waits.now { color: var(--urgent); }
+.waits.soon { color: var(--warn); }
+.required { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 10px; padding: 7px 0; border-top: 1px solid var(--line); font-size: 13px; line-height: 1.4; }
+.required .id { font: 600 12px var(--font-mono); color: var(--urgent); }
+.required .who { color: var(--muted); }
+.day-milestone { margin-top: 6px; font-size: 13px; padding: 8px 10px; border-radius: 6px; background: var(--card-2); }
+
+/* Pending answers */
+.answers-group { display: flex; flex-direction: column; gap: 8px; }
+.group-title { display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px; }
+.group-title h3 { margin: 0; font: 700 17px/1.2 var(--font-title); }
+.group-title span { font-size: 13px; color: var(--muted); }
+.tone-urgent { color: var(--urgent); }
+.tone-warn { color: var(--warn); }
+.tone-muted { color: var(--muted); }
+.answer { display: grid; grid-template-columns: 96px 48px minmax(0, 1fr) 130px; gap: 14px; align-items: baseline; padding: 11px 18px; }
+.answer + .answer { border-top: 1px solid var(--line-soft); }
+.answer-when { font-size: 13px; color: var(--text-2); }
+.answer-when span { color: var(--muted); font: 11px var(--font-mono); }
+.answer .id { font: 600 12px var(--font-mono); color: var(--text-2); }
+.answer-body { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.answer-body span:first-child { line-height: 1.4; text-wrap: pretty; }
+.answer-body span + span { font-size: 12px; color: var(--muted); }
+.answer-body .stake { font-size: 13px; color: var(--text-2); line-height: 1.4; }
+.answer-who { font-size: 12px; color: var(--muted); text-align: right; }
+
+/* Requests */
+.request-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: 10px; }
+.request-card { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.request-head { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; }
+.request-head > span:first-child { font-weight: 600; line-height: 1.35; }
+.request-card .id { font: 12px var(--font-mono); color: var(--muted); margin-right: 6px; }
+.request-status { flex: none; font-size: 11px; font-weight: 600; padding: 4px 7px; border-radius: 4px; background: var(--line); color: var(--muted); }
+.request-status.accepted { background: var(--accent-bg); color: var(--accent); }
+.request-status.pending { background: var(--warn-bg); color: var(--warn); }
+.request-card p { margin: 0; font-size: 13px; line-height: 1.45; color: var(--muted); text-wrap: pretty; }
+
+/* Log */
+.entry { display: grid; grid-template-columns: 90px 130px minmax(0, 1fr); gap: 16px; padding: 14px 20px; align-items: baseline; }
+.entry + .entry { border-top: 1px solid var(--line-soft); }
+.entry time { font: 500 12px var(--font-mono); color: var(--muted); }
+.entry-type { justify-self: start; font-size: 11px; font-weight: 600; padding: 4px 8px; border-radius: 4px; background: var(--line); color: var(--text-2); }
+.entry-type.replan { background: var(--warn-bg); color: var(--warn); }
+.entry-body { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.entry-title { font-weight: 600; line-height: 1.4; }
+.entry-text { font-size: 13px; line-height: 1.55; color: var(--text-2); text-wrap: pretty; }
+.entry-text.clamped { display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+/* Phone */
+@media (max-width: 720px) {
+  .page { padding: 20px 16px 72px; gap: 22px; }
+  .projection, .timeline-card, .panel { padding: 18px 16px; }
+  .figure { font-size: 36px; }
+  .row-btn { padding: 12px 14px; }
+  .row-day { grid-template-columns: 40px minmax(0, 1fr) 48px 14px; }
+  .row-area { grid-template-columns: minmax(0, 1fr) 48px 14px; }
+  .row-day .points, .row-day .bar, .row-area .bar, .row-area .waiting-chip { display: none; }
+  .day-body { padding: 4px 14px 16px; }
+  .area-body { padding: 0 14px 12px; }
+  .answer { grid-template-columns: auto minmax(0, 1fr); gap: 4px 12px; padding: 11px 14px; }
+  .answer .id { justify-self: start; }
+  .answer-body, .answer-who { grid-column: 1 / -1; text-align: left; }
+  .entry { grid-template-columns: auto minmax(0, 1fr); gap: 8px 12px; padding: 14px; }
+  .entry-body { grid-column: 1 / -1; }
+}
+@media (prefers-reduced-motion: reduce) { .day-btn:hover { filter: none; } }
+</style>
+
+<div class="page">
+  <header class="top">
+    <h1 class="brand" id="brand"></h1>
+    <div class="today" id="today"></div>
+  </header>
+
+  <section class="card explain" aria-labelledby="thesis">
+    <h2 class="thesis" id="thesis"></h2>
+    <div class="explain-grid">
+      <div class="explain-text" id="explain-text"></div>
+      <div class="scroll"><table class="calc-table" id="calc-table"></table><p class="calc-note" id="calc-note"></p></div>
+    </div>
+  </section>
+
+  <section class="hero" id="hero">
+    <article class="card projection" id="card-core"></article>
+    <article class="card projection" id="card-all"></article>
+    <div class="kpis" id="kpis"></div>
+  </section>
+
+  <section class="card timeline-card" aria-labelledby="timeline-title">
+    <div class="title-row">
+      <h2 id="timeline-title"></h2>
+      <div class="legend" id="legend"></div>
+    </div>
+    <div class="scroll"><div class="timeline" id="timeline"></div></div>
+    <div class="milestones" id="milestones"></div>
+  </section>
+
+  <section class="duo">
+    <div class="card panel" id="urgent"></div>
+    <div class="card panel"><h2 id="risks-title"></h2><div id="risks"></div></div>
+  </section>
+
+  <section class="detail" id="detail">
+    <div class="tabs" role="tablist" id="tabs"></div>
+    <div class="view" id="view" role="tabpanel"></div>
+  </section>
+</div>
+
+<script>
+const D = /*__DATA__*/null;
+const makeT = /*__MAKE_T__*/null;
+const C = D.calc;
+const P = D.project;
+const t = makeT(D.strings, D.intl);
+document.documentElement.lang = D.lang;
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const num = t.num;
+const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+const YEAR = String(C.today).slice(0, 4);
+const dateShort = (s) => t.date(String(s), { day: 'numeric', month: 'short', ...(String(s).slice(0, 4) !== YEAR && { year: 'numeric' }) });
+const LATER = 'later';
+const dayLabel = (d) => (d === LATER ? t('later.short') : t('day', { n: d }));
+const situation = (g) => cap(Math.abs(g) < 0.25 ? t('situation.onTime') : g > 0 ? t('situation.behind', { n: g }) : t('situation.ahead', { n: -g }));
+const workingDays = (n) => t('units.workingDays', { n });
+const goal = C.goal || t('goal');
+const focus = num(C.focus, 2);
+const reduced = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+const pct = (a, b) => `${b ? Math.max(0, Math.min(100, (a / b) * 100)) : 0}%`;
+
+/* Derived data: days, tasks, and what waits for an answer */
+const plan = C.days.filter((d) => d.day !== LATER);
+const later = C.days.find((d) => d.day === LATER);
+const allTasks = C.days.flatMap((d) => d.tasks);
+const delivered = (d) => d.active > 0 && d.done === d.active;
+const milestonesOn = (day) => D.milestones.filter((m) => m.day === day);
+const sprintOf = (day) => D.sprints.find((s) => day >= s.from && day <= s.to);
+const dues = new Map(C.watch.map((x) => [x.id, x]));
+const open = [
+  ...D.questions.filter((q) => q.status !== 'answered').map((q) => ({ ...q, kind: 'question' })),
+  ...D.dependencies.filter((d) => d.status !== 'received').map((d) => ({ ...d, kind: 'dependency' })),
+  ...D.requests.filter((r) => r.status === 'pending').map((r) => ({ ...r, kind: 'request' })),
+].map((x) => ({ ...x, date: dues.get(x.id)?.date || null, level: dues.get(x.id)?.level || 'ok' }));
+const byDue = (a, b) => (a.date || '9999').localeCompare(b.date || '9999') || a.id.localeCompare(b.id);
+const waitsFor = new Map();
+for (const x of open) for (const id of x.tasks || []) {
+  if (!waitsFor.has(id)) waitsFor.set(id, []);
+  waitsFor.get(id).push(x);
+}
+const waits = (task) => (task.status === 'done' || task.status === 'deferred' ? [] : waitsFor.get(task.id) || []);
+const when = (x) => (x.level === 'now' ? t('when.now') : x.date ? dateShort(x.date) : t('when.unset'));
+const now = open.filter((x) => x.level === 'now');
+const meeting = D.meetings.filter((m) => String(m.date) >= C.today).sort((a, b) => String(a.date).localeCompare(String(b.date)))[0];
+// An answer is prepared for the meeting when it is raised there (meeting), or due before it;
+// raised there, it is ranked by priority, with what it unlocks (stake).
+const forMeeting = (x) => Boolean(meeting) && (x.meeting === String(meeting.date)
+  || (x.level !== 'now' && Boolean(x.date) && x.date <= String(meeting.date) && x.who.includes(meeting.with)));
+const byPriority = (a, b) => (a.priority ?? 99) - (b.priority ?? 99) || byDue(a, b);
+const byWho = (xs) => [...new Set([...(D.people || []), ...xs.map((x) => x.who)])]
+  .map((who) => [who, xs.filter((x) => x.who === who)]).filter(([, l]) => l.length);
+const ALL = '*';
+
+/* Header */
+const sprint = sprintOf(C.currentDay);
+$('brand').innerHTML = `<b>${esc(P.name)}</b><i aria-hidden="true"></i><span>${esc(P.client ? t('header.subtitleClient', { client: P.client }) : t('header.subtitle'))}</span>`;
+$('today').innerHTML = `<span class="pill"><span><strong>${t('header.current', { day: dayLabel(C.currentDay) })}</strong>${sprint ? ' · ' + esc(t('sprint', { id: sprint.id })) : ''}</span></span>
+  <span>${t('header.generated', { date: new Date(C.generatedAt).toLocaleString(D.intl, { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) })}</span>`;
+
+/* How to read the page: a plan work day is not a calendar day */
+(() => {
+  const m = C.margin.core;
+  const range = (to) => t('range', { from: dayLabel(1), to: dayLabel(to) });
+  $('thesis').innerHTML = t('explain.thesis', {
+    goal: esc(goal), target: dateShort(C.target), end: `<em class="${m < 0 ? 'warn' : ''}">${dateShort(C.finish.core)}</em>`,
+    margin: m >= 0 ? t('explain.withMargin', { margin: workingDays(m) }) : t('explain.tooLate', { late: workingDays(-m) }),
+  });
+  $('explain-text').innerHTML = [
+    t(P.client ? 'explain.goalClient' : 'explain.goal', { goal: esc(goal), client: esc(P.client), target: dateShort(C.target), range: range(C.core) }),
+    t('explain.focus', { focus, ratio: num(1 / C.focus) }),
+    t('explain.work', { planDays: C.planDays, points: num(C.pointsPerDay) }),
+  ].map((p) => `<p>${p}</p>`).join('');
+  const tone = (n) => (n < 0 ? 'warn' : 'ok');
+  $('calc-table').innerHTML = `<thead><tr><th scope="col"></th><th scope="col">${t('explain.workLeft')}</th><th scope="col">${t('explain.calendar')}</th><th scope="col">${t('explain.readyBy')}</th></tr></thead><tbody>
+    <tr><td>${t('explain.coreRow', { range: range(C.core) })}</td><td>${t('units.days', { n: C.work.core })}</td><td>${workingDays(C.calendarLeft.core)}</td><td class="${tone(m)}">${dateShort(C.finish.core)}</td></tr>
+    <tr><td>${t('explain.allRow', { range: range(C.planDays) })}</td><td>${t('units.days', { n: C.work.all })}</td><td>${workingDays(C.calendarLeft.all)}</td><td class="${tone(C.margin.all)}">${dateShort(C.finish.all)}</td></tr>
+    <tr class="available"><td>${t('explain.untilTarget')}</td><td>${t('explain.available', { n: C.work.available })}</td><td>${workingDays(C.remaining)}</td><td>${dateShort(C.target)}</td></tr></tbody>`;
+  $('calc-note').textContent = t('explain.spent', { spent: C.spent, planDays: C.planDays });
+})();
+
+/* Projection of the core and of everything */
+$('hero').setAttribute('aria-label', t('hero.label'));
+(() => {
+  const m = C.margin.core;
+  $('card-core').classList.toggle('late', m < 0);
+  $('card-core').innerHTML = `<div class="eyebrow"><span class="caps">${t('hero.core', { from: dayLabel(1), to: dayLabel(C.core) })}</span><span class="chip ${m < 0 ? 'urgent' : 'ok'}">${t(m < 0 ? 'hero.offTarget' : 'hero.onSchedule')}</span></div>
+    <div class="figure">${situation(C.gap.core)}</div>
+    <div class="sentence">${t('hero.coreSentence', { end: dateShort(C.finish.core), target: dateShort(C.target), margin: m >= 0 ? t('hero.margin', { n: workingDays(m) }) : t('hero.afterTarget', { n: workingDays(-m) }) })}</div>
+    <div class="gauge"><div class="gauge-track"><span style="width:${pct(C.planDone, C.core)}"></span><i style="left:${pct(C.expected.core, C.core)}"></i></div>
+      <div class="gauge-legend"><span>${t('hero.doneExpected', { done: dayLabel(num(C.planDone)), expected: dayLabel(num(C.expected.core)) })}</span><span>${t('hero.daysOf', { done: Math.min(C.planDone, C.core), total: C.core })}</span></div></div>`;
+})();
+(() => {
+  const m = C.margin.all;
+  $('card-all').classList.toggle('off-target', m < 0);
+  $('card-all').innerHTML = `<div class="eyebrow"><span class="caps">${t('hero.all', { from: dayLabel(1), to: dayLabel(C.planDays) })}</span><span class="chip ${m < 0 ? 'warn' : 'ok'}">${t(m < 0 ? 'hero.offTarget' : 'hero.withinTarget')}</span></div>
+    <div class="figure">${dateShort(C.finish.all)}</div>
+    <div class="sentence">${t('hero.allSentence', { situation: situation(C.gap.all), target: dateShort(C.target) })} ${m < 0 ? t('hero.endsAfter', { n: workingDays(-m) }) : t('hero.endsBefore', { n: workingDays(m) })}</div>
+    <div class="gauge"><div class="gauge-track"><span style="width:${pct(C.planDone, C.planDays)}"></span>${m < 0 ? `<i class="warn" style="left:${pct(C.planAtTarget, C.planDays)}"></i>` : ''}</div>
+      <div class="gauge-legend"><span>${m < 0 ? t('hero.atTarget', { day: dayLabel(Math.floor(C.planAtTarget)) }) : t('hero.allFits')}</span><span>${t('hero.daysOf', { done: C.planDone, total: C.planDays })}</span></div></div>`;
+})();
+(() => {
+  const k = C.counters;
+  const waiting = allTasks.filter((x) => waits(x).length).length;
+  const openTasks = allTasks.filter((x) => x.status !== 'done' && x.status !== 'deferred').length;
+  $('kpis').innerHTML = [
+    { name: t('kpi.tasks'), value: num(k.tasks.done), total: k.tasks.total, part: k.tasks.total ? k.tasks.done / k.tasks.total : 0, sub: t('kpi.tasksLeft', { n: k.tasks.total - k.tasks.done }) },
+    k.screens.total
+      ? { name: t('kpi.screens'), value: num(k.screens.done), total: k.screens.total, part: k.screens.done / k.screens.total, sub: t('kpi.views', { done: k.views.done, total: k.views.total }) }
+      : { name: t('kpi.waiting'), value: num(waiting), total: openTasks, part: openTasks ? waiting / openTasks : 0, sub: t('kpi.waitingSub') },
+    { name: t('kpi.spent'), value: t('units.days', { n: C.spent }), total: C.planDays, part: C.spent / C.planDays, sub: t('kpi.spentSub', { focus }) },
+    { name: t('kpi.calendar'), value: num(C.remaining), total: C.workingDays, part: C.workingDays ? C.elapsed / C.workingDays : 1, sub: t('kpi.calendarSub', { n: C.work.available }) },
+  ].map((x) => `<div class="kpi"><div class="kpi-name">${x.name}</div><div class="kpi-value"><b>${x.value}</b><span>/ ${num(x.total)}</span></div>
+    <div class="kpi-bar"><span style="width:${pct(x.part, 1)}"></span></div><div class="kpi-sub">${x.sub}</div></div>`).join('');
+})();
+
+/* Plan calendar */
+(() => {
+  $('timeline-title').textContent = t('timeline.title');
+  $('legend').innerHTML = `<span><i class="l-done"></i>${t('timeline.done')}</span><span><i class="l-current"></i>${t('timeline.current')}</span><span><i class="l-tight"></i>${t('timeline.tight')}</span>
+    <span><i class="l-client"></i>${t('milestone.client')}</span><span><i class="l-checkpoint"></i>${t('milestone.checkpoint')}</span><span>${t('timeline.hint')}</span>`;
+  const cells = [...plan, ...(later ? [later] : [])];
+  const cols = cells.length;
+  const tl = $('timeline');
+  tl.style.gridTemplateColumns = `repeat(${cols}, minmax(0, 1fr))`;
+  tl.style.minWidth = `${cols * 24}px`;
+  let h = D.sprints.map((s) => `<div class="tl-sprint" style="grid-column:${s.from} / ${s.to + 1}"><strong>${esc(t('sprint', { id: s.id }))}</strong> ${esc(s.title || '')}</div>`).join('');
+  if (later && D.sprints.length) h += `<div class="tl-sprint" style="grid-column:${cols}"><strong>${t('later.short')}</strong></div>`;
+  h += cells.map((d) => {
+    const done = delivered(d), current = d.day === C.currentDay, ms = milestonesOn(d.day), dates = C.dayDates[d.day];
+    const name = `${d.day === LATER ? t('later.long') : dayLabel(d.day)}, ${d.title}${ms.length ? t('colon') + ms.map((m) => m.title).join(' ; ') : ''}${dates && !done ? t('timeline.around', { date: dateShort(dates.start) }) : ''}`;
+    return `<button type="button" class="day-btn ${done ? 'done' : current ? 'current' : ''} ${d.load === 'tight' && !done ? 'tight' : ''}" data-day="${d.day}" title="${esc(name)}" aria-label="${esc(name)}"><span>${d.day === LATER ? t('later.short') : d.day}</span><i></i></button>`;
+  }).join('');
+  h += cells.map((d) => {
+    const ms = milestonesOn(d.day), client = ms.some((m) => m.type === 'client');
+    return `<div class="tl-mark">${client ? '<span class="mark-client"></span>' : ms.length ? '<span class="mark-checkpoint"></span>' : ''}</div>`;
+  }).join('');
+  h += `<div class="tl-band core" style="grid-column:1 / span ${C.core}">${t('timeline.coreBand', { end: dateShort(C.finish.core), target: dateShort(C.target) })}</div>`;
+  if (C.planDays > C.core) h += `<div class="tl-band rest" style="grid-column:${C.core + 1} / span ${C.planDays - C.core}">${t('timeline.restBand', { end: dateShort(C.finish.all) })}</div>`;
+  if (later) h += `<div class="tl-band later" style="grid-column:${cols}">${t('later.short')}</div>`;
+  tl.innerHTML = h;
+  $('milestones').innerHTML = D.milestones.filter((m) => m.status !== 'reached').sort((a, b) => a.day - b.day).slice(0, 6).map((m) => {
+    const end = C.dayDates[m.day]?.end;
+    return `<div class="milestone"><div class="milestone-head"><b>${dayLabel(m.day)}</b><span>${end ? '≈ ' + dateShort(end) : ''}</span></div>
+      <div class="milestone-title">${esc(m.title)}</div><div class="milestone-type">${t('milestone.' + m.type)}</div></div>`;
+  }).join('');
+})();
+
+/* To settle now */
+(() => {
+  const toPrepare = open.filter(forMeeting);
+  const next = meeting ? `<button type="button" class="next-btn" data-next="${esc(meeting.with)}">${t('urgent.next', { title: esc(meeting.title), with: esc(meeting.with), date: dateShort(meeting.date), questions: t('urgent.questions', { n: toPrepare.length }) })} →</button>` : '';
+  $('urgent').classList.toggle('urgent', now.length > 0);
+  $('urgent').innerHTML = `<div class="panel-head"><div><h2>${t('urgent.title')}</h2>${now.length ? `<span class="count">${now.length}</span>` : ''}</div>
+    <div class="panel-sub">${now.length ? t('urgent.blocking', { day: dayLabel(C.currentDay) }) : t('urgent.none')}</div></div>
+    ${now.length ? `<div class="urgent-groups">${byWho(now).map(([who, l]) => `<div class="urgent-group"><div class="group-head"><span>${esc(who)}</span><span>${l.length}</span></div>
+      ${l.map((x) => `<div class="urgent-item"><div><span class="mono id">${x.id}</span><span>${esc(x.title)}</span></div>${x.tasks?.length ? `<div class="blocks">${t('urgent.blocks', { ids: x.tasks.join(', ') })}</div>` : ''}</div>`).join('')}</div>`).join('')}</div>` : ''}
+    ${next}`;
+})();
+
+/* Risks, drawn from the data: nothing is written by hand */
+const RISKS = (() => {
+  const r = [];
+  if (C.margin.core < 0) r.push({ level: 'high', title: t('risks.coreLate', { date: dateShort(C.finish.core), late: workingDays(-C.margin.core) }), detail: t('risks.coreLateDetail', { focus }), action: t('risks.seeDays'), tab: 'days' });
+  if (C.margin.all < 0) r.push({ level: C.margin.core < 0 ? 'medium' : 'high', title: t('risks.allLate', { date: dateShort(C.finish.all), late: workingDays(-C.margin.all) }), detail: t('risks.allLateDetail', { day: dayLabel(Math.floor(C.planAtTarget)) }), action: t('risks.seeDays'), tab: 'days', day: Math.min(C.planDays, Math.max(1, Math.ceil(C.planAtTarget))) });
+  if (now.length) {
+    const split = byWho(now).map(([who, l]) => t('risks.from', { n: l.length, who })).join(', ');
+    const worst = allTasks.map((x) => [x, waits(x).filter((y) => y.level === 'now').length]).sort((a, b) => b[1] - a[1])[0];
+    r.push({ level: 'high', title: t('risks.blocking', { n: now.length, day: dayLabel(C.currentDay) }), detail: `${split}.${worst && worst[1] > 1 ? ' ' + t('risks.worst', { id: worst[0].id, n: worst[1] }) : ''}`, action: t('risks.seeAnswers'), tab: 'answers', who: ALL });
+  }
+  // The party most answers depend on, when it holds half of them or more.
+  const top = byWho(open.filter((x) => x.who !== P.owner)).sort((a, b) => b[1].length - a[1].length)[0];
+  if (top && top[1].length * 2 >= open.length) {
+    const [who, l] = top;
+    const soon = meeting ? l.filter((x) => x.level === 'now' || forMeeting(x)).length : 0;
+    r.push({ level: 'medium', title: t('risks.dependOn', { n: l.length, total: open.length, who }), detail: meeting ? t('risks.expectedBy', { n: soon, date: dateShort(meeting.date), meeting: meeting.title }) : t('risks.pace'), action: t('risks.filter', { who }), tab: 'answers', who });
+  }
+  for (const x of open.filter((y) => y.kind === 'dependency' && y.level !== 'ok')) {
+    r.push({ level: x.level === 'now' ? 'high' : 'medium', title: x.title, detail: t('risks.dependency', { who: x.who, day: dayLabel(x.before), when: x.level === 'now' ? t('when.now') : t('when.around', { date: dateShort(x.date) }) }) + (x.tasks?.length ? ' ' + t('risks.blocksTasks', { n: x.tasks.length }) : ''), action: t('risks.seeAnswers'), tab: 'answers', who: x.who });
+  }
+  const ahead = plan.filter((d) => !delivered(d));
+  const tight = ahead.filter((d) => d.load === 'tight').length;
+  if (tight * 2 > ahead.length) r.push({ level: 'medium', title: t('risks.tight', { n: tight, total: ahead.length }), detail: t('risks.tightDetail'), action: t('risks.seeCalendar'), tab: 'days' });
+  const order = { high: 0, medium: 1, low: 2 };
+  return r.sort((a, b) => order[a.level] - order[b.level]).slice(0, 6);
+})();
+$('risks-title').textContent = t('risks.title');
+$('risks').innerHTML = RISKS.map((r, i) => `<div class="risk"><span class="level ${r.level}">${t('risks.' + r.level)}</span>
+  <div class="risk-body"><div class="risk-title">${esc(r.title)}</div><div class="risk-detail">${esc(r.detail)}</div>
+  <button type="button" class="link-btn" data-risk="${i}">${esc(r.action)} →</button></div></div>`).join('')
+  || `<p class="empty">${t('risks.none')}</p>`;
+
+/* Detail tabs */
+const TABS = [
+  ['answers', t('tabs.answers'), open.length], ['days', t('tabs.days'), plan.length],
+  ['areas', t('tabs.areas'), allTasks.filter((x) => x.status !== 'deferred').length],
+  ...(D.requests.length ? [['requests', t('tabs.requests'), D.requests.length]] : []),
+  ['log', t('tabs.log'), D.log.length],
+];
+$('detail').setAttribute('aria-label', t('tabs.label'));
+const anchor = (typeof location !== 'undefined' && location.hash.slice(1)) || '';
+const state = {
+  tab: TABS.some(([id]) => id === anchor) ? anchor : 'answers', who: ALL, sprint: ALL, hideDone: false,
+  openDay: C.currentDay, request: ALL, openEntries: new Set(), areaFilter: 'all', search: '', openAreas: new Set(),
+};
+
+function taskLine(x) {
+  const meta = [`<span class="st-${x.status}">${t('task.' + x.status)}</span>`, x.day === LATER ? t('later.long').toLowerCase() : dayLabel(x.day), x.views ? t('units.views', { n: Number(x.views) }) : '',
+    x.admin ? t('tasks.admin') : '', x.done_on ? t('tasks.doneOn', { date: dateShort(x.done_on) }) : '', x.note ? esc(x.note) : ''].filter(Boolean).join(' · ');
+  const w = waits(x).map((y) => `<span class="waits ${y.level}">${t('tasks.waits', { id: y.id, who: esc(y.who), when: when(y), title: esc(y.title) })}</span>`).join('');
+  return `<div class="task ${x.status}"><span class="id">${x.id}</span><span class="task-body"><span class="task-title">${esc(x.title)}</span><span class="task-meta">${meta}</span>${w}</span></div>`;
+}
+
+function viewAnswers() {
+  const people = byWho(open).map(([who]) => who);
+  const chips = [ALL, ...people].map((q) => `<button type="button" class="filter" aria-pressed="${state.who === q}" data-who="${esc(q)}">${q === ALL ? t('filters.all') : esc(q)}<span>${q === ALL ? open.length : open.filter((x) => x.who === q).length}</span></button>`).join('');
+  const list = open.filter((x) => state.who === ALL || x.who === state.who);
+  // The meeting first: what to raise there, in the order development needs it.
+  const groups = [
+    meeting && { title: `${meeting.title} · ${dateShort(meeting.date)}`, sub: t('answers.meetingSub', { with: meeting.with }), tone: 'tone-warn', keep: forMeeting, sort: byPriority },
+    { title: t('answers.now'), sub: t('answers.nowSub', { day: dayLabel(C.currentDay) }), tone: 'tone-urgent', keep: (x) => x.level === 'now' },
+    { title: t('answers.soon', { date: dateShort(C.horizon) }), sub: t('answers.soonSub'), tone: '', keep: (x) => Boolean(x.date) && x.date <= C.horizon },
+    { title: t('answers.later'), sub: t('answers.laterSub'), tone: 'tone-muted', keep: () => true },
+  ].filter(Boolean);
+  const placed = new Set();
+  const html = groups.map((g) => {
+    const items = list.filter((x) => !placed.has(x.id) && g.keep(x)).sort(g.sort || byDue);
+    items.forEach((x) => placed.add(x.id));
+    return items.length ? `<div class="answers-group"><div class="group-title"><h3 class="${g.tone}">${esc(g.title)}</h3><span>${esc(g.sub)} · ${items.length}</span></div>
+      <div class="list">${items.map((x) => `<div class="answer"><span class="answer-when">${when(x)} <span>${x.before ? dayLabel(x.before) : ''}</span></span><span class="id">${x.id}</span>
+        <div class="answer-body"><span>${g.sort && x.priority ? `<b>${esc(x.priority)}.</b> ` : ''}${esc(x.title)}</span>${g.sort && x.stake ? `<span class="stake">${esc(x.stake)}</span>` : ''}<span>${t('kind.' + x.kind)}${x.tasks?.length ? ' · ' + t('answers.blocks', { ids: x.tasks.join(', ') }) : ''}</span></div><span class="answer-who">${esc(x.who)}</span></div>`).join('')}</div></div>` : '';
+  }).join('');
+  $('view').innerHTML = `<div class="chips">${chips}</div>${html || `<p class="empty">${t('answers.none')}</p>`}`;
+}
+
+function viewDays() {
+  const chips = [[ALL, t('filters.all')], ...D.sprints.map((s) => [String(s.id), t('sprint', { id: s.id })]), ...(later ? [[LATER, t('later.long')]] : [])]
+    .map(([v, l]) => `<button type="button" class="filter" aria-pressed="${state.sprint === v}" data-sprint="${esc(v)}">${esc(l)}</button>`).join('');
+  $('view').innerHTML = `<div class="tools"><div class="chips">${chips}</div>
+    <label class="check"><input type="checkbox" id="hide-done" ${state.hideDone ? 'checked' : ''}> ${t('days.hideDone')}</label></div><div class="list" id="day-list"></div>`;
+  listDays();
+}
+function listDays() {
+  const days = C.days.filter((d) => (state.sprint === ALL || (state.sprint === LATER ? d.day === LATER : d.day !== LATER && String(d.sprint) === state.sprint))
+    && !(state.hideDone && delivered(d)));
+  $('day-list').innerHTML = days.map((d) => {
+    const done = delivered(d), current = d.day === C.currentDay, isOpen = state.openDay === d.day, dates = C.dayDates[d.day];
+    const required = open.filter((x) => x.before === d.day);
+    const status = done ? ['done', t('days.finished')] : current ? ['current', t('days.inProgress')] : required.length ? ['waiting', t('days.required', { n: required.length })] : null;
+    const tasks = [...d.tasks.filter((x) => x.id.startsWith('T')), ...d.tasks.filter((x) => x.id.startsWith('S'))];
+    return `<div class="fold ${current ? 'current' : ''}"><button type="button" class="row-btn row-day" data-open-day="${d.day}" aria-expanded="${isOpen}">
+      <span class="day-num ${current ? 'current' : done ? 'done' : ''}">${dayLabel(d.day)}</span>
+      <span class="row-title"><span>${esc(d.title)}${status ? `<span class="day-status ${status[0]}">${status[1]}</span>` : ''}</span>
+        <small>${[d.phase ? esc(d.phase) : '', d.day === LATER ? t('days.offPlan') : done ? t('days.delivered') : dates ? '≈ ' + dateShort(dates.start) : ''].filter(Boolean).join(' · ')}</small></span>
+      <span class="points">${t('days.points', { n: d.points })}${d.load === 'tight' ? ' · ' + t('days.tight') : ''}</span>
+      <span class="bar"><span style="width:${Math.round(d.fraction * 100)}%"></span></span>
+      <span class="ratio">${d.done}/${d.active}</span><span class="chevron" aria-hidden="true">${isOpen ? '▾' : '▸'}</span></button>
+      ${isOpen ? `<div class="day-body"><div class="col"><div class="col-title">${t('days.tasks')}</div>${d.note ? `<div class="task-meta">${esc(d.note)}</div>` : ''}
+        ${tasks.map(taskLine).join('') || `<div class="task-meta">${t('days.noTask')}</div>`}</div>
+        <div class="col"><div class="col-title">${t('days.requiredTitle')}</div>
+        ${required.map((x) => `<div class="required"><span class="id">${x.id}</span><span>${esc(x.title)} <span class="who">· ${esc(x.who)}</span></span></div>`).join('') || `<div class="task-meta">${t('days.noneRequired')}</div>`}
+        ${milestonesOn(d.day).map((m) => `<div class="day-milestone"><strong>${t('milestone.' + m.type)}</strong> · ${esc(m.title)}</div>`).join('')}</div></div>` : ''}</div>`;
+  }).join('') || `<p class="empty">${t('days.allDone')}</p>`;
+}
+
+function viewAreas() {
+  const active = allTasks.filter((x) => x.status !== 'deferred'), done = active.filter((x) => x.status === 'done').length;
+  const waiting = allTasks.filter((x) => waits(x).length).length;
+  const chips = [['all', t('filters.all')], ['left', t('areas.left')], ['done', t('areas.done')], ['waiting', t('areas.waiting')]]
+    .map(([v, l]) => `<button type="button" class="filter" aria-pressed="${state.areaFilter === v}" data-area-filter="${v}">${l}</button>`).join('');
+  $('view').innerHTML = `<div class="tools"><div class="chips">${chips}</div>
+    <input type="search" class="search" id="search" placeholder="${esc(t('areas.search'))}" aria-label="${esc(t('areas.search'))}" value="${esc(state.search)}"></div>
+    <p class="lede">${t('areas.lede', { n: active.length, done, left: active.length - done, waiting })}</p>
+    <div class="list" id="area-list"></div>`;
+  listAreas();
+}
+function listAreas() {
+  const q = state.search.trim().toLowerCase(), f = state.areaFilter, filtered = Boolean(q) || f !== 'all';
+  const keep = (x) => (f === 'all' || (f === 'done' ? x.status === 'done' : f === 'waiting' ? waits(x).length > 0 : x.status !== 'done' && x.status !== 'deferred'))
+    && (!q || `${x.id} ${x.title}`.toLowerCase().includes(q));
+  const known = new Set(D.areas.map((a) => a.id));
+  const areas = [...D.areas, ...(allTasks.some((x) => !known.has(x.area)) ? [{ id: '', title: t('areas.none') }] : [])];
+  let html = '';
+  for (const area of areas) {
+    const ts = allTasks.filter((x) => (area.id ? x.area === area.id : !known.has(x.area))), act = ts.filter((x) => x.status !== 'deferred');
+    const done = act.filter((x) => x.status === 'done').length, waiting = ts.filter((x) => waits(x).length).length;
+    const visible = ts.filter(keep);
+    if (filtered && !visible.length) continue;
+    const isOpen = filtered || state.openAreas.has(area.id);
+    html += `<div class="fold"><button type="button" class="row-btn row-area" data-area="${esc(area.id)}" aria-expanded="${isOpen}">
+      <span class="row-title"><span>${esc(area.title)}</span><small>${t('areas.counts', { left: act.length - done, done })}${waiting ? ', ' + t('areas.waitingCount', { n: waiting }) : ''}</small></span>
+      <span class="bar"><span style="width:${pct(done, act.length || 1)}"></span></span><span class="ratio">${done}/${act.length}</span>
+      <span class="waiting-chip ${waiting >= 10 ? 'high' : waiting >= 5 ? 'medium' : ''}">${t('areas.waitingCount', { n: waiting })}</span>
+      <span class="chevron" aria-hidden="true">${isOpen ? '▾' : '▸'}</span></button>
+      ${isOpen ? `<div class="area-body">${visible.map(taskLine).join('')}</div>` : ''}</div>`;
+  }
+  $('area-list').innerHTML = html || `<p class="empty">${t('areas.noMatch')}</p>`;
+}
+
+function viewRequests() {
+  const chips = [ALL, 'pending', 'accepted', 'declined', 'deferred'].map((s) => `<button type="button" class="filter" aria-pressed="${state.request === s}" data-request="${s}">${s === ALL ? t('filters.all') : t('request.' + s)}<span>${s === ALL ? D.requests.length : D.requests.filter((r) => r.status === s).length}</span></button>`).join('');
+  const items = D.requests.filter((r) => state.request === ALL || r.status === state.request).sort((a, b) => (a.status === 'pending' ? 0 : 1) - (b.status === 'pending' ? 0 : 1));
+  $('view').innerHTML = `<div class="chips">${chips}</div><div class="request-cards">${items.map((r) => `<div class="request-card"><div class="request-head"><span><span class="id">${r.id}</span>${esc(r.title)}</span><span class="request-status ${r.status}">${t('request.' + r.status)}</span></div>
+    ${r.decision || r.recommendation ? `<p>${esc(r.decision || t('requests.recommendation', { text: r.recommendation }))}</p>` : ''}${r.tasks?.length ? `<p>${t('requests.tasks', { ids: r.tasks.join(', ') })}</p>` : ''}</div>`).join('') || `<p class="empty">${t('requests.none')}</p>`}</div>`;
+}
+
+function viewLog() {
+  const entries = [...D.log].reverse();
+  $('view').innerHTML = `<div class="list">${entries.map((e, i) => {
+    const isOpen = state.openEntries.has(i);
+    return `<div class="entry"><time datetime="${esc(e.date)}">${t.date(String(e.date), { day: '2-digit', month: '2-digit' })}</time>
+      <span class="entry-type ${e.type}">${t('log.' + e.type)}</span>
+      <div class="entry-body">${e.title ? `<div class="entry-title">${esc(e.title)}</div>` : ''}<div class="entry-text ${isOpen ? '' : 'clamped'}">${esc(e.note || '')}</div>
+      <button type="button" class="link-btn" data-entry="${i}" aria-expanded="${isOpen}">${t(isOpen ? 'log.collapse' : 'log.expand')}</button></div></div>`;
+  }).join('') || `<p class="empty">${t('log.none')}</p>`}</div>`;
+}
+
+const VIEWS = { answers: viewAnswers, days: viewDays, areas: viewAreas, requests: viewRequests, log: viewLog };
+function renderDetail() {
+  $('tabs').innerHTML = TABS.map(([id, name, n]) => `<button type="button" role="tab" class="tab" aria-selected="${state.tab === id}" data-tab="${id}">${name}<span>${n}</span></button>`).join('');
+  VIEWS[state.tab]();
+}
+function go(tab, options) {
+  Object.assign(state, { tab }, options || {});
+  renderDetail();
+  $('detail').scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' });
+}
+// A render replaces the buttons: focus goes back to the one carrying the same data-* attributes.
+function keepFocus(render) {
+  const active = document.activeElement;
+  const key = active && active.dataset ? Object.entries(active.dataset).map(([k, v]) => `[data-${k.replace(/[A-Z]/g, (m) => '-' + m.toLowerCase())}="${CSS.escape(v)}"]`).join('') : '';
+  render();
+  if (key) document.querySelector(key)?.focus();
+}
+const dayValue = (v) => (v === LATER ? LATER : Number(v));
+
+document.addEventListener('click', (e) => {
+  const b = e.target.closest('button');
+  if (!b) return;
+  const d = b.dataset;
+  if (d.risk !== undefined) {
+    const r = RISKS[Number(d.risk)];
+    return go(r.tab, { ...(r.who && { who: r.who }), ...(r.day && { openDay: r.day, sprint: ALL, hideDone: false }) });
+  }
+  if (d.next !== undefined) return go('answers', { who: d.next });
+  if (d.day !== undefined) return go('days', { openDay: dayValue(d.day), sprint: ALL, hideDone: false });
+  if (d.tab) return keepFocus(() => { state.tab = d.tab; renderDetail(); });
+  if (d.who !== undefined) return keepFocus(() => { state.who = d.who; viewAnswers(); });
+  if (d.sprint) return keepFocus(() => { state.sprint = d.sprint; viewDays(); });
+  if (d.openDay !== undefined) {
+    const day = dayValue(d.openDay);
+    return keepFocus(() => { state.openDay = state.openDay === day ? null : day; listDays(); });
+  }
+  if (d.areaFilter) {
+    state.areaFilter = d.areaFilter;
+    b.parentElement.querySelectorAll('button').forEach((x) => x.setAttribute('aria-pressed', x === b));
+    return listAreas();
+  }
+  if (d.area !== undefined) {
+    if (!state.openAreas.delete(d.area)) state.openAreas.add(d.area);
+    return keepFocus(listAreas);
+  }
+  if (d.request) return keepFocus(() => { state.request = d.request; viewRequests(); });
+  if (d.entry !== undefined) {
+    const i = Number(d.entry);
+    if (!state.openEntries.delete(i)) state.openEntries.add(i);
+    return keepFocus(viewLog);
+  }
+});
+document.addEventListener('change', (e) => {
+  if (e.target.id === 'hide-done') { state.hideDone = e.target.checked; listDays(); }
+});
+document.addEventListener('input', (e) => {
+  if (e.target.id === 'search') { state.search = e.target.value; listAreas(); }
+});
+renderDetail();
+</script>
