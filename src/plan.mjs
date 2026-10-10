@@ -5,8 +5,9 @@ const EPS = 1e-9;
 const round = (n) => Math.round(n * 100) / 100;
 const sum = (xs) => xs.reduce((s, x) => s + x, 0);
 
-// The six steps of the first plan, as far as the file shows them. The skill picks up from the first
-// step not done; the developer may reopen any.
+// The six steps of the first plan. The skill records the last step the developer approved in
+// project.planning_step; a file kept by hand falls back on what its sections show. The skill picks up
+// from the first step not done; the developer may reopen any.
 export function planningProgress(b) {
   const active = b.tasks.filter((t) => t.status !== 'deferred');
   const screens = active.filter((t) => String(t.id).startsWith('S'));
@@ -17,7 +18,8 @@ export function planningProgress(b) {
   const steps = [
     { key: 'features', done: b.features.length > 0, inScope: b.features.filter((f) => f.scope !== 'out').length, out: b.features.filter((f) => f.scope === 'out').length },
     { key: 'screens', done: screens.length > 0, screens: screens.length, views: sum(screens.map((t) => Number(t.views) || 0)) },
-    { key: 'questions', done: b.questions.length + b.dependencies.length > 0, questions: b.questions.length, dependencies: b.dependencies.length },
+    // Questions are born at step 1 already: the pass of step 3 shows only once estimating has begun.
+    { key: 'questions', done: b.questions.length + b.dependencies.length > 0 && estimated.length > 0, questions: b.questions.length, dependencies: b.dependencies.length },
     {
       key: 'estimation', done: active.length > 0 && estimated.length === active.length, estimated: estimated.length, total: active.length,
       points: round(sum(estimated.filter((t) => !below(t)).map((t) => t.points))), later: round(sum(estimated.filter(below).map((t) => t.points))),
@@ -25,14 +27,18 @@ export function planningProgress(b) {
     { key: 'days', done: active.length > 0 && placed.length === active.length && b.days.length > 0, planDays: b.project.plan_days, core: b.project.core },
     { key: 'baseline', done: Boolean(b.project.baseline) },
   ];
+  const approved = b.project.planning_step;
+  if (Number.isInteger(approved)) steps.slice(0, 5).forEach((s, i) => { s.done = i + 1 <= approved; });
   const next = steps.findIndex((s) => !s.done);
   return { steps, next: next < 0 ? null : next + 1 };
 }
 
 // Lays the estimated tasks out on plan days, a full work day holding points_per_day:
-//   1. tasks without a feature (foundations), in file order;
+//   1. foundations: tasks of kind setup without a feature, in file order;
 //   2. tasks of core features, by feature priority, then file order;
-//   3. tasks of the other features, the same way.
+//   3. the other tasks without a feature, which close the core: fixes after acceptance, an
+//      accessibility pass, a guide, the handover;
+//   4. tasks of the other features, by feature priority, then file order.
 // The core ends with the last day of core work, and the rest starts on a fresh day. Tasks on "later"
 // stay below the line, deferred tasks keep their day, and tasks of features out of scope are left out.
 // Each open question and pending dependency is then needed before the first day of its work.
@@ -41,7 +47,8 @@ export function layoutPlan(b, { laterTitle = 'Below the line' } = {}) {
   const errors = [];
   const warnings = [];
   const features = new Map(b.features.map((f, index) => [f.id, { ...f, index }]));
-  const rank = (f) => [f.core ? 1 : 2, f.priority ?? Infinity, f.index];
+  const rank = (f) => [f.core ? 1 : 3, f.priority ?? Infinity, f.index];
+  const GROUP = { foundations: [0, 0, 0], closing: [2, 0, 0] };
   const compare = (a, c) => {
     for (let i = 0; i < a.length; i++) if (a[i] !== c[i]) return a[i] < c[i] ? -1 : 1;
     return 0;
@@ -56,7 +63,7 @@ export function layoutPlan(b, { laterTitle = 'Below the line' } = {}) {
     const f = featureOf(t);
     if (f?.scope === 'out') return void warnings.push(`${t.id}: its feature ${f.id} is out of scope, so it is not laid out`);
     if (typeof t.points !== 'number') return void errors.push(`${t.id}: no points yet; every task needs its estimate before the layout`);
-    queue.push({ t, f, key: [...(f ? rank(f) : [0, 0, 0]), index] });
+    queue.push({ t, f, key: [...(f ? rank(f) : t.kind === 'setup' ? GROUP.foundations : GROUP.closing), index] });
   });
   if (!(capacity > 0)) errors.push('project.points_per_day: the points a full work day holds');
   if (errors.length) return { errors, warnings };

@@ -165,6 +165,7 @@ const commands = {
     if (!isPlanning(b)) fail(b.project.baseline ? `The plan was agreed on ${b.project.baseline.date}.` : `baseline agrees a plan being drawn up (project.phase: ${PLANNING}).`);
     const agreed = { ...b, project: { ...b.project } };
     delete agreed.project.phase;
+    delete agreed.project.planning_step;
     const issues = validate(agreed);
     printIssues(issues);
     if (issues.errors.length) fail(`\nThe plan is not complete yet: ${issues.errors.length} error(s), as it would be checked once agreed.`);
@@ -173,6 +174,7 @@ const commands = {
     const points = round(compute(agreed, { today }).pointsTotal);
     const file = writeEdits(dir, (ed) => {
       ed.removeProject('phase');
+      ed.removeProject('planning_step');
       ed.setProject('baseline', { date: today, points, plan_days: p.plan_days });
       ed.append('log', { date: today, type: 'baseline', title: t('log.baselineTitle'), note: t('log.baselineNote', { points: t('planning.points', { n: points }), days: p.plan_days, core: t('day', { n: p.core }) }) });
     });

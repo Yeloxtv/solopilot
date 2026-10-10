@@ -48,6 +48,14 @@ test('layout: foundations, then the core by priority, then the rest from a fresh
   assert.equal(r.days.at(-1).day, 'later');
 });
 
+test('layout: other tasks without a feature close the core, they do not open the plan', () => {
+  const b = draft();
+  b.tasks.push({ id: 'T007', area: 'app', kind: 'release', status: 'todo', points: 1, title: 'Fixes after acceptance' });
+  const r = layoutPlan(b);
+  assert.deepEqual(r.listing.map((d) => d.tasks), [['T002', 'T003'], ['S01'], ['T004', 'T007'], ['T001']]);
+  assert.equal(r.core, 3);
+});
+
 test('layout: a task bigger than a day fills a day of its own, marked tight', () => {
   const b = draft();
   b.tasks.find((t) => t.id === 'T004').points = 8;
@@ -89,6 +97,31 @@ test('planning progress follows the file, step by step', () => {
   assert.equal(p.next, 5);
   assert.equal(p.steps[3].points, 17);
   assert.equal(p.steps[3].later, 2);
+});
+
+test('the step recorded by the skill wins over what the sections show', () => {
+  const p = planningProgress(draft({ project: { planning_step: 1 } }));
+  assert.deepEqual(p.steps.map((s) => s.done), [true, false, false, false, false, false]);
+  assert.equal(p.next, 2);
+  assert.match(validate(draft({ project: { planning_step: 7 } })).errors.join('\n'), /project\.planning_step/);
+  assert.match(validate(fixture({ project: { planning_step: 2 } })).errors.join('\n'), /project\.planning_step/, 'only while planning');
+});
+
+test('without a recorded step, questions alone do not make step 3 done', () => {
+  const b = draft();
+  for (const t of b.tasks) delete t.points;
+  assert.deepEqual(planningProgress(b).steps.map((s) => s.done).slice(0, 3), [true, true, false]);
+});
+
+test('before day 1, the projection and the due dates start on day 1', () => {
+  const b = fixture();
+  for (const t of b.tasks) { t.status = 'todo'; delete t.done_on; }
+  const early = compute(b, { today: '2025-12-29' });
+  const onDay1 = compute(b, { today: '2026-01-05' });
+  assert.equal(early.notStarted, true);
+  assert.equal(onDay1.notStarted, false);
+  assert.deepEqual(early.finish, onDay1.finish);
+  assert.deepEqual(early.watch.map((x) => x.date), onDay1.watch.map((x) => x.date));
 });
 
 test('features need a source, a known area and well-formed flags', () => {

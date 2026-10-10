@@ -54,7 +54,7 @@
     "milestone": "next client milestone: {day}, {title}{when}",
     "around": ", around {date}",
     "link": "<{url}|Open the dashboard>: projection, pending answers, backlog by area",
-    "fallback": "{name}: {goal} on {target}, core ready around {coreEnd}",
+    "fallback": "{name}: {goalMid} on {target}, core ready around {coreEnd}",
     "reached": ":triangular_flag_on_post: *Milestone {day} reached*",
     "reachedFallback": "{name}, milestone {day} reached: {title}"
   },
@@ -63,14 +63,15 @@
     "subtitle": "Project steering",
     "subtitleClient": "Steering the {client} project",
     "current": "{day} in progress",
+    "starts": "Starts on {date}",
     "generated": "Generated {date}"
   },
   "explain": {
     "thesis": "{goal} on {target}: the core is projected ready around {end}{margin}.",
     "withMargin": ", with {margin} to spare",
     "tooLate": ", {late} too late",
-    "goal": "<strong>The goal:</strong> {goal} on {target}, with at least the core of the product ({range} of the plan). The rest comes on top if it fits before.",
-    "goalClient": "<strong>The goal:</strong> {goal} for {client} on {target}, with at least the core of the product ({range} of the plan). The rest comes on top if it fits before.",
+    "goal": "<strong>The goal:</strong> {goalMid} on {target}, with at least the core of the product ({range} of the plan). The rest comes on top if it fits before.",
+    "goalClient": "<strong>The goal:</strong> {goalMid} for {client} on {target}, with at least the core of the product ({range} of the plan). The rest comes on top if it fits before.",
     "focus": "<strong>{focus} day per working day, on average.</strong> Time spent on the project varies from day to day; the plan uses the average. So one planned work day takes {ratio} working days on the calendar.",
     "work": "<strong>Work or calendar.</strong> Plan “days” are work days, estimated upfront: {planDays} days, about {points} load points per day. The dates on this page are calendar dates derived from them, never extrapolated from the first days.",
     "workLeft": "Work left",

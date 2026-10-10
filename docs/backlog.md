@@ -20,6 +20,7 @@ Dates are written `YYYY-MM-DD`. Only `project`, `days` and `tasks` are required;
 | `start` | yes | Date of day 1 |
 | `target` | yes | The date you committed to: the core at least, everything ideally |
 | `phase` | | `planning` while the first plan is drawn up, absent once it is agreed |
+| `planning_step` | | While planning: the last of the six steps you approved, 0 to 6. Written by the skill, removed by `solopilot baseline` |
 | `budget_days` | | The work days sold in the quote, which the plan is weighed against |
 | `plan_days` | once agreed | Number of work days in the plan. `days` must list every day from 1 to this number. Written by `solopilot layout` |
 | `core` | once agreed | Last day of the core, the minimum commitment. Written by `solopilot layout` |
@@ -77,6 +78,8 @@ A day's progress is the share of its active tasks that are done: half the tasks 
 ## features
 
 `{ id, area, title, source, core, priority, scope, note }`: what the app must do, each feature traced to its `source` in the project documents (required, such as `"spec.pdf p. 4"`, or the id of the request that added it). `core: true` marks the minimum that must ship on the target date, and `priority` the order to build in; `solopilot layout` follows both. `scope: out` keeps what the documents explicitly exclude.
+
+Tasks without a feature place themselves: those of kind `setup` (the foundations) open the plan, the others (fixes after acceptance, an accessibility pass, a guide, the handover) close the core.
 
 ## estimation
 

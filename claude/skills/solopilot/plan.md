@@ -7,7 +7,7 @@ solopilot comes in once the project is signed: the budget and the date are fixed
 ## Before the first step
 
 1. Work in the pilot directory: `$SOLOPILOT_DIR`, or the current directory when it holds `solopilot.yaml`. The project documents live in its `sources/` folder, versioned with the plan. They never go into the project repository.
-2. Run `solopilot status` to see the step reached, and pick up from there. The developer may ask to reopen an earlier step; the later steps are then reviewed too.
+2. Run `solopilot status` to see the step reached (`project.planning_step`, the last step approved), and pick up from there. The developer may ask to reopen an earlier step; set `planning_step` back to the step before it, and review the later steps too.
 3. List `sources/` and read every document in full: specs, workshop notes, quotes, mockups. Read PDFs and images directly. A Word file has to be converted first: ask the developer to export it to PDF, or convert it with `pandoc` if it is installed. Read Figma links through the Figma connector when it is available; otherwise ask for exported images.
 4. Check the inputs that the documents may not give, and ask for the missing ones in one message:
    - `project.start` and `project.target`: day 1 and the production date;
@@ -20,7 +20,7 @@ solopilot comes in once the project is signed: the budget and the date are fixed
 
 1. Draft the step and show it as a compact table, area by area for a large spec (about twenty lines at a time).
 2. Wait for the developer's approval. Write nothing before.
-3. Write the approved lines into `solopilot.yaml`, one entry per line, in the existing format, with targeted edits. Leave comments alone.
+3. Write the approved lines into `solopilot.yaml`, one entry per line, in the existing format, with targeted edits. Leave comments alone. In the same write, set `project.planning_step` to the number of the step just approved: this is how `status` knows a step is done, not from the sections it finds.
 4. Run `solopilot check`. Fix what it reports before going on.
 5. Commit in the pilot directory: `git -C "<pilot dir>" add -A` then `git -C "<pilot dir>" commit -m "plan: step N, <name>"`.
 
@@ -52,7 +52,8 @@ Write every title, note and question in the language of `project.locale`.
 ## Step 4: tasks and their estimate
 
 - Propose the **estimation grid** first, and wait for its approval: a few typical sizes per kind, with their points, in `estimation.grid`, with `basis: hypotheses`. For example `{ kind: screen, size: "3 simple views", points: 1 }`, `{ kind: logic, size: "resource with business rules", points: 1.5 }`, `{ kind: integration, size: "third-party API with webhooks", points: 4 }`. Kinds: `screen`, `setup`, `logic`, `integration`, `content`, `release`.
-- Then split each feature into tasks `T…`, with `feature`, `area`, `kind`, `status: todo` and `points` taken from the grid. Foundations (repository, CI, data model, deployment pipeline) are tasks of kind `setup`, without a feature. Give the screens their points too.
+- Then split each feature into tasks `T…`, with `feature`, `area`, `kind`, `status: todo` and `points` taken from the grid. Give the screens their points too.
+- Tasks that belong to no feature place themselves: foundations (repository, CI, data model, deployment pipeline), of kind `setup`, open the plan; the other ones (fixes after the client's acceptance, accessibility pass, user guide, handover) close the core. Do not invent a feature to move them.
 - Include what is easy to forget: deployment and environments, accessibility and performance passes, content loading, fixes after the client's review, handover.
 - Turn the `features` links of the questions into `tasks` links where the waiting task is clear.
 

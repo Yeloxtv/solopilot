@@ -343,6 +343,8 @@ const dayLabel = (d) => (d === LATER ? t('later.short') : t('day', { n: d }));
 const situation = (g) => cap(Math.abs(g) < 0.25 ? t('situation.onTime') : g > 0 ? t('situation.behind', { n: g }) : t('situation.ahead', { n: -g }));
 const workingDays = (n) => t('units.workingDays', { n });
 const goal = C.goal || t('goal');
+// After a colon, French writes on in lower case ("L'objectif : mise en ligne…"); MVP or V1 keep theirs.
+const goalMid = /^\p{Lu}\p{Ll}/u.test(goal) ? goal[0].toLocaleLowerCase() + goal.slice(1) : goal;
 const focus = num(C.focus, 2);
 const reduced = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 const pct = (a, b) => `${b ? Math.max(0, Math.min(100, (a / b) * 100)) : 0}%`;
@@ -382,7 +384,7 @@ const ALL = '*';
 /* Header */
 const sprint = sprintOf(C.currentDay);
 $('brand').innerHTML = `<b>${esc(P.name)}</b><i aria-hidden="true"></i><span>${esc(P.client ? t('header.subtitleClient', { client: P.client }) : t('header.subtitle'))}</span>`;
-$('today').innerHTML = `<span class="pill"><span><strong>${t('header.current', { day: dayLabel(C.currentDay) })}</strong>${sprint ? ' · ' + esc(t('sprint', { id: sprint.id })) : ''}</span></span>
+$('today').innerHTML = `<span class="pill"><span>${C.notStarted ? `<strong>${t('header.starts', { date: dateShort(C.start) })}</strong>` : `<strong>${t('header.current', { day: dayLabel(C.currentDay) })}</strong>${sprint ? ' · ' + esc(t('sprint', { id: sprint.id })) : ''}`}</span></span>
   <span>${t('header.generated', { date: new Date(C.generatedAt).toLocaleString(D.intl, { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) })}</span>`;
 
 /* How to read the page: a plan work day is not a calendar day */
@@ -394,7 +396,7 @@ $('today').innerHTML = `<span class="pill"><span><strong>${t('header.current', {
     margin: m >= 0 ? t('explain.withMargin', { margin: workingDays(m) }) : t('explain.tooLate', { late: workingDays(-m) }),
   });
   $('explain-text').innerHTML = [
-    t(P.client ? 'explain.goalClient' : 'explain.goal', { goal: esc(goal), client: esc(P.client), target: dateShort(C.target), range: range(C.core) }),
+    t(P.client ? 'explain.goalClient' : 'explain.goal', { goalMid: esc(goalMid), client: esc(P.client), target: dateShort(C.target), range: range(C.core) }),
     t('explain.focus', { focus, ratio: num(1 / C.focus) }),
     t('explain.work', { planDays: C.planDays, points: num(C.pointsPerDay) }),
   ].map((p) => `<p>${p}</p>`).join('');

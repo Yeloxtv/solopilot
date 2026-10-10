@@ -7,6 +7,7 @@ import { dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { FILE } from './backlog.mjs';
 import { calendar, localToday } from './calendar.mjs';
+import { loadLocale } from './i18n.mjs';
 import { git } from './repo.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -38,6 +39,7 @@ export function init(dir, { name, locale = 'en', today = localToday() } = {}) {
   const starter = readFileSync(join(ROOT, 'templates', 'solopilot.yaml'), 'utf8')
     .replaceAll('__NAME__', projectName)
     .replaceAll('__LOCALE__', locale)
+    .replaceAll('__GOAL__', loadLocale(locale).strings.goal.replace(/"/g, '\\"'))
     .replaceAll('__START__', today)
     .replaceAll('__TARGET__', guess);
   writeFileSync(join(target, FILE), starter);

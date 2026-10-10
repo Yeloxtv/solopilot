@@ -18,10 +18,11 @@
 project:
   name: __NAME__
   phase: planning           # removed by `solopilot baseline`, once the plan is agreed
+  planning_step: 0          # the last step of the first plan you approved, written by /solopilot
   # client: Acme          # who the project is for; requests default to them
   # owner: Alex           # you; excluded when looking for who most answers depend on
   locale: __LOCALE__        # en or fr (or a tag such as en-GB, for date formats)
-  goal: "Launch"            # what happens on the target date
+  goal: "__GOAL__"          # what happens on the target date
   start: __START__          # date of day 1
   target: __TARGET__        # the date you committed to: the core at least, everything ideally
   # budget_days: 20       # work days sold in the quote

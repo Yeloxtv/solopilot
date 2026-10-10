@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 import { compute } from '../src/compute.mjs';
 import { renderDashboard } from '../src/dashboard.mjs';
 import { loadLocale } from '../src/i18n.mjs';
-import { digestMessage, milestoneMessage } from '../src/report.mjs';
+import { digestMessage, midSentence, milestoneMessage } from '../src/report.mjs';
 import { fixture } from './fixture.mjs';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
@@ -71,6 +71,16 @@ test('Slack messages escape user text', () => {
   assert.doesNotMatch(json, /<!channel>/);
 });
 
+test('after a colon, the goal goes on in lower case, unless it is an acronym', () => {
+  assert.equal(midSentence('Mise en ligne'), 'mise en ligne');
+  assert.equal(midSentence('Démo de l\'application'), 'démo de l\'application');
+  assert.equal(midSentence('MVP'), 'MVP');
+  assert.equal(midSentence('V1 publique'), 'V1 publique');
+  const b = fixture({ project: { locale: 'fr', goal: 'Démo de l\'application' } });
+  const message = digestMessage(b, compute(b, { today: '2026-01-07' }), loadLocale('fr').t);
+  assert.match(message.text, /^Test : démo de l'application le/);
+});
+
 test('messages name the milestone or refuse an unknown one', () => {
   const b = fixture();
   const c = compute(b, { today: '2026-01-07' });
@@ -103,6 +113,14 @@ test('init starts a plan being drawn up, in a repository of its own with a first
   const build = run(['build', '--dir', dir]);
   assert.notEqual(build.status, 0);
   assert.match(build.stderr, /still being drawn up/);
+});
+
+test('init writes the goal in the language of the plan', () => {
+  const dir = join(tmp(), 'kerlan-pilot');
+  run(['init', dir, '--locale', 'fr'], GIT_ID);
+  const yaml = readFileSync(join(dir, 'solopilot.yaml'), 'utf8');
+  assert.match(yaml, /goal: "Mise en ligne"/);
+  assert.match(yaml, /planning_step: 0/);
 });
 
 test('init inside another repository commits nothing there', () => {
@@ -141,7 +159,7 @@ test('layout and baseline take a plan from drawn up to agreed', () => {
   const baseline = run(['baseline', '--dir', dir, '--today', '2026-02-02'], GIT_ID);
   assert.equal(baseline.status, 0, baseline.stderr);
   const agreed = readFileSync(file, 'utf8');
-  assert.doesNotMatch(agreed, /phase: planning/);
+  assert.doesNotMatch(agreed, /phase: planning|planning_step/);
   assert.match(agreed, /baseline: \{ date: 2026-02-02, points: 11, plan_days: 3 \}/);
   assert.match(agreed, /type: baseline, title: "Plan agreed"/);
   assert.equal(gitOut(dir, 'tag'), 'baseline');

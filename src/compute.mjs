@@ -72,7 +72,10 @@ export function compute(b, { today = localToday(), now = new Date() } = {}) {
   const capacity = p.points_per_day * focus; // points per working day
   const left = (upTo) => plan.filter((d) => !d.empty && d.day <= upTo).reduce((s, d) => s + d.points - d.pointsDone, 0);
   const inWorkingDays = (points) => Math.ceil(points / capacity - EPS);
-  const finishDate = (points) => cal.add(today, Math.max(0, inWorkingDays(points) - 1));
+  // Work starts today, or on day 1 if the project has not started yet.
+  const notStarted = String(today) < start;
+  const from = notStarted ? start : today;
+  const finishDate = (points) => cal.add(from, Math.max(0, inWorkingDays(points) - 1));
   const finish = { core: finishDate(left(coreDay)), all: finishDate(left(planDays)) };
   const currentDay = plan.find((d) => !d.empty && d.done < d.active)?.day ?? planDays;
   const sessions = b.log.filter((e) => e.type === 'session');
@@ -84,7 +87,7 @@ export function compute(b, { today = localToday(), now = new Date() } = {}) {
   // project may run ahead of or behind. That moment is dated at the plan estimate, like the projection.
   const dueDate = (before) => {
     const rest = left(before - 1);
-    return rest <= EPS ? today : cal.add(today, inWorkingDays(rest));
+    return rest <= EPS ? from : cal.add(from, inWorkingDays(rest));
   };
   const level = (date) => (date == null ? 'ok' : today >= date ? 'now' : cal.between(today, date) <= 2 ? 'soon' : 'ok');
 
@@ -120,7 +123,7 @@ export function compute(b, { today = localToday(), now = new Date() } = {}) {
 
   return {
     generatedAt: now.toISOString(),
-    today, horizon, start, target, goal: p.goal || null,
+    today, horizon, start, target, goal: p.goal || null, notStarted,
     planDays, core: coreDay, focus, capacity, pointsPerDay: p.points_per_day,
     workingDays, elapsed, remaining, expected, gap, finish, margin, work, calendarLeft,
     currentDay, planDone, planAtTarget, lastSession, spent,

@@ -11,7 +11,10 @@ The first plan, drawn up with Claude from the project documents.
 - `solopilot layout`: lays the estimated tasks out on plan days, foundations and the core first, by feature priority, and sets when each open question is needed.
 - `solopilot baseline`: records the agreed plan, ends the planning phase, logs it, commits and tags `baseline`.
 - `layout` and `baseline` write `solopilot.yaml` through surgical edits: only their own values change, and nothing is written unless the file reads back exactly as intended.
-- `status` shows the six steps while planning, the estimate against the days sold, and when the core and everything finish once the days are laid out.
+- `status` shows the six steps while planning, the estimate against the days sold, and when the core and everything finish once the days are laid out. The skill records the last step approved in `project.planning_step`.
+- Tasks without a feature place themselves: foundations (`kind: setup`) open the plan, the other ones close the core.
+- Before day 1, the projection and the due dates start on day 1 instead of today, and the dashboard header shows the start date.
+- `init` writes the goal in the plan's language ("Mise en ligne" in French), and French text goes on in lower case after a colon ("L'objectif : mise en ligne…").
 
 ## 0.1.0
 

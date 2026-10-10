@@ -79,6 +79,9 @@ export function validate(b) {
   const maxDay = isInt(p.plan_days) ? p.plan_days : planning ? Infinity : 0;
 
   if (p.phase !== undefined && !planning) err(`project.phase: "${PLANNING}" while the plan is being drawn up, absent once it is agreed`);
+  if (p.planning_step !== undefined && !(planning && isInt(p.planning_step) && p.planning_step >= 0 && p.planning_step <= 6)) {
+    err('project.planning_step: the last step of the first plan you approved, 0 to 6, while planning');
+  }
   if (!p.name) err('project.name: the project name');
   if (!isIso(p.start)) err('project.start: date of day 1, as YYYY-MM-DD');
   if (!isIso(p.target)) err('project.target: target date, as YYYY-MM-DD');

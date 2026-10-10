@@ -32,6 +32,7 @@ export function planningText(b, t, { today } = {}) {
   // What can be promised: the plan read as if it were agreed, from today.
   const agreed = { ...b, project: { ...p } };
   delete agreed.project.phase;
+  delete agreed.project.planning_step;
   if (steps[4].done && !validate(agreed).errors.length) {
     const c = compute(agreed, { today });
     const { date, focus } = helpers(c, t);
@@ -50,8 +51,12 @@ export function helpers(c, t) {
   const situation = (g) => (Math.abs(g) < 0.25 ? t('situation.onTime') : g > 0 ? t('situation.behind', { n: g }) : t('situation.ahead', { n: -g }));
   const goal = c.goal || t('goal');
   const focus = t.num(c.focus, 2);
-  return { date, day, situation, goal, focus };
+  return { date, day, situation, goal, goalMid: midSentence(goal), focus };
 }
+
+// The goal after a colon, as French typography wants it: "Kerlan : mise en ligne le…". A word that
+// is not a plain capitalised one (MVP, V1) keeps its case.
+export const midSentence = (s) => (/^\p{Lu}\p{Ll}/u.test(s) ? s[0].toLocaleLowerCase() + s.slice(1) : s);
 
 export function statusText(b, c, t) {
   const { date, day, situation, goal, focus } = helpers(c, t);
@@ -118,7 +123,7 @@ function targetLine(c, t) {
 
 // The digest carries only the essentials; the detail lives on the dashboard (project.dashboard_url).
 export function digestMessage(b, c, t) {
-  const { date, day, goal } = helpers(c, t);
+  const { date, day, goalMid } = helpers(c, t);
   const name = b.project.name;
   const on = c.lastSession || c.today;
   const pretty = t.date(on, { weekday: 'long', day: 'numeric', month: 'long' });
@@ -158,7 +163,7 @@ export function digestMessage(b, c, t) {
     milestone ? t('slack.milestone', { day: day(milestone.day), title: se(milestone.title), when: milestoneEnd ? t('slack.around', { date: date(milestoneEnd) }) : '' }) : '',
   ].filter(Boolean).join('  ·  ') }] });
   if (b.project.dashboard_url) section(t('slack.link', { url: b.project.dashboard_url }));
-  return { text: t('slack.fallback', { name: se(name), goal: se(goal), target: date(c.target), coreEnd: date(c.finish.core) }), blocks };
+  return { text: t('slack.fallback', { name: se(name), goalMid: se(goalMid), target: date(c.target), coreEnd: date(c.finish.core) }), blocks };
 }
 
 export function milestoneMessage(b, c, t, dayNumber) {
