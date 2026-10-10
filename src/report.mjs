@@ -1,4 +1,46 @@
 // Text views of the computation: the terminal status and the Slack messages.
+import { validate } from './backlog.mjs';
+import { compute } from './compute.mjs';
+import { planningProgress } from './plan.mjs';
+
+// While the first plan is being drawn up: where each of the six steps stands, what the estimate
+// weighs against the days sold and, once the days are laid out, when the core and everything finish.
+export function planningText(b, t, { today } = {}) {
+  const p = b.project;
+  const { steps, next } = planningProgress(b);
+  const step = (s) => t(`planning.steps.${s.key}`);
+  const day = (n) => t('day', { n });
+  const ready = steps[3].done && steps[4].done;
+  const out = [ready ? t('planning.ready', { name: p.name }) : t('planning.lead', { name: p.name, n: next, step: step(steps[next - 1]) })];
+  const detail = {
+    features: (s) => t('planning.features', { n: s.inScope }) + (s.out ? t('planning.out', { n: s.out }) : ''),
+    screens: (s) => `${t('planning.screens', { n: s.screens })}, ${t('units.views', { n: s.views })}`,
+    questions: (s) => `${t('planning.questions', { n: s.questions })}, ${t('planning.dependencies', { n: s.dependencies })}`,
+    estimation: (s) => `${t('planning.estimated', { done: s.estimated, total: s.total })}, ${t('planning.points', { n: s.points })}`
+      + (s.later ? t('planning.below', { points: t('planning.points', { n: s.later }) }) : ''),
+    days: (s) => (s.done ? t('planning.days', { n: s.planDays, core: day(s.core) }) : t('planning.notYet')),
+    baseline: () => t('planning.notYet'),
+  };
+  const width = Math.max(...steps.map((s) => step(s).length));
+  steps.forEach((s, i) => out.push(`  ${s.done ? '✓' : i + 1 === next ? '→' : ' '} ${i + 1}. ${step(s).padEnd(width)}  ${detail[s.key](s)}`));
+  const points = steps[3].points;
+  if (points > 0 && p.budget_days) {
+    const days = points / p.points_per_day;
+    const vars = { ppd: p.points_per_day, points: t('planning.points', { n: points }), days, budget: p.budget_days };
+    out.push('', days - p.budget_days > 0.05 ? t('planning.budgetOver', { ...vars, over: t('units.days', { n: days - p.budget_days }) }) : t('planning.budget', vars));
+  }
+  // What can be promised: the plan read as if it were agreed, from today.
+  const agreed = { ...b, project: { ...p } };
+  delete agreed.project.phase;
+  if (steps[4].done && !validate(agreed).errors.length) {
+    const c = compute(agreed, { today });
+    const { date, focus } = helpers(c, t);
+    const when = (d) => (d > c.target ? t('status.onLate', { date: date(d) }) : t('status.on', { date: date(d) }));
+    if (!p.budget_days) out.push('');
+    out.push(t('status.projection', { focus, core: when(c.finish.core), all: when(c.finish.all) }));
+  }
+  return out.join('\n');
+}
 
 export function helpers(c, t) {
   const year = c.today.slice(0, 4);

@@ -1,18 +1,18 @@
 ---
 name: solopilot
-description: Updates the project's solopilot backlog (solopilot.yaml in the pilot directory) from the work done, regenerates the dashboard and posts the Slack digest. Use at the end of a work session or day, and whenever the user says "update the plan", "where do we stand", "what's left", "fais le point", "mets à jour le suivi", "où on en est", "qu'est-ce qui reste". Also use when a milestone is reached, a dependency arrives, a question gets answered, a change request is triaged, or the plan changes after a client meeting.
+description: Draws up a project's first plan from its spec and keeps the solopilot backlog (solopilot.yaml in the pilot directory) up to date from the work done, then regenerates the dashboard and posts the Slack digest. Use to plan a signed project from its documents ("draw up the plan", "plan from the spec", "planifie le projet", "à partir du cahier des charges"), at the end of a work session or day, and whenever the user says "update the plan", "where do we stand", "what's left", "fais le point", "mets à jour le suivi", "où on en est", "qu'est-ce qui reste". Also use when a milestone is reached, a dependency arrives, a question gets answered, a change request is triaged, or the plan changes after a client meeting.
 ---
 
 # solopilot
 
-The plan lives in a pilot directory kept outside the project repository. Its path is in `$SOLOPILOT_DIR`, the project's in `$SOLOPILOT_REPO`; `solopilot install` sets both in the project's `.claude/settings.local.json`. If `$SOLOPILOT_DIR` is empty, say so and suggest running `solopilot install <project-repo>` from the pilot directory, without looking for a backlog elsewhere.
+The plan lives in a pilot directory kept outside the project repository. Its path is in `$SOLOPILOT_DIR`, the project's in `$SOLOPILOT_REPO`; `solopilot install` sets both in the project's `.claude/settings.local.json`. While the first plan is drawn up, Claude Code runs in the pilot directory itself: if `$SOLOPILOT_DIR` is empty but the current directory holds `solopilot.yaml`, work there. Otherwise, if `$SOLOPILOT_DIR` is empty, say so and suggest running `solopilot install <project-repo>` from the pilot directory, without looking for a backlog elsewhere.
 
 `$SOLOPILOT_DIR/solopilot.yaml` is the source of truth. The dashboard and the Slack digest are generated views of it. This skill proposes changes, the user approves them, then the skill writes, regenerates and publishes.
 
 Commands, all read-only on the backlog (they find it through `$SOLOPILOT_DIR`):
 
 ```bash
-solopilot status              # where the project stands, current day, alerts
+solopilot status              # where the project stands, current day, alerts; or the steps of the first plan
 solopilot commits             # tagged project commits since the last update
 solopilot head                # last commit of the project
 solopilot check               # validation, to run after every write
@@ -20,6 +20,8 @@ solopilot build               # regenerate the dashboard
 solopilot slack               # digest of the day; --dry-run to print it without sending
 solopilot slack --milestone 5 # announce the milestone of plan day 5
 ```
+
+Two commands write `solopilot.yaml`, and only while the first plan is drawn up: `solopilot layout` (the plan days) and `solopilot baseline` (the agreed plan). They change their own values and nothing else.
 
 Write every title and note in the language of `project.locale`.
 
@@ -30,6 +32,10 @@ The project repository may be handed over to the client with its history. Nothin
 ## Pick the mode
 
 Read the request and the context, then follow the matching mode. By default, it is the end-of-session update.
+
+### 0. First plan
+
+When `project.phase` is `planning`, read `plan.md`, in this skill's directory, and follow it. Its six steps take the project documents to an agreed plan. No other mode applies until `solopilot baseline` ends the phase.
 
 ### 1. End-of-session update
 
@@ -53,7 +59,7 @@ Update the entry, add a log entry if the fact deserves a trace, then `check`, `b
 
 No request becomes `accepted` without a written decision from the user in the conversation. Never infer a decision from a discussion or from reported client feedback.
 
-An accepted request becomes one or more tasks with the next free ids, placed on a day. Their ids go in the request's `tasks`, the decision in `decision`. If the day's load grows, update its `points` and switch to mode 4 to measure the impact.
+An accepted request becomes one or more tasks with the next free ids, placed on a day. Their ids go in the request's `tasks`, the decision in `decision`. If it adds a feature, give it the next free `F` id with the request's id as its `source`, so the growth of the scope stays traceable. If the day's load grows, update its `points` (or give the new tasks their points, when the plan estimates each task) and switch to mode 4 to measure the impact.
 
 ### 4. Replan
 
@@ -69,11 +75,12 @@ Never delete a task. A dropped or postponed task becomes `deferred` with a note 
 ## Writing rules
 
 - A task becomes `done` only if the tests covering it pass, with the project's test command. Never close a task in red.
-- A screen (`S…`) becomes `done` only when all its views are wired: default, empty, loading, error and variants, as counted in `views`.
+- A screen (`S…`) becomes `done` only when all its views are wired: default, empty, loading, error and variants, as listed (or counted) in `views`.
 - `done` takes `done_on`, today's date as YYYY-MM-DD.
 - `blocked` takes a `note` saying what it waits for and from whom, with the id of the dependency or question if there is one.
 - Keep one line per item, in the existing format, and leave comments alone. Edit with targeted replacements (`id: T024, day: 5, area: search, status: todo` → `id: T024, day: 5, area: search, status: done, done_on: 2026-10-08`), never by rewriting the file.
-- A new task takes the next free number: the highest existing `T` or `S`, plus one. It takes an `area` from `areas`; a new area is decided with the user.
+- A new task takes the next free number: the highest existing `T` or `S`, plus one. It takes an `area` from `areas`; a new area is decided with the user. When the plan estimates each task, a new task also takes its `feature`, its `kind` and its `points`, from the grid in `estimation`.
+- After the plan is agreed, days move by hand, with a `replan` entry in the log. `solopilot layout` is for the first plan only.
 - An open question, dependency or request lists in `tasks` the tasks waiting for its answer: that is what shows "Waits on Q…" on the task in the dashboard. When creating a question, propose these links along with it.
 - A log entry takes a `title` of a few words, shown above its note.
 - A meeting with the client (workshop, demo, steering committee) goes into `meetings`, with `date`, `title` and `with`, as soon as the user mentions it. The dashboard groups the answers to prepare for the next one.

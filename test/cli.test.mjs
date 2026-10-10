@@ -14,8 +14,14 @@ import { fixture } from './fixture.mjs';
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const BIN = join(ROOT, 'bin', 'solopilot.mjs');
 const DEMO = join(ROOT, 'examples', 'demo');
-const run = (args, env = {}) => spawnSync(process.execPath, [BIN, ...args], { encoding: 'utf8', env: { ...process.env, SOLOPILOT_DIR: '', SOLOPILOT_REPO: '', ...env } });
 const tmp = () => mkdtempSync(join(tmpdir(), 'solopilot-'));
+// A home of its own: init and install copy the skill there, and the machine's git settings (global
+// excludes, identity) cannot hide a mistake.
+const HOME = tmp();
+const run = (args, env = {}) => spawnSync(process.execPath, [BIN, ...args], {
+  encoding: 'utf8',
+  env: { ...process.env, SOLOPILOT_DIR: '', SOLOPILOT_REPO: '', HOME, USERPROFILE: HOME, ...env },
+});
 
 test('the demo checks and reports', () => {
   assert.equal(run(['check', '--dir', DEMO]).status, 0);
@@ -80,6 +86,78 @@ test('init creates a valid starter', () => {
   assert.match(readFileSync(join(dir, 'solopilot.yaml'), 'utf8'), /name: acme/);
   assert.equal(run(['check', '--dir', dir]).status, 0);
   assert.notEqual(run(['init', dir]).status, 0, 'init refuses to overwrite');
+});
+
+// A git identity of its own, so commits work on a machine without one.
+const GIT_ID = { GIT_AUTHOR_NAME: 'Test', GIT_AUTHOR_EMAIL: 'test@example.com', GIT_COMMITTER_NAME: 'Test', GIT_COMMITTER_EMAIL: 'test@example.com' };
+const gitOut = (dir, ...args) => execFileSync('git', args, { cwd: dir, encoding: 'utf8' }).trim();
+
+test('init starts a plan being drawn up, in a repository of its own with a first commit', () => {
+  const dir = join(tmp(), 'acme-pilot');
+  assert.equal(run(['init', dir], GIT_ID).status, 0);
+  assert.ok(existsSync(join(dir, 'sources', '.gitkeep')));
+  assert.ok(existsSync(join(HOME, '.claude', 'skills', 'solopilot', 'plan.md')), 'the skill is there for the first plan');
+  assert.equal(gitOut(dir, 'log', '--format=%s'), 'solopilot init');
+  assert.equal(gitOut(dir, 'status', '--porcelain'), '');
+  assert.match(run(['status', '--dir', dir]).stdout, /plan being drawn up, next step 1 of 6: Features/);
+  const build = run(['build', '--dir', dir]);
+  assert.notEqual(build.status, 0);
+  assert.match(build.stderr, /still being drawn up/);
+});
+
+test('init inside another repository commits nothing there', () => {
+  const project = join(tmp(), 'project');
+  execFileSync('git', ['init', '--quiet', project]);
+  const out = run(['init', join(project, 'pilot')], GIT_ID);
+  assert.equal(out.status, 0);
+  assert.match(out.stdout, /inside the git repository/);
+  assert.equal(spawnSync('git', ['rev-parse', 'HEAD'], { cwd: project }).status === 0, false, 'no commit in the enclosing repository');
+});
+
+test('layout and baseline take a plan from drawn up to agreed', () => {
+  const dir = join(tmp(), 'acme-pilot');
+  run(['init', dir, '--name', 'Acme'], GIT_ID);
+  const file = join(dir, 'solopilot.yaml');
+  writeFileSync(file, readFileSync(file, 'utf8')
+    .replace('features: []', 'features:\n  - { id: F01, title: "Sign-in", source: "spec.pdf p. 2", core: true, priority: 1 }\n  - { id: F02, title: "Reports", source: "spec.pdf p. 5", priority: 2 }')
+    .replace('questions: []', 'questions:\n  - { id: Q01, status: open, who: "Acme", features: [F02], title: "Report page one?" }')
+    .replace('tasks: []', [
+      'tasks:',
+      '  - { id: T001, kind: setup, status: todo, points: 2, title: "Repository" }',
+      '  - { id: T002, feature: F01, kind: logic, status: todo, points: 3, title: "Magic link" }',
+      '  - { id: S01, feature: F01, status: todo, points: 2, views: [default, error], title: "Sign-in screen" }',
+      '  - { id: T003, feature: F02, kind: integration, status: todo, points: 4, title: "PDF" }',
+    ].join('\n')));
+
+  const layout = run(['layout', '--dir', dir]);
+  assert.equal(layout.status, 0, layout.stderr);
+  assert.match(layout.stdout, /11 points over 3 plan days, core up to day 2/);
+  const laid = readFileSync(file, 'utf8');
+  assert.match(laid, /\{ id: T002, feature: F01, day: 1, kind: logic/);
+  assert.match(laid, /\{ id: Q01, before: 3, status: open/);
+  assert.match(laid, /^ {2}plan_days: 3\n {2}core: 2$/m);
+  assert.match(laid, /# What the app must do/, 'comments survive');
+
+  const baseline = run(['baseline', '--dir', dir, '--today', '2026-02-02'], GIT_ID);
+  assert.equal(baseline.status, 0, baseline.stderr);
+  const agreed = readFileSync(file, 'utf8');
+  assert.doesNotMatch(agreed, /phase: planning/);
+  assert.match(agreed, /baseline: \{ date: 2026-02-02, points: 11, plan_days: 3 \}/);
+  assert.match(agreed, /type: baseline, title: "Plan agreed"/);
+  assert.equal(gitOut(dir, 'tag'), 'baseline');
+  assert.equal(run(['check', '--dir', dir]).status, 0);
+  assert.equal(run(['status', '--dir', dir, '--today', '2026-02-02']).status, 0);
+  assert.match(run(['baseline', '--dir', dir]).stderr, /agreed on 2026-02-02/);
+  assert.match(run(['layout', '--dir', dir]).stderr, /This plan is agreed/);
+});
+
+test('baseline refuses a plan that is not complete', () => {
+  const dir = join(tmp(), 'acme-pilot');
+  run(['init', dir], GIT_ID);
+  const out = run(['baseline', '--dir', dir]);
+  assert.notEqual(out.status, 0);
+  assert.match(out.stdout, /project\.plan_days/);
+  assert.match(readFileSync(join(dir, 'solopilot.yaml'), 'utf8'), /phase: planning/);
 });
 
 test('install wires a project without committing anything there', () => {

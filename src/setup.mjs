@@ -18,6 +18,16 @@ function writeIfMissing(file, content) {
   if (!existsSync(file)) writeFileSync(file, content);
 }
 
+// One skill for every project: the paths come from each project's local settings, or from the
+// current directory while a first plan is drawn up in the pilot directory.
+export function installSkill() {
+  const skills = join(homedir(), '.claude', 'skills', 'solopilot');
+  rmSync(skills, { recursive: true, force: true });
+  mkdirSync(dirname(skills), { recursive: true });
+  cpSync(SKILL, skills, { recursive: true });
+  return skills;
+}
+
 export function init(dir, { name, locale = 'en', today = localToday() } = {}) {
   const target = resolve(dir);
   if (existsSync(join(target, FILE))) throw new Error(`${join(target, FILE)} already exists`);
@@ -33,8 +43,27 @@ export function init(dir, { name, locale = 'en', today = localToday() } = {}) {
   writeFileSync(join(target, FILE), starter);
   writeIfMissing(join(target, '.gitignore'), 'build/\n.env\nnode_modules/\n');
   writeIfMissing(join(target, '.env.example'), '# Copy to .env (never committed). `solopilot install` adds PROJECT_REPO.\nSLACK_WEBHOOK_URL=https://hooks.slack.com/services/XXX/YYY/ZZZ\n');
-  if (!git(['rev-parse', '--show-toplevel'], target)) git(['init', '--quiet'], target);
-  return target;
+  // The project documents the first plan is drawn from, versioned with it: features point to them.
+  mkdirSync(join(target, 'sources'), { recursive: true });
+  writeIfMissing(join(target, 'sources', '.gitkeep'), '');
+
+  // Its own repository, with a first commit: the skill records each update with `commit -am`, and the
+  // reminder hook reads the history of the backlog. Never a commit in an enclosing repository, which
+  // could be the project's.
+  let repo = git(['rev-parse', '--show-toplevel'], target);
+  if (!repo) {
+    git(['init', '--quiet'], target);
+    repo = git(['rev-parse', '--show-toplevel'], target);
+  }
+  const own = Boolean(repo) && realpathSync(resolve(repo)) === realpathSync(target);
+  let committed = false;
+  if (own) {
+    git(['add', '--', FILE, '.gitignore', '.env.example', 'sources/.gitkeep'], target);
+    committed = git(['commit', '--quiet', '-m', 'solopilot init'], target) !== null;
+  }
+  // The first plan is drawn up with /solopilot in this directory, before any project is wired.
+  const skill = installSkill();
+  return { dir: target, repo, own, committed, skill };
 }
 
 function setEnv(dir, key, value) {
@@ -104,11 +133,7 @@ export function install(dir, repoArg) {
   setEnv(pilot, 'PROJECT_REPO', project);
   log.push(`PROJECT_REPO written to ${join(pilot, '.env')}`);
 
-  // One skill for every project: the paths come from each project's local settings.
-  const skills = join(homedir(), '.claude', 'skills', 'solopilot');
-  rmSync(skills, { recursive: true, force: true });
-  mkdirSync(dirname(skills), { recursive: true });
-  cpSync(SKILL, skills, { recursive: true });
+  const skills = installSkill();
   log.push(`Skill /solopilot copied to ${skills}`);
 
   s.env = { ...(s.env || {}), SOLOPILOT_DIR: slash(pilot), SOLOPILOT_REPO: slash(project) };

@@ -214,8 +214,35 @@
   "log": {
     "session": "Session",
     "replan": "Replan",
+    "baseline": "Agreed plan",
+    "baselineTitle": "Plan agreed",
+    "baselineNote": "{points} over {days} plan days, core up to {core}.",
     "collapse": "Collapse",
     "expand": "Read all",
     "none": "No entry yet. The first one comes with /solopilot."
+  },
+  "planning": {
+    "lead": "{name}: plan being drawn up, next step {n} of 6: {step}.",
+    "ready": "{name}: plan ready to be agreed. Once it is validated, run `solopilot baseline`.",
+    "steps": {
+      "features": "Features",
+      "screens": "Screens and views",
+      "questions": "Questions",
+      "estimation": "Estimation",
+      "days": "Dated plan",
+      "baseline": "Agreed plan"
+    },
+    "features": "{n} in scope",
+    "out": ", {n} out of scope",
+    "screens": { "one": "{n} screen", "other": "{n} screens" },
+    "questions": { "one": "{n} question", "other": "{n} questions" },
+    "dependencies": { "one": "{n} dependency", "other": "{n} dependencies" },
+    "estimated": "{done} of {total} tasks estimated",
+    "points": { "one": "{n} point", "other": "{n} points" },
+    "below": " (and {points} below the line)",
+    "days": { "one": "{n} plan day, core up to {core}", "other": "{n} plan days, core up to {core}" },
+    "notYet": "not yet",
+    "budget": "At {ppd} points a work day, {points} make {days} work days, for {budget} days sold.",
+    "budgetOver": "At {ppd} points a work day, {points} make {days} work days: {over} more than the {budget} days sold."
   }
 }

@@ -9,20 +9,26 @@
 #
 # Ids never change. Moving a task means changing its day. A task is never deleted: it becomes
 # deferred, with a note saying where it goes.
+#
+# The first plan: put the project documents (spec, workshop notes, mockups) in sources/, open
+# Claude Code in this directory and run /solopilot. It drafts the plan in six steps, each one
+# approved by you. `solopilot layout` lays the estimated tasks out on plan days, and
+# `solopilot baseline` records the agreed plan and ends the planning phase.
 
 project:
   name: __NAME__
+  phase: planning           # removed by `solopilot baseline`, once the plan is agreed
   # client: Acme          # who the project is for; requests default to them
   # owner: Alex           # you; excluded when looking for who most answers depend on
   locale: __LOCALE__        # en or fr (or a tag such as en-GB, for date formats)
   goal: "Launch"            # what happens on the target date
   start: __START__          # date of day 1
   target: __TARGET__        # the date you committed to: the core at least, everything ideally
-  plan_days: 5              # work days in the plan, estimated upfront
-  core: 3                   # the core is day 1 to this day: the minimum commitment
+  # budget_days: 20       # work days sold in the quote
   points_per_day: 6         # load points a full work day is worth, at the plan estimate
   focus: 0.5                # share of each working day spent on this project, for the projection
   holidays: []              # weekday dates not worked, as YYYY-MM-DD
+  # plan_days and core: written by `solopilot layout`
   # working_days: [1, 2, 3, 4, 5]   # ISO weekdays worked, Monday to Friday by default
   # wip_limit: 4                    # tasks in progress before check warns
   # last_commit: abc123def456       # last project commit taken into account, written by /solopilot
@@ -31,21 +37,20 @@ project:
 # Optional: the order in which people appear when answers are grouped by who gives them.
 people: []
 
-sprints:
-  - { id: 1, from: 1, to: 5, title: "First release" }
+sprints: []
+#  - { id: 1, from: 1, to: 5, title: "First release" }
 
 # type client: announced to the client, posted to Slack when reached.
 # type checkpoint: internal checkpoint, a decision date if things slip.
-milestones:
-  - { day: 3, type: checkpoint, status: upcoming, title: "Core works end to end" }
-  - { day: 5, type: client, status: upcoming, title: "Demo to the client" }
+milestones: []
+#  - { day: 5, type: client, status: upcoming, title: "Demo to the client" }
 
 # Meetings: the dashboard groups the answers to prepare for the next one.
 meetings: []
 #  - { date: 2026-01-15, title: "Workshop", with: "Acme" }
 
 # Things you need from others. before: the plan day they are needed by. status: waiting or received.
-# tasks: the tasks waiting for it.
+# tasks: the tasks waiting for it (features, before the tasks exist).
 dependencies: []
 #  - { id: D01, before: 2, status: waiting, who: "Acme", title: "Access to the staging server", tasks: [T003] }
 
@@ -58,30 +63,34 @@ questions: []
 requests: []
 #  - { id: R01, status: pending, title: "Export to CSV", recommendation: "Accept, half a day" }
 
-# Areas group tasks across days, like epics.
-areas:
-  - { id: setup, title: "Setup" }
-  - { id: product, title: "Product" }
+# Areas group features and tasks, like epics.
+areas: []
+#  - { id: accounts, title: "Accounts" }
 
-# The plan, one entry per work day, 1 to plan_days. points: the load of the day.
-# load: normal or tight. The optional day "later" holds what sits below the line.
-days:
-  - { day: 1, sprint: 1, points: 6, load: normal, phase: "Foundations", title: "Repository and data model" }
-  - { day: 2, sprint: 1, points: 6, load: normal, phase: "Foundations", title: "First feature" }
-  - { day: 3, sprint: 1, points: 6, load: tight, phase: "Core", title: "Core flow end to end" }
-  - { day: 4, sprint: 1, points: 6, load: normal, phase: "Finish", title: "Screens" }
-  - { day: 5, sprint: 1, points: 6, load: normal, phase: "Finish", title: "Polish and demo" }
-  - { day: later, points: 0, phase: "Below the line", title: "If time allows" }
+# What the app must do, each feature traced to its source in the project documents.
+# core: true for the minimum that must ship on the target date. priority: the order to build in.
+# scope: out for what the documents explicitly exclude.
+features: []
+#  - { id: F01, area: accounts, title: "Sign-in with a magic link", source: "spec.pdf p. 4", core: true, priority: 1 }
 
-# T… are tasks, S… are screens (views: the number of views to build: default, empty, loading…).
-# status: todo, doing, done (with done_on), blocked (with a note), deferred (with a note).
-tasks:
-  - { id: T001, day: 1, area: setup, status: todo, title: "Create the repository, CI and test command" }
-  - { id: T002, day: 1, area: setup, status: todo, title: "Data model" }
-  - { id: T003, day: 2, area: product, status: todo, title: "First feature, back end" }
-  - { id: T004, day: 3, area: product, status: todo, title: "Core flow, end to end" }
-  - { id: S01, day: 4, area: product, status: todo, views: 3, title: "Home screen" }
-  - { id: T005, day: 5, area: product, status: todo, title: "Fixes from the review, demo script" }
+# Typical sizes and their points, agreed before the tasks are estimated.
+# basis: hypotheses, until solopilot learns from your past projects.
+estimation:
+  basis: hypotheses
+  grid: []
+#    - { kind: screen, size: "3 simple views", points: 1 }
+
+# The plan, one entry per work day, written by `solopilot layout`. load: tight for an overloaded day.
+# The optional day "later" holds what sits below the line.
+days: []
+
+# T… are tasks, S… are screens. feature: what the task delivers. points: its estimated load.
+# kind: setup, logic, integration, content or release (a screen is of kind screen).
+# views: the views a screen needs, by name. status: todo, doing, done (with done_on),
+# blocked (with a note), deferred (with a note).
+tasks: []
+#  - { id: T001, feature: F01, area: accounts, kind: logic, status: todo, points: 1.5, title: "Magic link: send, expiry, single use" }
+#  - { id: S01, feature: F01, area: accounts, status: todo, points: 1, views: [default, error, sending], title: "Sign-in screen" }
 
 # One session entry per day worked (effort: share of the day spent on the project, 0 to 1),
 # and one replan entry whenever the plan changes, saying why.

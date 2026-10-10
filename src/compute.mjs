@@ -8,8 +8,11 @@
 //
 // The projection follows the plan's own estimate, never the pace of the first days: a full work day
 // is worth points_per_day, and project.focus of each working day goes to the project.
+//
+// When every active task of a day carries its own points, the day weighs their sum and its progress
+// is the share of those points done; otherwise each task counts for an equal share of the day.
 import { calendar, localToday, nextDay } from './calendar.mjs';
-import { LATER } from './backlog.mjs';
+import { LATER, dayLoad } from './backlog.mjs';
 
 const EPS = 1e-9;
 
@@ -27,10 +30,9 @@ export function compute(b, { today = localToday(), now = new Date() } = {}) {
   }
   const detail = (d) => {
     const tasks = byDay.get(String(d.day)) || [];
-    const active = tasks.filter((t) => t.status !== 'deferred');
+    const { active, points = 0, fraction } = dayLoad(d, tasks);
     const done = active.filter((t) => t.status === 'done').length;
-    const fraction = active.length ? done / active.length : 0;
-    return { ...d, tasks, active: active.length, done, fraction, pointsDone: d.points * fraction, empty: !active.length };
+    return { ...d, points, tasks, active: active.length, done, fraction, pointsDone: points * fraction, empty: !active.length };
   };
   const plan = b.days.filter((d) => d.day !== LATER).map(detail).sort((a, c) => a.day - c.day);
   const later = b.days.filter((d) => d.day === LATER).map(detail);

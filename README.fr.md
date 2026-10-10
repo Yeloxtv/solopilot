@@ -29,11 +29,11 @@ npm install -g github:Yeloxtv/solopilot
 
 solopilot init ../acme-pilot --locale fr   # un dossier de pilotage à côté du projet
 cd ../acme-pilot
-# décrire le plan dans solopilot.yaml : jours, points, tâches
-solopilot check                            # le valider
-solopilot status                           # où en est le projet
-solopilot build                            # tableau de bord dans build/index.html
+# déposer cahier des charges, notes d'ateliers et maquettes dans sources/, puis dans Claude Code : /solopilot
+solopilot status                           # où en est le premier plan, étape par étape
+solopilot baseline                         # une fois le plan convenu
 solopilot install ../acme                  # le brancher sur Claude Code pour ce projet
+solopilot build                            # tableau de bord dans build/index.html
 ```
 
 Pour essayer d'abord sur le projet de démo :
@@ -54,6 +54,7 @@ workspace/
 ├── acme/                 le projet, livré au client
 └── acme-pilot/           privé, jamais livré
     ├── solopilot.yaml    la source de vérité
+    ├── sources/          les documents du projet dont le plan est tiré
     ├── .env              SLACK_WEBHOOK_URL, PROJECT_REPO (non commité)
     └── build/            le tableau de bord généré (non commité)
 ```
@@ -65,6 +66,19 @@ workspace/
 - le hook de rappel.
 
 Il copie aussi le skill `/solopilot` dans `~/.claude/skills/`, partagé par tous vos projets.
+
+## Le premier plan
+
+Un projet signé arrive souvent avec un cahier des charges, quelques ateliers et une date, mais sans liste de fonctionnalités convenue. `solopilot init` démarre le plan en phase de planification. Déposez les documents du projet dans `sources/`, ouvrez Claude Code dans le dossier de pilotage et lancez `/solopilot`. Il rédige le plan en six étapes, chacune validée par vous avant toute écriture :
+
+1. **Les fonctionnalités**, chacune rattachée à sa source dans les documents ; ce qu'ils excluent est gardé aussi.
+2. **Les écrans et leurs vues** : par défaut, vide, chargement, erreur, variantes. Avec des maquettes, les écrans et les vues que personne n'a encore dessinés.
+3. **Les questions** à trancher et **les dépendances** à recevoir, avec qui les doit.
+4. **Les tâches et leur estimation**, à partir d'une grille que vous validez d'abord.
+5. **Le plan daté** : vous choisissez le cœur et l'ordre, et `solopilot layout` répartit les tâches sur les jours de plan.
+6. **Ce que vous pouvez promettre** : le cœur et la totalité face à la date et aux jours vendus, et ce qui passe sous la ligne si tout ne tient pas.
+
+`solopilot baseline` enregistre alors le plan convenu, la référence à laquelle le périmètre se mesure ensuite. `layout` et `baseline` sont les seules commandes qui écrivent `solopilot.yaml` ; elles ne changent que leurs propres valeurs, et gardent vos commentaires et votre mise en forme.
 
 ## Au quotidien
 
@@ -78,10 +92,12 @@ Après un atelier client, demandez-lui de replanifier : il chiffre l'impact de c
 
 | Commande | Ce qu'elle fait |
 | --- | --- |
-| `solopilot init [dossier]` | Crée un dossier de pilotage avec un `solopilot.yaml` de départ commenté |
+| `solopilot init [dossier]` | Crée un dossier de pilotage, son `sources/` et un plan de départ en phase de planification, avec un premier commit |
 | `solopilot install <dépôt>` | Branche le dossier de pilotage sur un projet pour Claude Code |
 | `solopilot check` | Valide `solopilot.yaml` |
-| `solopilot status` | Où en est le projet : écart, projection, jour courant, alertes |
+| `solopilot status` | Où en est le projet : écart, projection, jour courant, alertes. En planification : les six étapes |
+| `solopilot layout [--dry-run]` | Répartit les tâches estimées sur les jours de plan, en planification |
+| `solopilot baseline` | Enregistre le plan convenu et clôt la phase de planification |
 | `solopilot commits` | Commits taggés du projet depuis le dernier point, par tâche |
 | `solopilot head` | Dernier commit du projet, reporté dans `project.last_commit` |
 | `solopilot build` | Génère `build/index.html`, et `build/publish.html` pour l'héberger ailleurs |

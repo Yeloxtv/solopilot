@@ -29,11 +29,11 @@ npm install -g github:Yeloxtv/solopilot
 
 solopilot init ../acme-pilot          # a pilot directory next to your project
 cd ../acme-pilot
-# describe your plan in solopilot.yaml: days, points, tasks
-solopilot check                       # validate it
-solopilot status                      # where the project stands
-solopilot build                       # dashboard in build/index.html
+# put the spec, workshop notes and mockups in sources/, then in Claude Code: /solopilot
+solopilot status                      # where the first plan stands, step by step
+solopilot baseline                    # once you agree the plan
 solopilot install ../acme             # wire it into Claude Code for that project
+solopilot build                       # dashboard in build/index.html
 ```
 
 To try it on the demo project first:
@@ -53,6 +53,7 @@ workspace/
 ├── acme/                 the project, handed over to the client
 └── acme-pilot/           private, never handed over
     ├── solopilot.yaml    the source of truth
+    ├── sources/          the project documents the plan is drawn from
     ├── .env              SLACK_WEBHOOK_URL, PROJECT_REPO (not committed)
     └── build/            the generated dashboard (not committed)
 ```
@@ -64,6 +65,19 @@ workspace/
 - the reminder hook.
 
 It also copies the `/solopilot` skill to `~/.claude/skills/`, shared by all your projects.
+
+## The first plan
+
+A signed project often comes with a spec, a few workshops and a date, but no agreed list of features. `solopilot init` starts the plan in a planning phase. Put the project documents in `sources/`, open Claude Code in the pilot directory and run `/solopilot`. It drafts the plan in six steps, each one approved by you before anything is written:
+
+1. **Features**, each traced to its source in the documents; what they exclude is kept too.
+2. **Screens and their views**: default, empty, loading, error, variants. With mockups, the screens and views nobody drew yet.
+3. **Questions** to settle and **dependencies** to receive, with who owes them.
+4. **Tasks and their estimate**, from an estimation grid you agree first.
+5. **The dated plan**: you choose the core and the order, and `solopilot layout` lays the tasks out on plan days.
+6. **What you can promise**: the core and everything against the date and the days sold, and what goes below the line if it does not fit.
+
+`solopilot baseline` then records the agreed plan, the reference the scope is measured against later. `layout` and `baseline` are the only commands that write `solopilot.yaml`; they change their own values and keep your comments and layout.
 
 ## Day to day
 
@@ -77,10 +91,12 @@ After a client meeting, ask it to replan: it measures the impact of every change
 
 | Command | What it does |
 | --- | --- |
-| `solopilot init [dir]` | Create a pilot directory with a commented starter `solopilot.yaml` |
+| `solopilot init [dir]` | Create a pilot directory, its `sources/` and a starter plan in the planning phase, with a first commit |
 | `solopilot install <repo>` | Wire the pilot directory into a project for Claude Code |
 | `solopilot check` | Validate `solopilot.yaml` |
-| `solopilot status` | Where the project stands: gap, projection, current day, alerts |
+| `solopilot status` | Where the project stands: gap, projection, current day, alerts. While planning: the six steps |
+| `solopilot layout [--dry-run]` | Lay the estimated tasks out on plan days, while planning |
+| `solopilot baseline` | Record the agreed plan and end the planning phase |
 | `solopilot commits` | Tagged project commits since the last update, grouped by task |
 | `solopilot head` | Last project commit, recorded in `project.last_commit` |
 | `solopilot build` | Generate `build/index.html`, plus `build/publish.html` to host elsewhere |

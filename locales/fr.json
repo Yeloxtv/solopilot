@@ -214,8 +214,35 @@
   "log": {
     "session": "Session",
     "replan": "Replanification",
+    "baseline": "Plan convenu",
+    "baselineTitle": "Plan convenu",
+    "baselineNote": "{points} sur {days} jours de plan, cœur jusqu'au {core}.",
     "collapse": "Réduire",
     "expand": "Lire tout",
     "none": "Aucune entrée. La première arrive avec /solopilot."
+  },
+  "planning": {
+    "lead": "{name} : plan en cours d'élaboration, prochaine étape {n} sur 6 : {step}.",
+    "ready": "{name} : plan prêt à être convenu. Une fois validé, lancer `solopilot baseline`.",
+    "steps": {
+      "features": "Fonctionnalités",
+      "screens": "Écrans et vues",
+      "questions": "Questions",
+      "estimation": "Estimation",
+      "days": "Plan daté",
+      "baseline": "Plan convenu"
+    },
+    "features": "{n} dans le périmètre",
+    "out": ", {n} hors périmètre",
+    "screens": { "one": "{n} écran", "other": "{n} écrans" },
+    "questions": { "one": "{n} question", "other": "{n} questions" },
+    "dependencies": { "one": "{n} dépendance", "other": "{n} dépendances" },
+    "estimated": "{done} tâches estimées sur {total}",
+    "points": { "one": "{n} point", "other": "{n} points" },
+    "below": " (et {points} sous la ligne)",
+    "days": { "one": "{n} jour de plan, cœur jusqu'au {core}", "other": "{n} jours de plan, cœur jusqu'au {core}" },
+    "notYet": "pas encore",
+    "budget": "À {ppd} points par jour de travail, {points} font {days} jours de travail, pour {budget} jours vendus.",
+    "budgetOver": "À {ppd} points par jour de travail, {points} font {days} jours de travail : {over} de plus que les {budget} jours vendus."
   }
 }

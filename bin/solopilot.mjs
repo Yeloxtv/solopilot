@@ -1,14 +1,16 @@
 #!/usr/bin/env node
-import { readFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { readFileSync, realpathSync, writeFileSync } from 'node:fs';
+import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { FILE, findPilotDir, readBacklog, validate } from '../src/backlog.mjs';
-import { ISO } from '../src/calendar.mjs';
+import { FILE, PLANNING, findPilotDir, isPlanning, readBacklog, validate } from '../src/backlog.mjs';
+import { ISO, localToday } from '../src/calendar.mjs';
 import { compute } from '../src/compute.mjs';
 import { renderDashboard, writeDashboard } from '../src/dashboard.mjs';
+import { BacklogEditor, EditRefused } from '../src/edit.mjs';
 import { loadLocale } from '../src/i18n.mjs';
-import { digestMessage, helpers, milestoneMessage, statusText } from '../src/report.mjs';
-import { head, readEnv, taggedCommits } from '../src/repo.mjs';
+import { layoutPlan } from '../src/plan.mjs';
+import { digestMessage, helpers, milestoneMessage, planningText, statusText } from '../src/report.mjs';
+import { git, head, readEnv, taggedCommits } from '../src/repo.mjs';
 import { cliOnPath, init, install } from '../src/setup.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -19,10 +21,12 @@ const USAGE = `solopilot ${VERSION}: project steering for solo developers
 Usage: solopilot <command> [options]
 
 Commands
-  init [dir]              create a pilot directory with a starter ${FILE}
+  init [dir]              create a pilot directory, its sources/ and a plan in the planning phase
   install <project-repo>  wire this pilot directory into a project for Claude Code
   check                   validate ${FILE}
-  status                  where the project stands (default command)
+  status                  where the project stands, or where its first plan stands (default)
+  layout [--dry-run]      lay the estimated tasks out on plan days, while planning
+  baseline                record the agreed plan and end the planning phase
   commits                 tagged commits in the project since the last update
   head                    last commit of the project, for project.last_commit
   build                   generate the dashboard in build/
@@ -36,6 +40,34 @@ Options
   --name <name>           project name, for init
   -h, --help              show this help
   -v, --version           show the version`;
+
+const PLANNING_ONLY = `The plan is still being drawn up (project.phase: ${PLANNING}). Run \`solopilot status\` to see where it stands, and \`solopilot baseline\` once it is agreed.`;
+const round = (n) => Math.round(n * 100) / 100;
+
+function printIssues({ errors, warnings }) {
+  for (const w of warnings) console.log(`warning  ${w}`);
+  for (const e of errors) console.log(`error    ${e}`);
+}
+
+// Writes the edits of a command that owns some values of the backlog, or explains why it did not.
+function writeEdits(dir, edit) {
+  const file = join(dir, FILE);
+  try {
+    const ed = new BacklogEditor(readFileSync(file, 'utf8'));
+    edit(ed);
+    writeFileSync(file, ed.toString());
+  } catch (e) {
+    if (e instanceof EditRefused) fail(`\nNothing written: ${e.message}. Apply the change by hand, then run \`solopilot check\`.`);
+    throw e;
+  }
+  return file;
+}
+
+// The pilot directory as its own repository (never an enclosing one, such as the project's).
+function ownRepo(dir) {
+  const top = git(['rev-parse', '--show-toplevel'], dir);
+  return Boolean(top) && realpathSync(resolve(top)) === realpathSync(dir);
+}
 
 function parse(argv) {
   const opts = { _: [] };
@@ -72,9 +104,12 @@ function load(opts, { strict = true } = {}) {
 
 const commands = {
   init(opts) {
-    const dir = init(opts._[0] || '.', { name: opts.name, locale: opts.locale });
+    const { dir, repo, own, committed, skill } = init(opts._[0] || '.', { name: opts.name, locale: opts.locale });
     console.log(`Pilot directory ready: ${dir}`);
-    console.log(`Next: fill in ${FILE} (project, days, tasks), then \`solopilot install <project-repo>\` from that directory.`);
+    console.log(`  Skill /solopilot copied to ${skill}`);
+    if (!own && repo) console.log(`  It sits inside the git repository ${repo}: keep the pilot directory outside the project's repository. Nothing was committed.`);
+    else if (!committed) console.log(`  The first commit failed (is a git identity set?). Commit it yourself: git -C "${dir}" add -A && git -C "${dir}" commit -m "solopilot init"`);
+    console.log('Next: put the project documents (spec, workshop notes, mockups) in sources/, open Claude Code in that directory and run /solopilot to draw up the first plan.');
   },
 
   install(opts) {
@@ -98,11 +133,59 @@ const commands = {
 
   status(opts) {
     const { b, t, today } = load(opts);
-    console.log(statusText(b, compute(b, { today }), t));
+    console.log(isPlanning(b) ? planningText(b, t, { today }) : statusText(b, compute(b, { today }), t));
+  },
+
+  layout(opts) {
+    const { dir, b, t } = load(opts);
+    if (!isPlanning(b)) fail(`layout lays out a plan being drawn up (project.phase: ${PLANNING}). This plan is agreed: move tasks by hand, and log a replan saying why.`);
+    const r = layoutPlan(b, { laterTitle: t('later.long') });
+    printIssues(r);
+    if (r.errors.length) fail(`\nNothing laid out: ${r.errors.length} error(s).`);
+    console.log(`At ${r.capacity} points per work day: ${r.points} points over ${r.planDays} plan days, core up to day ${r.core}.`);
+    for (const d of r.listing) console.log(`  D${String(d.day).padEnd(3)} ${String(d.points).padStart(5)}  ${d.title}  (${d.tasks.join(' ')})`);
+    if (r.later.length) console.log(`  later       (${r.later.join(' ')})`);
+    if (opts['dry-run']) return console.log('\nDry run: nothing written.');
+    const byId = (section, id) => b[section].find((x) => x.id === id);
+    const file = writeEdits(dir, (ed) => {
+      ed.replaceList('days', r.days, { before: 'tasks' });
+      for (const [id, day] of r.assign) if (byId('tasks', id).day !== day) ed.setField('tasks', id, 'day', day, ['feature', 'id']);
+      for (const x of r.before) if (byId(x.section, x.id).before !== x.day) ed.setField(x.section, x.id, 'before', x.day);
+      ed.setProject('plan_days', r.planDays);
+      ed.setProject('core', r.core);
+    });
+    console.log(`\nWritten to ${file}.`);
+    const issues = validate(readBacklog(dir));
+    printIssues(issues);
+    if (issues.errors.length) fail(`\n${issues.errors.length} error(s) left to fix by hand (sprints and milestones follow the new days).`);
+  },
+
+  baseline(opts) {
+    const { dir, b, t, today: asOf } = load(opts);
+    if (!isPlanning(b)) fail(b.project.baseline ? `The plan was agreed on ${b.project.baseline.date}.` : `baseline agrees a plan being drawn up (project.phase: ${PLANNING}).`);
+    const agreed = { ...b, project: { ...b.project } };
+    delete agreed.project.phase;
+    const issues = validate(agreed);
+    printIssues(issues);
+    if (issues.errors.length) fail(`\nThe plan is not complete yet: ${issues.errors.length} error(s), as it would be checked once agreed.`);
+    const p = agreed.project;
+    const today = asOf || localToday();
+    const points = round(compute(agreed, { today }).pointsTotal);
+    const file = writeEdits(dir, (ed) => {
+      ed.removeProject('phase');
+      ed.setProject('baseline', { date: today, points, plan_days: p.plan_days });
+      ed.append('log', { date: today, type: 'baseline', title: t('log.baselineTitle'), note: t('log.baselineNote', { points: t('planning.points', { n: points }), days: p.plan_days, core: t('day', { n: p.core }) }) });
+    });
+    console.log(`Plan agreed on ${today}: ${points} points over ${p.plan_days} plan days, core up to day ${p.core}. Written to ${file}.`);
+    if (p.budget_days && p.plan_days > p.budget_days) console.log(`warning  the plan takes ${p.plan_days} work days, ${p.budget_days} were sold`);
+    if (!ownRepo(dir)) return console.log('The pilot directory is not its own git repository: commit the agreed plan yourself.');
+    if (git(['commit', '--quiet', '-m', `baseline ${today}`, '--', FILE], dir) === null) return console.log(`The commit failed: commit ${FILE} yourself, then tag it baseline.`);
+    console.log(git(['tag', 'baseline'], dir) === null ? 'Committed. The tag baseline already exists: tag this commit yourself if it should move.' : 'Committed and tagged baseline in the pilot directory.');
   },
 
   commits(opts) {
     const { dir, b, t, today } = load(opts);
+    if (isPlanning(b)) fail(PLANNING_ONLY);
     const { day } = helpers(compute(b, { today }), t);
     let commits;
     try { commits = taggedCommits(b, dir); } catch (e) { fail(e.message); }
@@ -127,6 +210,7 @@ const commands = {
 
   build(opts) {
     const { dir, b, locale, today } = load(opts);
+    if (isPlanning(b)) fail(PLANNING_ONLY);
     const { local, fragment } = writeDashboard(dir, renderDashboard(b, compute(b, { today }), locale), locale.lang);
     console.log(`Dashboard: ${local}`);
     console.log(`Fragment to publish: ${fragment}`);
@@ -134,6 +218,7 @@ const commands = {
 
   async slack(opts) {
     const { dir, b, t, today } = load(opts);
+    if (isPlanning(b)) fail(PLANNING_ONLY);
     const c = compute(b, { today });
     const message = opts.milestone !== undefined ? milestoneMessage(b, c, t, Number(opts.milestone)) : digestMessage(b, c, t);
     if (opts['dry-run']) return console.log(JSON.stringify(message, null, 2));
