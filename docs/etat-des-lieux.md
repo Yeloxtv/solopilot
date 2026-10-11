@@ -88,6 +88,8 @@ Il le valide par écrit, et sa validation est enregistrée avec le plan convenu.
 
 **Fini quand** aucune question bloquante n'apparaît le jour où le travail l'atteint.
 
+**État (11 octobre).** Fait, selon la [spécification](specs/vie-des-questions.md). Dans le scénario `daily`, le skill signale la question à relancer, passe au crible les trois jours suivants, puis note la relance quand le développeur l'annonce.
+
 ### 6. Voir tous ses projets ensemble
 
 **Pourquoi.** Un développeur seul mène souvent plusieurs projets. Chaque plan suppose sa part de journée, et personne ne vérifie que leur somme tient.

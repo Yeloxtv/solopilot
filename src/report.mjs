@@ -120,9 +120,14 @@ export function statusText(b, c, t) {
     out.push('', t('status.watch'));
     for (const x of alerts) {
       const due = x.level === 'now' ? t('status.now') : t('status.around', { date: date(x.date) });
-      out.push(`  ${x.id}  ${t('status.before', { day: day(x.before) }).padEnd(12)}  ${due.padEnd(22)}  ${x.title} (${x.who})`);
+      const asked = x.kind === 'request' ? '' : ` · ${x.asked ? t('status.askedFor', { date: date(x.asked_on), n: x.waiting }) : t('status.notAsked')}`;
+      out.push(`  ${x.id}  ${t('status.before', { day: day(x.before) }).padEnd(12)}  ${due.padEnd(22)}  ${x.title} (${x.who})${asked}`);
     }
   }
+  // Who to chase, and what was never sent although the work needs it soon.
+  const byWho = (items) => [...new Set(items.map((x) => x.who))].map((who) => `  ${who}${t('colon')}${items.filter((x) => x.who === who).map((x) => x.id).join(', ')}`);
+  if (c.chase.length) out.push('', t('status.chase'), ...byWho(c.chase));
+  if (c.unasked.length) out.push('', t('status.neverAsked'), ...byWho(c.unasked));
   return out.join('\n');
 }
 
@@ -177,6 +182,9 @@ export function digestMessage(b, c, t) {
     const byWho = [...new Set(now.map((x) => x.who))].map((who) => `• ${se(who)}${t('colon')}${now.filter((x) => x.who === who).map((x) => x.id).join(', ')}`);
     section(`${t('slack.now', { n: now.length, day: day(c.currentDay) })}\n${byWho.join('\n')}`);
   }
+  const perWho = (items) => [...new Set(items.map((x) => x.who))].map((who) => `• ${se(who)}${t('colon')}${items.filter((x) => x.who === who).map((x) => x.id).join(', ')}`).join('\n');
+  if (c.chase.length) section(`${t('slack.chase', { n: c.chase.length })}\n${perWho(c.chase)}`);
+  if (c.unasked.length) section(`${t('slack.neverAsked', { n: c.unasked.length })}\n${perWho(c.unasked)}`);
   if (meeting) {
     const first = toPrepare.filter((x) => x.priority).slice(0, 6).map((x) => x.id);
     section(t('slack.meeting', {

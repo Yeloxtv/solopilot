@@ -40,6 +40,10 @@ The real pace is the points delivered per day of effort, against `points_per_day
 
 This is fairer to everyone: a project often starts before the client workshops, and a date drawn from day 1 would blame the client for answers the work does not need yet.
 
+## Asked, waiting, to chase
+
+A question or a dependency is **asked** on the day in `asked_on`, and waits from then, in working days. It is **to chase** `chase_after` working days (5 by default) after it was asked or last reminded (`reminded_on`). An answer the work needs within two weeks, or now, that has no `asked_on` is **never asked**: the costliest case, since nobody even knows it is awaited. `status` and the digest list who to chase; the dashboard shows each answer's state and raises a risk for those never asked.
+
 ## Risks
 
 The dashboard raises risks from the data alone, nothing written by hand:
@@ -50,7 +54,8 @@ The dashboard raises risks from the data alone, nothing written by hand:
 - dependencies due now or soon;
 - more than half of the remaining days marked `tight`;
 - a real pace, once judged, under 80% of the estimate;
-- a scope grown by more than 10% since it was agreed (high beyond 25%).
+- a scope grown by more than 10% since it was agreed (high beyond 25%);
+- answers needed within two weeks that were never asked (high if one is needed now).
 
 ## Scope growth
 

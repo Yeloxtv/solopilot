@@ -241,6 +241,9 @@ h2 { margin: 0; font: 700 22px/1.1 var(--font-title); text-wrap: balance; }
 .answer-body span + span { font-size: 12px; color: var(--muted); }
 .answer-body .stake { font-size: 13px; color: var(--text-2); line-height: 1.4; }
 .answer-who { font-size: 12px; color: var(--muted); text-align: right; }
+.answer-body em { font-style: normal; font-weight: 600; }
+.answer-body em.chase { color: var(--warn); }
+.answer-body em.unasked { color: var(--urgent); }
 
 /* Requests */
 .request-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: 10px; }
@@ -361,8 +364,15 @@ const open = [
   ...D.questions.filter((q) => q.status !== 'answered').map((q) => ({ ...q, kind: 'question' })),
   ...D.dependencies.filter((d) => d.status !== 'received').map((d) => ({ ...d, kind: 'dependency' })),
   ...D.requests.filter((r) => r.status === 'pending').map((r) => ({ ...r, kind: 'request' })),
-].map((x) => ({ ...x, date: dues.get(x.id)?.date || null, level: dues.get(x.id)?.level || 'ok' }));
+].map((x) => {
+  const w = dues.get(x.id);
+  return { ...x, date: w?.date || null, level: w?.level || 'ok', asked: Boolean(w?.asked), waiting: w?.waiting, chase: Boolean(w?.chase), unasked: Boolean(w?.unasked) };
+});
 const byDue = (a, b) => (a.date || '9999').localeCompare(b.date || '9999') || a.id.localeCompare(b.id);
+// Where an answer stands with the person who owes it: to chase, asked and waiting, or never asked though needed soon.
+const answerState = (x) => x.chase ? ` · <em class="chase">${t('answers.chaseFor', { n: x.waiting })}</em>`
+  : x.asked ? ` · ${t('answers.asked', { date: dateShort(x.asked_on), n: x.waiting })}`
+  : x.unasked ? ` · <em class="unasked">${t('answers.unasked')}</em>` : '';
 const waitsFor = new Map();
 for (const x of open) for (const id of x.tasks || []) {
   if (!waitsFor.has(id)) waitsFor.set(id, []);
@@ -512,6 +522,9 @@ const RISKS = (() => {
   const ahead = plan.filter((d) => !delivered(d));
   const tight = ahead.filter((d) => d.load === 'tight').length;
   if (tight * 2 > ahead.length) r.push({ level: 'medium', title: t('risks.tight', { n: tight, total: ahead.length }), detail: t('risks.tightDetail'), action: t('risks.seeCalendar'), tab: 'days' });
+  // Answers the work needs within two weeks that nobody has asked for yet.
+  const never = open.filter((x) => x.unasked);
+  if (never.length) r.push({ level: never.some((x) => x.level === 'now') ? 'high' : 'medium', title: t('risks.unasked', { n: never.length }), detail: t('risks.unaskedDetail', { ids: never.map((x) => x.id).join(', '), who: esc([...new Set(never.map((x) => x.who))].join(', ')) }), action: t('risks.seeAnswers'), tab: 'answers', who: ALL });
   // The scope grown past +10% since it was agreed, what was removed already deducted.
   if (C.growthView && C.growthView.level) r.push({ level: C.growthView.level, title: t('risks.growth', { pct: esc(C.growthView.pct), since: esc(C.growthView.since) }), detail: `${esc(C.growthView.details)} ${t('risks.growthAdvice')}`.trim(), action: D.requests.length ? t('risks.seeRequests') : t('risks.seeDays'), tab: D.requests.length ? 'requests' : 'days' });
   // The real pace, once judged, durably under the estimate: the plan's own estimate may be wrong.
@@ -563,7 +576,7 @@ function viewAnswers() {
     items.forEach((x) => placed.add(x.id));
     return items.length ? `<div class="answers-group"><div class="group-title"><h3 class="${g.tone}">${esc(g.title)}</h3><span>${esc(g.sub)} · ${items.length}</span></div>
       <div class="list">${items.map((x) => `<div class="answer"><span class="answer-when">${when(x)} <span>${x.before ? dayLabel(x.before) : ''}</span></span><span class="id">${x.id}</span>
-        <div class="answer-body"><span>${g.sort && x.priority ? `<b>${esc(x.priority)}.</b> ` : ''}${esc(x.title)}</span>${g.sort && x.stake ? `<span class="stake">${esc(x.stake)}</span>` : ''}<span>${t('kind.' + x.kind)}${x.tasks?.length ? ' · ' + t('answers.blocks', { ids: x.tasks.join(', ') }) : ''}</span></div><span class="answer-who">${esc(x.who)}</span></div>`).join('')}</div></div>` : '';
+        <div class="answer-body"><span>${g.sort && x.priority ? `<b>${esc(x.priority)}.</b> ` : ''}${esc(x.title)}</span>${g.sort && x.stake ? `<span class="stake">${esc(x.stake)}</span>` : ''}<span>${t('kind.' + x.kind)}${x.tasks?.length ? ' · ' + t('answers.blocks', { ids: x.tasks.join(', ') }) : ''}${answerState(x)}</span></div><span class="answer-who">${esc(x.who)}</span></div>`).join('')}</div></div>` : '';
   }).join('');
   $('view').innerHTML = `<div class="chips">${chips}</div>${html || `<p class="empty">${t('answers.none')}</p>`}`;
 }

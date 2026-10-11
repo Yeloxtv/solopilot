@@ -149,7 +149,9 @@ export function buildFieldbook(root, { today }) {
     .replace(/\b20\d\d-\d\d-\d\d\b/g, (d) => addDays(d, shift))
     .replaceAll('__MEETING__', meeting)
     .replace(/^(#.*\r?\n)+/, '# Fieldbook, a fictional project for the solopilot end-to-end scenarios.\n')
-    .replace(/^(  holidays: .*)$/m, `$1\n  last_commit: ${lastCommit}`);
+    .replace(/^(  holidays: .*)$/m, `$1\n  last_commit: ${lastCommit}`)
+    // Q01 went to the client on the Monday of the week before: to chase by now.
+    .replace('{ id: Q01, before: 6, status: open,', `{ id: Q01, before: 6, status: open, asked_on: ${addDays(wednesday, -9)},`);
   writeFileSync(join(pilot, 'solopilot.yaml'), plan);
   git(pilot, ['add', '-A']);
   git(pilot, ['commit', '--quiet', '-m', `plan as of ${wednesday}`]);

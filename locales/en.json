@@ -35,7 +35,11 @@
     "watch": "To watch",
     "now": "now",
     "around": "around {date}",
-    "before": "before {day}"
+    "before": "before {day}",
+    "askedFor": "asked {date}, {n} d ago",
+    "notAsked": "not asked yet",
+    "chase": "To chase",
+    "neverAsked": "Needed within two weeks, never asked"
   },
 
   "slack": {
@@ -56,6 +60,8 @@
     "milestone": "next client milestone: {day}, {title}{when}",
     "around": ", around {date}",
     "link": "<{url}|Open the dashboard>: projection, pending answers, backlog by area",
+    "chase": "*To chase ({n})*",
+    "neverAsked": "*Never asked ({n})*: needed within two weeks",
     "fallback": "{name}: {goalMid} on {target}, core ready around {coreEnd}",
     "reached": ":triangular_flag_on_post: *Milestone {day} reached*",
     "reachedFallback": "{name}, milestone {day} reached: {title}"
@@ -154,6 +160,8 @@
     "blocksTasks": { "one": "Blocks {n} task.", "other": "Blocks {n} tasks." },
     "tight": "{n} of {total} remaining days are tight",
     "tightDetail": "Little slack per day: any surprise eats straight into the lead.",
+    "unasked": { "one": "{n} answer needed soon was never asked", "other": "{n} answers needed soon were never asked" },
+    "unaskedDetail": "Needed within two weeks: {ids}. To send to {who}.",
     "growth": "The scope grew by {pct} since {since}",
     "growthAdvice": "Weigh each request against the agreed scope, and decide what goes below the line.",
     "seeRequests": "See the requests",
@@ -187,6 +195,9 @@
     "later": "Later",
     "laterSub": "beyond, or no day set",
     "blocks": "blocks {ids}",
+    "asked": "asked {date}, {n} d",
+    "chaseFor": "to chase: {n} d without an answer",
+    "unasked": "never asked",
     "none": "No answer pending."
   },
   "days": {

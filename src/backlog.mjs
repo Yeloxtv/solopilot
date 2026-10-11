@@ -91,6 +91,7 @@ export function validate(b) {
   if (!(p.points_per_day > 0)) err('project.points_per_day: points a full work day is worth, at the plan estimate');
   if (!(p.focus > 0 && p.focus <= 1)) err('project.focus: share of each working day spent on the project, between 0 and 1');
   if (p.budget_days !== undefined && !(isInt(p.budget_days) && p.budget_days >= 1)) err('project.budget_days: the work days sold, a whole number');
+  if (p.chase_after !== undefined && !(isInt(p.chase_after) && p.chase_after >= 1)) err('project.chase_after: working days without an answer before a reminder, 5 by default');
   for (const h of p.holidays) if (!isIso(h)) err(`project.holidays: ${h} is not YYYY-MM-DD`);
   if (!(Array.isArray(p.working_days) && p.working_days.length && p.working_days.every((d) => isInt(d) && d >= 1 && d <= 7))) {
     err('project.working_days: ISO weekdays worked, 1 (Monday) to 7 (Sunday)');
@@ -186,6 +187,10 @@ export function validate(b) {
     if (x.priority !== undefined && !(isInt(x.priority) && x.priority >= 1)) err(`${x.id}: priority is a whole number, 1 or more`);
     for (const id of x.tasks || []) if (!ids.has(id)) err(`${x.id}: task ${id} not found`);
     checkFeatures(x.id, x.features);
+    if (x.asked_on !== undefined && !isIso(x.asked_on)) err(`${x.id}: asked_on, the day it was asked, as YYYY-MM-DD`);
+    if (x.reminded_on !== undefined && !(isIso(x.reminded_on) && x.asked_on !== undefined && String(x.reminded_on) >= String(x.asked_on))) {
+      err(`${x.id}: reminded_on, the day of the last reminder, on or after asked_on`);
+    }
   };
   for (const d of b.dependencies) {
     checkRef(d, 'D');

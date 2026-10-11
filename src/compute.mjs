@@ -119,6 +119,7 @@ export function compute(b, { today = localToday(), now = new Date() } = {}) {
   const work = { core: left(coreDay) / p.points_per_day, all: left(planDays) / p.points_per_day, available: remaining * focus };
   const calendarLeft = { core: inWorkingDays(left(coreDay)), all: inWorkingDays(left(planDays)) };
   const horizon = cal.add(today, 10);
+  const chaseAfter = p.chase_after ?? 5;
 
   const watch = [
     ...b.dependencies.filter((d) => d.status !== 'received').map((d) => ({ ...d, kind: 'dependency' })),
@@ -127,7 +128,14 @@ export function compute(b, { today = localToday(), now = new Date() } = {}) {
   ]
     .map((x) => {
       const date = x.before ? dueDate(x.before) : null;
-      return { ...x, date, left: date ? cal.between(today, date) : null, level: level(date) };
+      // Questions and dependencies go to someone: asked on a day, chased after chase_after working
+      // days without an answer, or never asked although the work needs them within two weeks.
+      const asks = x.kind !== 'request';
+      const asked = asks && x.asked_on !== undefined;
+      const waiting = asked ? cal.between(String(x.asked_on), today) : null;
+      const chase = asked && cal.between(String(x.reminded_on ?? x.asked_on), today) >= chaseAfter;
+      const unasked = asks && !asked && date !== null && date <= horizon;
+      return { ...x, date, left: date ? cal.between(today, date) : null, level: level(date), asked, waiting, chase, unasked };
     })
     .sort((a, c) => (a.before ?? Infinity) - (c.before ?? Infinity));
 
@@ -152,6 +160,8 @@ export function compute(b, { today = localToday(), now = new Date() } = {}) {
     inProgress: b.tasks.filter((t) => t.status === 'doing'),
     blocked: b.tasks.filter((t) => t.status === 'blocked'),
     watch, nextMilestone,
+    chase: watch.filter((x) => x.chase),
+    unasked: watch.filter((x) => x.unasked),
     days: [...plan, ...later],
   };
 }

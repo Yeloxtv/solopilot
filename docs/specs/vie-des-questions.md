@@ -1,6 +1,6 @@
 # Spécification : suivre la vie des questions
 
-Statut : brouillon à valider. Chantier 5 de l'[état des lieux](../etat-des-lieux.md).
+Statut : validée le 2026-10-11, en cours de réalisation. Chantier 5 de l'[état des lieux](../etat-des-lieux.md).
 
 ## Objectif
 
@@ -38,7 +38,7 @@ Ce qui en découle :
 - **Pour une relance**, il rédige le message au client, groupé par interlocuteur, sans retard ni marge interne. Une fois que le développeur l'a envoyé, il note `reminded_on`.
 - **À chaque point de fin de session**, il passe au crible les tâches des trois prochains jours du plan. Pour chacune, il se demande ce qui manque encore pour la construire : une règle métier, un contenu, une donnée, un accès, une décision. Il propose les nouvelles questions ou dépendances, rattachées à leurs tâches, avec leur `before`.
 
-## Décisions à prendre
+## Décisions prises (2026-10-11)
 
 1. **Les champs.** *Recommandé : `asked_on` et `reminded_on`, sur les questions comme sur les dépendances.*
 2. **Le délai de relance.** *Recommandé : 5 jours ouvrés après la pose ou la dernière relance, réglable par `project.chase_after`.*

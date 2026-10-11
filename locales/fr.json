@@ -35,7 +35,11 @@
     "watch": "À surveiller",
     "now": "maintenant",
     "around": "vers le {date}",
-    "before": "avant {day}"
+    "before": "avant {day}",
+    "askedFor": "posée le {date}, il y a {n} j",
+    "notAsked": "pas encore posée",
+    "chase": "À relancer",
+    "neverAsked": "Nécessaires d'ici deux semaines, jamais posées"
   },
 
   "slack": {
@@ -56,6 +60,8 @@
     "milestone": "prochain jalon client : {day}, {title}{when}",
     "around": ", vers le {date}",
     "link": "<{url}|Ouvrir le tableau de bord> : projection, réponses attendues, backlog par domaine",
+    "chase": "*À relancer ({n})*",
+    "neverAsked": "*Jamais posées ({n})* : nécessaires d'ici deux semaines",
     "fallback": "{name} : {goalMid} le {target}, cœur prêt vers le {coreEnd}",
     "reached": ":triangular_flag_on_post: *Jalon {day} atteint*",
     "reachedFallback": "{name}, jalon {day} atteint : {title}"
@@ -154,6 +160,8 @@
     "blocksTasks": { "one": "Bloque {n} tâche.", "other": "Bloque {n} tâches." },
     "tight": "{n} jours sur {total} restants sont tendus",
     "tightDetail": "Peu de marge par jour : un imprévu consomme directement l'avance.",
+    "unasked": { "one": "{n} réponse nécessaire bientôt n'a jamais été demandée", "other": "{n} réponses nécessaires bientôt n'ont jamais été demandées" },
+    "unaskedDetail": "Nécessaires d'ici deux semaines : {ids}. À envoyer à {who}.",
     "growth": "Le périmètre a grossi de {pct} depuis {since}",
     "growthAdvice": "Mesurer chaque demande au périmètre convenu, et décider ce qui passe sous la ligne.",
     "seeRequests": "Voir les demandes",
@@ -187,6 +195,9 @@
     "later": "Plus tard",
     "laterSub": "au-delà, ou sans jour fixé",
     "blocks": "bloque {ids}",
+    "asked": "posée le {date}, {n} j",
+    "chaseFor": "à relancer : {n} j sans réponse",
+    "unasked": "jamais posée",
     "none": "Aucune réponse attendue."
   },
   "days": {

@@ -22,6 +22,7 @@ Dates are written `YYYY-MM-DD`. Only `project`, `days` and `tasks` are required;
 | `phase` | | `planning` while the first plan is drawn up, absent once it is agreed |
 | `planning_step` | | While planning: the last of the six steps you approved, 0 to 6. Written by the skill, removed by `solopilot baseline` |
 | `budget_days` | | The work days sold in the quote, which the plan is weighed against |
+| `chase_after` | | Working days without an answer before an asked question or dependency is to chase, 5 by default |
 | `plan_days` | once agreed | Number of work days in the plan. `days` must list every day from 1 to this number. Written by `solopilot layout` |
 | `core` | once agreed | Last day of the core, the minimum commitment. Written by `solopilot layout` |
 | `baseline` | | The agreed plan, `{ date, points, plan_days }`, written by `solopilot baseline` |
@@ -110,6 +111,8 @@ What you need from others. They share these keys:
 | `before` | The plan day it is needed by. Its due date follows the work, see [how it computes](how-it-computes.md) |
 | `tasks` | The tasks waiting for it. They show "Waits on Q01" on the dashboard |
 | `features` | The features waiting for it, before their tasks exist |
+| `asked_on` | The day it was asked of whoever owes it. Without it, an answer needed within two weeks shows as never asked |
+| `reminded_on` | The day of the last reminder. An answer is to chase `chase_after` working days after it was asked or last reminded |
 | `meeting`, `priority`, `stake` | The meeting where to raise it, its rank there, and what it unlocks |
 | `note` | Free text |
 

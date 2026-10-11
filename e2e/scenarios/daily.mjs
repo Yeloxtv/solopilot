@@ -28,6 +28,8 @@ export default {
           ['proposes T017 and S01', /T017/.test(said) && /S01/.test(said)],
           ['flags S02, started ahead of its day', /S02/.test(said)],
           ['asks how much of the day went to the project', /effort|charge|share of (the|your) day|how much of (the|your) day|part de/i.test(said)],
+          ['flags Q01 as to chase', /Q01/.test(said) && /chase|remind|relanc/i.test(said)],
+          ['looks over the next days for missing answers', /D8|D9|J8|J9|S02|S03|S04|T018/.test(said) && /question|missing|manque|dependenc|dépendance/i.test(said)],
         ];
       },
     },
@@ -50,6 +52,18 @@ export default {
           ['dashboard built', existsSync(join(fx.pilot, 'build', 'index.html'))],
           ['nothing committed in the project', git(fx.project, ['rev-parse', '--short=12', 'HEAD']) === fx.head],
           ['project tree untouched', git(fx.project, ['status', '--porcelain']) === '?? src/screens/site-list.mjs', git(fx.project, ['status', '--porcelain'])],
+        ];
+      },
+    },
+    {
+      prompt: "J'ai relancé Harbor & Pine pour Q01 aujourd'hui, par e-mail.",
+      checks(fx, run, ctx) {
+        const b = readBacklog(fx.pilot);
+        const q = b.questions.find((x) => x.id === 'Q01');
+        return [
+          ['the reminder is recorded on Q01', String(q.reminded_on) === ctx.today, `reminded_on: ${q.reminded_on}`],
+          ['Q01 is no longer to chase', !/To chase[\s\S]*Q01|À relancer[\s\S]*Q01/.test(run.final), ''],
+          ['the plan is valid', validate(b).errors.length === 0, validate(b).errors.join('; ')],
         ];
       },
     },
