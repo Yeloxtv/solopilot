@@ -154,6 +154,9 @@
     "blocksTasks": { "one": "Bloque {n} tâche.", "other": "Bloque {n} tâches." },
     "tight": "{n} jours sur {total} restants sont tendus",
     "tightDetail": "Peu de marge par jour : un imprévu consomme directement l'avance.",
+    "growth": "Le périmètre a grossi de {pct} depuis {since}",
+    "growthAdvice": "Mesurer chaque demande au périmètre convenu, et décider ce qui passe sous la ligne.",
+    "seeRequests": "Voir les demandes",
     "realPace": "Le rythme réel est {n} % sous l'estimation",
     "realPaceDetail": "{pace} points par jour de travail, pour {estimate} estimés : à ce rythme, le cœur finit le {core}. Recalibrer l'estimation, ou réduire le périmètre.",
     "seeDays": "Voir le jour par jour",
@@ -279,5 +282,18 @@
     "agreement": "Accord",
     "agreementBlank": "Bon pour accord : nom, date et signature.",
     "agreed": "Validé par {by} le {date}."
+  }
+,
+  "growth": {
+    "line": "Périmètre depuis {since} : {net} ({pct}).",
+    "unchanged": "Périmètre depuis {since} : inchangé.",
+    "sinceAgreed": "l'accord du client ({date})",
+    "sinceBaseline": "le plan convenu ({date})",
+    "points": { "one": "{signed} point", "other": "{signed} points" },
+    "percent": "{n} %",
+    "requests": { "one": "{points} par la demande {ids}", "other": "{points} par les demandes {ids}" },
+    "unrequested": { "one": "{points} ajouté sans demande", "other": "{points} ajoutés sans demande" },
+    "reestimated": "{points} par réestimation",
+    "removed": { "one": "{points} retiré", "other": "{points} retirés" }
   }
 }

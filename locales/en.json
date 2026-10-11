@@ -154,6 +154,9 @@
     "blocksTasks": { "one": "Blocks {n} task.", "other": "Blocks {n} tasks." },
     "tight": "{n} of {total} remaining days are tight",
     "tightDetail": "Little slack per day: any surprise eats straight into the lead.",
+    "growth": "The scope grew by {pct} since {since}",
+    "growthAdvice": "Weigh each request against the agreed scope, and decide what goes below the line.",
+    "seeRequests": "See the requests",
     "realPace": "The real pace is {n}% under the estimate",
     "realPaceDetail": "{pace} points per day of work, for {estimate} estimated: at that pace, the core ends on {core}. Recalibrate the estimate, or cut the scope.",
     "seeDays": "See day by day",
@@ -279,5 +282,18 @@
     "agreement": "Agreement",
     "agreementBlank": "Approved: name, date and signature.",
     "agreed": "Approved by {by} on {date}."
+  }
+,
+  "growth": {
+    "line": "Scope since {since}: {net} ({pct}).",
+    "unchanged": "Scope since {since}: unchanged.",
+    "sinceAgreed": "the client's approval ({date})",
+    "sinceBaseline": "the agreed plan ({date})",
+    "points": { "one": "{signed} point", "other": "{signed} points" },
+    "percent": "{n}%",
+    "requests": { "one": "{points} from request {ids}", "other": "{points} from requests {ids}" },
+    "unrequested": { "one": "{points} added without a request", "other": "{points} added without a request" },
+    "reestimated": "{points} re-estimated",
+    "removed": { "one": "{points} removed", "other": "{points} removed" }
   }
 }

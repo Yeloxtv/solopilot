@@ -9,7 +9,8 @@ import { renderDashboard, writeDashboard } from '../src/dashboard.mjs';
 import { BacklogEditor, EditRefused } from '../src/edit.mjs';
 import { loadLocale } from '../src/i18n.mjs';
 import { layoutPlan } from '../src/plan.mjs';
-import { digestMessage, helpers, milestoneMessage, planningText, statusText } from '../src/report.mjs';
+import { reference, scopeGrowth } from '../src/growth.mjs';
+import { digestMessage, growthView, helpers, milestoneMessage, planningText, statusText } from '../src/report.mjs';
 import { git, head, projectRepo, readEnv, reportedBefore, taggedCommits } from '../src/repo.mjs';
 import { scopeData, writeScope } from '../src/scope.mjs';
 import { cliOnPath, init, install } from '../src/setup.mjs';
@@ -66,6 +67,14 @@ function writeEdits(dir, edit) {
     throw e;
   }
   return file;
+}
+
+// The computation, with the scope's movement since it was agreed (read from the pilot directory's tags).
+function computeAll(dir, b, t, today) {
+  const c = compute(b, { today });
+  c.growth = scopeGrowth(reference(dir, b), b);
+  c.growthView = growthView(c.growth, t);
+  return c;
 }
 
 // The pilot directory as its own repository (never an enclosing one, such as the project's).
@@ -138,8 +147,8 @@ const commands = {
   },
 
   status(opts) {
-    const { b, t, today } = load(opts);
-    console.log(isPlanning(b) ? planningText(b, t, { today }) : statusText(b, compute(b, { today }), t));
+    const { dir, b, t, today } = load(opts);
+    console.log(isPlanning(b) ? planningText(b, t, { today }) : statusText(b, computeAll(dir, b, t, today), t));
   },
 
   layout(opts) {
@@ -236,9 +245,9 @@ const commands = {
   },
 
   build(opts) {
-    const { dir, b, locale, today } = load(opts);
+    const { dir, b, t, locale, today } = load(opts);
     if (isPlanning(b)) fail(PLANNING_ONLY);
-    const { local, fragment } = writeDashboard(dir, renderDashboard(b, compute(b, { today }), locale), locale.lang);
+    const { local, fragment } = writeDashboard(dir, renderDashboard(b, computeAll(dir, b, t, today), locale), locale.lang);
     console.log(`Dashboard: ${local}`);
     console.log(`Fragment to publish: ${fragment}`);
   },
@@ -275,7 +284,7 @@ const commands = {
   async slack(opts) {
     const { dir, b, t, today } = load(opts);
     if (isPlanning(b)) fail(PLANNING_ONLY);
-    const c = compute(b, { today });
+    const c = computeAll(dir, b, t, today);
     const message = opts.milestone !== undefined ? milestoneMessage(b, c, t, Number(opts.milestone)) : digestMessage(b, c, t);
     if (opts['dry-run']) return console.log(JSON.stringify(message, null, 2));
     const url = readEnv(dir, 'SLACK_WEBHOOK_URL');

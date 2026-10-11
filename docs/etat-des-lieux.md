@@ -76,6 +76,8 @@ Il le valide par écrit, et sa validation est enregistrée avec le plan convenu.
 
 **Fini quand** on peut dire en une ligne de combien le périmètre a grossi depuis l'accord, et pourquoi.
 
+**État (11 octobre).** Fait, selon la [spécification](specs/croissance-du-perimetre.md). Dans le scénario `first-plan`, une demande acceptée après l'accord du client est située, estimée, et la croissance lui est attribuée : « +2 points (+3 %), tout vient de R02 ».
+
 ### 5. Suivre la vie des questions
 
 **Pourquoi.** Le passage au crible initial est solide, mais les questions naissent aussi pendant le développement, et une question posée sans relance reste ouverte.

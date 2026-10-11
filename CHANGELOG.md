@@ -33,6 +33,7 @@ The scope, approved by the client:
 The plan against reality:
 
 - The real pace (points delivered per day of effort the developer declares) shows in `status` once judged, after 5 sessions and 15% of the plan, with the date the core would end at that pace; under 80% of the estimate, the dashboard raises a risk. The projection stays on the plan's estimate.
+- Scope growth: against the client's approval, or the agreed plan, the plan as it stood then (read from its git tag) is compared with today's, task by task. `status` and the dashboard show the net change and where it comes from (accepted requests, work added without a request, re-estimates, removals); the dashboard raises a risk beyond +10% net (high beyond 25%), and the digest mentions it on the days the plan changed. The skill weighs each request against it before the developer decides. Never in the client's scope document.
 - solopilot never measures the developer's hours. Measuring them from Claude Code's sessions was tried and dropped: it only sees a floor of the work, and an employer reads any count of hours as the time worked.
 
 ## 0.1.0

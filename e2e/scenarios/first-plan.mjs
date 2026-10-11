@@ -4,6 +4,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { readBacklog, validate } from '../../src/backlog.mjs';
+import { reference, scopeGrowth } from '../../src/growth.mjs';
 import { buildKerlan, git } from '../fixtures.mjs';
 
 const text = (x) => `${x.title ?? ''} ${x.note ?? ''} ${x.answer ?? ''} ${x.stake ?? ''}`.toLowerCase();
@@ -87,6 +88,21 @@ export default {
           ['approval logged', b.log.some((e) => e.type === 'agreed')],
           ['approved scope tagged', /scope-agreed-2026-10-20/.test(git(fx.pilot, ['tag']))],
           ['document shows the approval', /Validé par .*Le Goff/.test(md)],
+          ['the plan is still valid', validate(b).errors.length === 0, validate(b).errors.slice(0, 3).join('; ')],
+        ];
+      },
+    },
+    {
+      prompt: "Au deuxième atelier, la présidente demande un export CSV des réservations pour le bureau. J'accepte : estime-le, ajoute-le au plan, et dis-moi ce que ça fait au périmètre.",
+      checks(fx, run) {
+        const b = readBacklog(fx.pilot);
+        const g = scopeGrowth(reference(fx.pilot, b), b);
+        const said = run.texts.join('\n');
+        const request = b.requests.find((r) => r.status === 'accepted' && /csv|export/i.test(text(r)));
+        return [
+          ['the request is accepted, with the tasks it creates', Boolean(request?.tasks?.length), JSON.stringify(request ?? null)],
+          ['the scope grows, and the growth is put down to the request', g?.requests > 0 && g?.net > 0, g ? `net ${g.net}, from requests ${g.requests} (${g.requestIds.join(', ')})` : 'no reference'],
+          ['the answer says what it does to the scope', /périmètre|scope/i.test(said) && /\+\s?\d/.test(said)],
           ['the plan is still valid', validate(b).errors.length === 0, validate(b).errors.slice(0, 3).join('; ')],
         ];
       },

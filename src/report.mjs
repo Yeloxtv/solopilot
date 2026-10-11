@@ -43,6 +43,28 @@ export function planningText(b, t, { today } = {}) {
   return out.join('\n');
 }
 
+// The scope's movement in words, for status, the digest and the dashboard: one line for the net change,
+// and the detail of where it comes from.
+const signed = (n, t) => `${n > 0.005 ? '+' : n < -0.005 ? '−' : ''}${t.num(Math.abs(n))}`;
+export function growthView(g, t) {
+  if (!g) return null;
+  const since = t(g.basis === 'agreed' ? 'growth.sinceAgreed' : 'growth.sinceBaseline', { date: t.date(g.date, { day: 'numeric', month: 'long' }) });
+  const moved = Math.abs(g.net) > 0.005 || (g.detailed && [g.requests, g.unrequested, g.reestimated, g.removed].some((x) => Math.abs(x) > 0.005));
+  if (!moved) return { line: t('growth.unchanged', { since }), details: '', since, pct: t('growth.percent', { n: '0' }), level: null };
+  const pct = t('growth.percent', { n: `${g.ratio > 0.005 ? '+' : g.ratio < -0.005 ? '−' : ''}${Math.round(Math.abs(g.ratio) * 100)}` });
+  const parts = g.detailed ? [
+    g.requests ? t('growth.requests', { n: g.requestIds.length, points: signed(g.requests, t), ids: t.list(g.requestIds) }) : '',
+    g.unrequested ? t('growth.unrequested', { n: g.unrequested, points: signed(g.unrequested, t) }) : '',
+    Math.abs(g.reestimated) > 0.005 ? t('growth.reestimated', { points: signed(g.reestimated, t) }) : '',
+    g.removed ? t('growth.removed', { n: g.removed, points: signed(-g.removed, t) }) : '',
+  ].filter(Boolean) : [];
+  return {
+    line: t('growth.line', { since, net: t('growth.points', { n: Math.abs(g.net), signed: signed(g.net, t) }), pct }),
+    details: parts.length ? `${parts.join(', ')}.` : '',
+    since, pct, level: g.level,
+  };
+}
+
 export function helpers(c, t) {
   const year = c.today.slice(0, 4);
   const date = (s) => t.date(String(s), { day: 'numeric', month: 'long', ...(String(s).slice(0, 4) !== year && { year: 'numeric' }) });
@@ -76,6 +98,8 @@ export function statusText(b, c, t) {
     const n = Math.round(Math.abs(1 - c.pace.ratio) * 100);
     out.push(t(c.pace.ratio < 1 ? 'status.paceUnder' : 'status.paceOver', { pace: c.pace.value, estimate: c.pace.estimate, n, core: when(c.pace.finish.core) }));
   }
+  const growth = growthView(c.growth, t);
+  if (growth) out.push(`${growth.line}${growth.details ? ` ${growth.details}` : ''}`);
   if (c.nextMilestone) out.push(t('status.nextMilestone', { day: day(c.nextMilestone.day), title: c.nextMilestone.title }));
 
   const current = c.days.find((d) => d.day === c.currentDay);
@@ -146,6 +170,9 @@ export function digestMessage(b, c, t) {
   const section = (text) => blocks.push({ type: 'section', text: { type: 'mrkdwn', text } });
   if (done.length) section(`${t('slack.done', { n: done.length })}\n${bullets(done, t, 5)}`);
   if (c.blocked.length) section(`${t('slack.blocked', { n: c.blocked.length })}\n${bullets(c.blocked, t, 5, (x) => `${t('colon')}${se(x.note)}`)}`);
+  // The scope's movement, on the days the plan changed only: the same figure every day is noise.
+  const growth = growthView(c.growth, t);
+  if (growth && b.log.some((e) => e.type === 'replan' && String(e.date) === String(on))) section(se(`${growth.line}${growth.details ? ` ${growth.details}` : ''}`));
   if (now.length) {
     const byWho = [...new Set(now.map((x) => x.who))].map((who) => `• ${se(who)}${t('colon')}${now.filter((x) => x.who === who).map((x) => x.id).join(', ')}`);
     section(`${t('slack.now', { n: now.length, day: day(c.currentDay) })}\n${byWho.join('\n')}`);

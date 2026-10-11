@@ -400,6 +400,7 @@ $('today').innerHTML = `<span class="pill"><span>${C.notStarted ? `<strong>${t('
     t('explain.focus', { focus, ratio: num(1 / C.focus) }),
     t('explain.work', { planDays: C.planDays, points: num(C.pointsPerDay) }),
     P.scope_agreed ? t('explain.agreed', { by: esc(P.scope_agreed.by), date: dateShort(P.scope_agreed.date) }) : '',
+    C.growthView ? esc(`${C.growthView.line}${C.growthView.details ? ` ${C.growthView.details}` : ''}`) : '',
   ].filter(Boolean).map((p) => `<p>${p}</p>`).join('');
   const tone = (n) => (n < 0 ? 'warn' : 'ok');
   $('calc-table').innerHTML = `<thead><tr><th scope="col"></th><th scope="col">${t('explain.workLeft')}</th><th scope="col">${t('explain.calendar')}</th><th scope="col">${t('explain.readyBy')}</th></tr></thead><tbody>
@@ -511,6 +512,8 @@ const RISKS = (() => {
   const ahead = plan.filter((d) => !delivered(d));
   const tight = ahead.filter((d) => d.load === 'tight').length;
   if (tight * 2 > ahead.length) r.push({ level: 'medium', title: t('risks.tight', { n: tight, total: ahead.length }), detail: t('risks.tightDetail'), action: t('risks.seeCalendar'), tab: 'days' });
+  // The scope grown past +10% since it was agreed, what was removed already deducted.
+  if (C.growthView && C.growthView.level) r.push({ level: C.growthView.level, title: t('risks.growth', { pct: esc(C.growthView.pct), since: esc(C.growthView.since) }), detail: `${esc(C.growthView.details)} ${t('risks.growthAdvice')}`.trim(), action: D.requests.length ? t('risks.seeRequests') : t('risks.seeDays'), tab: D.requests.length ? 'requests' : 'days' });
   // The real pace, once judged, durably under the estimate: the plan's own estimate may be wrong.
   if (C.pace && C.pace.risk && C.pace.finish) r.push({ level: C.pace.ratio < 0.6 ? 'high' : 'medium', title: t('risks.realPace', { n: Math.round((1 - C.pace.ratio) * 100) }), detail: t('risks.realPaceDetail', { pace: num(C.pace.value), estimate: num(C.pace.estimate), core: dateShort(C.pace.finish.core) }), action: t('risks.seeDays'), tab: 'days' });
   const order = { high: 0, medium: 1, low: 2 };

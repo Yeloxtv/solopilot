@@ -19,6 +19,7 @@ export function makeT(strings, intl) {
     return String(s).replace(/\{(\w+)\}/g, (m, k) => (k in vars ? (typeof vars[k] === 'number' ? num(vars[k]) : String(vars[k])) : m));
   };
   t.num = num;
+  t.list = (items) => new Intl.ListFormat(intl, { type: 'conjunction' }).format(items.map(String));
   // French writes the first of the month as an ordinal: "le 1er décembre".
   t.date = (iso, options) => {
     const s = new Date(`${iso}T12:00:00`).toLocaleDateString(intl, options);

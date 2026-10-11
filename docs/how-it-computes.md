@@ -49,7 +49,19 @@ The dashboard raises risks from the data alone, nothing written by hand:
 - one party holding half or more of the open answers;
 - dependencies due now or soon;
 - more than half of the remaining days marked `tight`;
-- a real pace, once judged, under 80% of the estimate.
+- a real pace, once judged, under 80% of the estimate;
+- a scope grown by more than 10% since it was agreed (high beyond 25%).
+
+## Scope growth
+
+The scope is measured against the client's approval (`solopilot scope --agreed-by`), or the agreed plan (`solopilot baseline`) until there is one. Both are tagged in the pilot directory, so the plan as it stood then is compared with today's, task by task, below the line left out:
+
+- **added by requests**: new tasks an accepted request lists in its `tasks`;
+- **added without a request**: the other new tasks, work found on the way;
+- **re-estimated**: the change in points of the tasks that were already there;
+- **removed**: tasks deferred, or moved below the line, since.
+
+The net change, in points and as a share of the reference, already deducts what was removed. A task's weight is its own points, or an equal share of its day's points when the plan estimates days. Without the tag, only the net change against the total recorded in `project.baseline` is known. The digest mentions the movement on the days the plan changed (a `replan` in the log); the scope document sent to the client never does.
 
 ## Plan of record and living plan
 

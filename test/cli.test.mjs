@@ -179,6 +179,17 @@ test('layout and baseline take a plan from drawn up to agreed', () => {
   assert.match(readFileSync(join(dir, 'build', 'scope.md'), 'utf8'), /Approved by Mme Le Goff on February 10, 2026\./);
   assert.match(gitOut(dir, 'tag'), /scope-agreed-2026-02-10/);
   assert.equal(run(['check', '--dir', dir]).status, 0);
+
+  // Then a request accepted at the next workshop: the scope grows, and says from where.
+  assert.match(run(['status', '--dir', dir, '--today', '2026-02-11']).stdout, /Scope since the client's approval \(February 10\): unchanged\./);
+  writeFileSync(file, readFileSync(file, 'utf8')
+    .replace('requests: []', 'requests:\n  - { id: R01, status: accepted, title: "CSV export", decision: "Accepted at workshop 2", tasks: [T004] }')
+    .replace(/(\n {2}- \{ id: T003,[^\n]*)/, '$1\n  - { id: T004, feature: F02, day: 3, kind: logic, status: todo, points: 2, title: "CSV export" }'));
+  assert.equal(run(['check', '--dir', dir]).status, 0);
+  const status = run(['status', '--dir', dir, '--today', '2026-02-11']).stdout;
+  assert.match(status, /Scope since the client's approval \(February 10\): \+2 points \(\+18%\)\. \+2 from request R01\./);
+  run(['scope', '--dir', dir, '--today', '2026-02-11']);
+  assert.doesNotMatch(readFileSync(join(dir, 'build', 'scope.md'), 'utf8'), /Scope since|\+2 points/, 'never in the client document');
 });
 
 test('the scope document waits for an agreed plan', () => {

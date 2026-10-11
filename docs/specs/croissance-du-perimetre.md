@@ -1,6 +1,6 @@
 # Spécification : afficher la croissance du périmètre
 
-Statut : brouillon à valider. Chantier 4 de l'[état des lieux](../etat-des-lieux.md).
+Statut : validée le 2026-10-11, en cours de réalisation. Chantier 4 de l'[état des lieux](../etat-des-lieux.md).
 
 ## Objectif
 
@@ -34,7 +34,7 @@ Le solde net, en points et en pourcentage de la référence, résume le tout.
 
 Rien de tout cela n'apparaît dans le document de périmètre envoyé au client.
 
-## Décisions à prendre
+## Décisions prises (2026-10-11)
 
 1. **Ce qui est compté.** *Recommandé : les points du plan hors « sous la ligne », avec le détail par mouvement.*
 2. **Les seuils du risque.** *Recommandé : +10 % net pour un risque moyen, +25 % pour un risque élevé.* Ce qui a été compensé (retiré, passé sous la ligne) se déduit avant de comparer.
