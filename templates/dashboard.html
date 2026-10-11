@@ -259,7 +259,7 @@ h2 { margin: 0; font: 700 22px/1.1 var(--font-title); text-wrap: balance; }
 .entry time { font: 500 12px var(--font-mono); color: var(--muted); }
 .entry-type { justify-self: start; font-size: 11px; font-weight: 600; padding: 4px 8px; border-radius: 4px; background: var(--line); color: var(--text-2); }
 .entry-type.replan { background: var(--warn-bg); color: var(--warn); }
-.entry-type.baseline { background: var(--accent-bg); color: var(--accent); }
+.entry-type.baseline, .entry-type.agreed { background: var(--accent-bg); color: var(--accent); }
 .entry-body { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
 .entry-title { font-weight: 600; line-height: 1.4; }
 .entry-text { font-size: 13px; line-height: 1.55; color: var(--text-2); text-wrap: pretty; }
@@ -399,7 +399,8 @@ $('today').innerHTML = `<span class="pill"><span>${C.notStarted ? `<strong>${t('
     t(P.client ? 'explain.goalClient' : 'explain.goal', { goalMid: esc(goalMid), client: esc(P.client), target: dateShort(C.target), range: range(C.core) }),
     t('explain.focus', { focus, ratio: num(1 / C.focus) }),
     t('explain.work', { planDays: C.planDays, points: num(C.pointsPerDay) }),
-  ].map((p) => `<p>${p}</p>`).join('');
+    P.scope_agreed ? t('explain.agreed', { by: esc(P.scope_agreed.by), date: dateShort(P.scope_agreed.date) }) : '',
+  ].filter(Boolean).map((p) => `<p>${p}</p>`).join('');
   const tone = (n) => (n < 0 ? 'warn' : 'ok');
   $('calc-table').innerHTML = `<thead><tr><th scope="col"></th><th scope="col">${t('explain.workLeft')}</th><th scope="col">${t('explain.calendar')}</th><th scope="col">${t('explain.readyBy')}</th></tr></thead><tbody>
     <tr><td>${t('explain.coreRow', { range: range(C.core) })}</td><td>${t('units.days', { n: C.work.core })}</td><td>${workingDays(C.calendarLeft.core)}</td><td class="${tone(m)}">${dateShort(C.finish.core)}</td></tr>

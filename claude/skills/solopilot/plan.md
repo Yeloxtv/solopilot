@@ -31,9 +31,10 @@ Write every title, note and question in the language of `project.locale`.
 ## Step 1: features
 
 - Propose the areas first if `areas` is empty: a handful of groups such as accounts, catalogue, payments, administration.
-- List every feature the app needs, area by area: `{ id: F01, area: accounts, title: "…", source: "spec.pdf p. 4, §2.1" }`. The source names the file in `sources/` and the page or section.
-- What the documents explicitly exclude becomes a feature with `scope: out` and a note saying where it is excluded. That list is the one to reread when the client asks for "just a small addition".
+- List every feature the app needs, area by area: `{ id: F01, area: accounts, title: "…", source: "Spec, §2.1" }`. The source names the document and its page or section, in words the client recognises: the scope document sent to the client shows it next to each feature. Titles are read by the client too: write them as features, not as tasks.
+- What the documents explicitly exclude becomes a feature with `scope: out` and a note saying where it is excluded; the scope document shows that note to the client. That list is the one to reread when the client asks for "just a small addition".
 - Each grey area becomes a question, linked to its features with `features: [F03]`. Steps 3 and 4 complete them.
+- Each decision the workshop notes record becomes an `answered` question, with its `answer`, `who` decided and the notes as source in its `note`, even when a feature already reflects it: the plan keeps the log of what was settled, by whom, so it is not argued again.
 - Leave `core` and `priority` for step 5.
 
 ## Step 2: screens and their views
@@ -68,8 +69,7 @@ Write every title, note and question in the language of `project.locale`.
 
 - Run `solopilot status`. Once the days are laid out, it shows the points against the days sold and when the core and everything finish, against the target.
 - If everything does not fit, propose what goes below the line: the features outside the core with the least value, whose tasks take `day: later`. Rerun `layout`. Never cut into the core without saying so plainly. If the core itself does not fit, say it, with the options: more time on the project, a later date, or a smaller core decided with the client.
-- Write two texts in the conversation, not in the file:
-  - for the PO, internal: what the core covers, the margin, the main risks, and the questions that block the first days;
-  - for the client: the questions to ask now or at the next meeting, written for them, without internal delays or margins.
-- When the developer confirms, run `solopilot baseline`. It records the agreed plan (the reference that scope growth is measured against), ends the planning phase, logs it, commits and tags `baseline`.
+- Write, in the conversation, a text for the PO, internal: what the core covers, the margin, the main risks, and the questions that block the first days.
+- When the developer confirms, run `solopilot baseline`. It records the agreed plan, ends the planning phase, logs it, commits and tags `baseline`.
+- Then run `solopilot scope`: it writes the scope document for the client, `build/scope.html` to print as PDF and `build/scope.md`, the same as text. It is generated from the plan and holds no delay or margin: never rewrite it by hand. Propose a short cover message to go with it: what the document is, what is expected from the client first, and that their written approval makes it the reference for any later request.
 - Then suggest `solopilot install <project-repo>` from the pilot directory, and publishing the dashboard (see "Published dashboard" in SKILL.md).

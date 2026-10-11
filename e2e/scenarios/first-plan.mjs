@@ -1,7 +1,7 @@
 // The first plan of Kerlan, drawn up from its documents: a seven-page spec with deliberate gaps and
 // explicit exclusions, workshop notes, an 18-day quote, and two mockups showing default states only.
 // The developer approves every proposal, step after step, until the plan is agreed.
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { readBacklog, validate } from '../../src/backlog.mjs';
 import { buildKerlan, git } from '../fixtures.mjs';
@@ -68,11 +68,26 @@ export default {
           ...Object.entries(GAPS).map(([label, re]) => [`gap turned into a question or dependency: ${label}`, covered(re)]),
           ...Object.entries(EXCLUSIONS).map(([label, re]) => [`exclusion kept out of scope: ${label}`, out.some((f) => re.test(text(f)))]),
           ['workshop decisions recorded as answered questions', DECISIONS.filter((re) => answered.some((q) => re.test(text(q)))).length >= 2, `${answered.length} answered`],
-          ['the new request (rating a boat) is a request, not a planned feature', b.requests.some((r) => /not(e|er)|signal|évalu/i.test(text(r))), b.requests.map((r) => r.title).join(' | ')],
+          ['the new request (rating a boat) is a request, not a planned feature', b.requests.some((r) => /not(e|er|ation)|signal|évalu/i.test(text(r))), b.requests.map((r) => r.title).join(' | ')],
           ['screens list empty and error views', screens.length > 0 && screens.filter((t) => /vide|empty|aucun/.test(names(t)) || /erreur|error/.test(names(t))).length >= screens.length / 2, `${screens.length} screens`],
           ['drawn screens linked to their mockup', b.tasks.some((t) => /maquettes\//.test(String(t.design ?? '')))],
           ['days laid out, the core inside the plan', b.project.plan_days >= 1 && b.project.core <= b.project.plan_days, `${b.project.plan_days} days, core up to ${b.project.core}`],
           ['each approved step committed', steps.length >= 4, `${steps.length} commits`],
+          ['scope document generated for the client', existsSync(join(fx.pilot, 'build', 'scope.html')) && existsSync(join(fx.pilot, 'build', 'scope.md'))],
+        ];
+      },
+    },
+    {
+      prompt: 'Le client a validé le périmètre par e-mail : c\'est Mme Le Goff, la présidente, le 20 octobre 2026.',
+      checks(fx) {
+        const b = readBacklog(fx.pilot);
+        const md = existsSync(join(fx.pilot, 'build', 'scope.md')) ? readFileSync(join(fx.pilot, 'build', 'scope.md'), 'utf8') : '';
+        return [
+          ['approval recorded', /Le Goff/.test(b.project.scope_agreed?.by ?? '') && String(b.project.scope_agreed?.date) === '2026-10-20', JSON.stringify(b.project.scope_agreed ?? null)],
+          ['approval logged', b.log.some((e) => e.type === 'agreed')],
+          ['approved scope tagged', /scope-agreed-2026-10-20/.test(git(fx.pilot, ['tag']))],
+          ['document shows the approval', /Validé par .*Le Goff/.test(md)],
+          ['the plan is still valid', validate(b).errors.length === 0, validate(b).errors.slice(0, 3).join('; ')],
         ];
       },
     },

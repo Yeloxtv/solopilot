@@ -23,6 +23,12 @@ The daily mode, tried end to end:
 - The reminder hook keeps quiet once `/solopilot` ran in the session, instead of asking for it while the update waits for approval.
 - `e2e/`: end-to-end scenarios that drive real Claude Code sessions on fictional projects rebuilt from scratch, with scripted answers and checks on the files written (`npm run e2e -- daily`). They spend real tokens and stay out of `npm test`.
 
+The scope, approved by the client:
+
+- `solopilot scope` writes the scope document for the client, `build/scope.html` to print as PDF and `build/scope.md` for an email: what is guaranteed on the date, planned next, not planned, out of scope, each feature with its source; what is expected from the client and by when; the questions to settle; the pending requests. Built from chosen fields only, it carries no delay, margin or projected date.
+- `solopilot scope --agreed-by <name> [--on <date>]` records the approval in `project.scope_agreed`, logs it, commits and tags `scope-agreed-<date>`. The dashboard mentions it, and the skill measures any request against it.
+- French dates write the first of the month as an ordinal ("1er décembre").
+
 ## 0.1.0
 
 First version, extracted from a tool used daily on a client project.

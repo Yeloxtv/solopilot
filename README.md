@@ -77,7 +77,7 @@ A signed project often comes with a spec, a few workshops and a date, but no agr
 5. **The dated plan**: you choose the core and the order, and `solopilot layout` lays the tasks out on plan days.
 6. **What you can promise**: the core and everything against the date and the days sold, and what goes below the line if it does not fit.
 
-`solopilot baseline` then records the agreed plan, the reference the scope is measured against later. `layout` and `baseline` are the only commands that write `solopilot.yaml`; they change their own values and keep your comments and layout.
+`solopilot baseline` then records the agreed plan, and `solopilot scope` writes the scope document for the client: what is guaranteed on the date, what follows, what is not planned or excluded, and what you expect from them, without a single delay or margin. Once the client approves it in writing, `solopilot scope --agreed-by` records the approval: every later request is measured against it. `layout` and `baseline` are the only commands that write `solopilot.yaml`; they change their own values and keep your comments and layout.
 
 ## Day to day
 
@@ -101,6 +101,8 @@ After a client meeting, ask it to replan: it measures the impact of every change
 | `solopilot head` | Last project commit, recorded in `project.last_commit` |
 | `solopilot commit [-m <message>]` | Commit the pilot directory |
 | `solopilot build` | Generate `build/index.html`, plus `build/publish.html` to host elsewhere |
+| `solopilot scope` | Generate the scope document for the client, `build/scope.html` to print and `build/scope.md` for an email: no delay or margin in it |
+| `solopilot scope --agreed-by <name> [--on <date>]` | Record the client's approval of the scope, the reference for any later request |
 | `solopilot slack [--dry-run]` | Post the digest to Slack, or print it |
 | `solopilot slack --milestone <n>` | Announce the milestone of plan day *n* |
 

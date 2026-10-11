@@ -67,6 +67,7 @@
     "generated": "Généré le {date}"
   },
   "explain": {
+    "agreed": "<strong>Périmètre validé</strong> par {by} le {date} : la référence pour toute demande d'ajout.",
     "thesis": "{goal} le {target} : le cœur est projeté prêt vers le {end}{margin}.",
     "withMargin": ", avec {margin} de marge",
     "tooLate": ", {late} trop tard",
@@ -217,6 +218,9 @@
     "replan": "Replanification",
     "baseline": "Plan convenu",
     "baselineTitle": "Plan convenu",
+    "agreed": "Périmètre validé",
+    "agreedTitle": "Périmètre validé par le client",
+    "agreedNote": "Validé par {by}.",
     "baselineNote": "{points} sur {days} jours de plan, cœur jusqu'au {core}.",
     "collapse": "Réduire",
     "expand": "Lire tout",
@@ -245,5 +249,31 @@
     "notYet": "pas encore",
     "budget": "À {ppd} points par jour de travail, {points} font {days} jours de travail, pour {budget} jours vendus.",
     "budgetOver": "À {ppd} points par jour de travail, {points} font {days} jours de travail : {over} de plus que les {budget} jours vendus."
+  }
+,
+  "scope": {
+    "title": "{name} : périmètre du projet",
+    "subtitle": "{client}, document du {date}",
+    "subtitleNoClient": "Document du {date}",
+    "goal": "L'objectif",
+    "goalLine": "{goal} le {target}.",
+    "core": "Garanti pour le {target}",
+    "coreSub": "Le cœur du produit : ce qui sort à la date prévue.",
+    "planned": "Prévu ensuite, dans le budget",
+    "plannedSub": "Réalisé après le cœur, dans les jours du devis.",
+    "later": "Non prévu à ce stade",
+    "laterSub": "Réalisé seulement s'il reste du temps, sans engagement.",
+    "out": "Hors périmètre",
+    "outSub": "Ne fait pas partie de ce projet.",
+    "dependencies": "Ce que nous attendons de vous",
+    "questions": "Les questions à trancher",
+    "requests": "Les demandes en attente",
+    "requestsSub": "Elles ne font pas partie du périmètre actuel : nous pouvons les chiffrer à part.",
+    "by": "nécessaire vers le {date}",
+    "toSet": "date à préciser",
+    "source": "source : {source}",
+    "agreement": "Accord",
+    "agreementBlank": "Bon pour accord : nom, date et signature.",
+    "agreed": "Validé par {by} le {date}."
   }
 }

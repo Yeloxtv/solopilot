@@ -78,7 +78,7 @@ Un projet signé arrive souvent avec un cahier des charges, quelques ateliers et
 5. **Le plan daté** : vous choisissez le cœur et l'ordre, et `solopilot layout` répartit les tâches sur les jours de plan.
 6. **Ce que vous pouvez promettre** : le cœur et la totalité face à la date et aux jours vendus, et ce qui passe sous la ligne si tout ne tient pas.
 
-`solopilot baseline` enregistre alors le plan convenu, la référence à laquelle le périmètre se mesure ensuite. `layout` et `baseline` sont les seules commandes qui écrivent `solopilot.yaml` ; elles ne changent que leurs propres valeurs, et gardent vos commentaires et votre mise en forme.
+`solopilot baseline` enregistre alors le plan convenu, et `solopilot scope` écrit le document de périmètre pour le client : ce qui est garanti à la date, ce qui suit, ce qui n'est pas prévu ou exclu, et ce que vous attendez de lui, sans le moindre retard ni la moindre marge. Une fois qu'il l'a validé par écrit, `solopilot scope --agreed-by` enregistre son accord : toute demande ultérieure se mesure à lui. `layout` et `baseline` sont les seules commandes qui écrivent `solopilot.yaml` ; elles ne changent que leurs propres valeurs, et gardent vos commentaires et votre mise en forme.
 
 ## Au quotidien
 
@@ -102,6 +102,8 @@ Après un atelier client, demandez-lui de replanifier : il chiffre l'impact de c
 | `solopilot head` | Dernier commit du projet, reporté dans `project.last_commit` |
 | `solopilot commit [-m <message>]` | Commite le dossier de pilotage |
 | `solopilot build` | Génère `build/index.html`, et `build/publish.html` pour l'héberger ailleurs |
+| `solopilot scope` | Génère le document de périmètre pour le client, `build/scope.html` à imprimer et `build/scope.md` pour un e-mail : ni retard ni marge |
+| `solopilot scope --agreed-by <nom> [--on <date>]` | Enregistre l'accord du client sur le périmètre, la référence de toute demande ultérieure |
 | `solopilot slack [--dry-run]` | Poste le digest sur Slack, ou l'affiche |
 | `solopilot slack --milestone <n>` | Annonce le jalon du jour *n* du plan |
 

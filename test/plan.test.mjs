@@ -44,6 +44,7 @@ test('layout: foundations, then the core by priority, then the rest from a fresh
   assert.equal(r.planDays, 4);
   assert.equal(r.core, 3);
   assert.deepEqual(r.later, ['T006']);
+  assert.deepEqual(r.days.slice(0, 2).map((d) => d.title), ['App', 'Sign-in'], 'several features: their areas; one feature: its title');
   assert.match(r.warnings.join('\n'), /T005: its feature F04 is out of scope/);
   assert.equal(r.days.at(-1).day, 'later');
 });

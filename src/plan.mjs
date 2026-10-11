@@ -90,8 +90,12 @@ export function layoutPlan(b, { laterTitle = 'Below the line' } = {}) {
 
   const areaTitle = new Map(b.areas.map((a) => [a.id, a.title]));
   const sprintOf = (n) => b.sprints.find((s) => n >= s.from && n <= s.to)?.id;
+  // A day of one feature takes its title; a day of several takes the names of their areas, which
+  // stay short enough for the calendar.
   const titleOf = (items) => {
-    const names = [...new Set(items.map((x) => x.f?.title ?? areaTitle.get(x.t.area) ?? x.t.title))];
+    const features = [...new Set(items.map((x) => x.f?.title ?? x.t.title))];
+    if (features.length === 1) return features[0];
+    const names = [...new Set(items.map((x) => areaTitle.get(x.f?.area ?? x.t.area) ?? x.f?.title ?? x.t.title))];
     return names.slice(0, 3).join(', ') + (names.length > 3 ? '…' : '');
   };
   const dayEntries = days.map((d) => ({

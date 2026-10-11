@@ -1,6 +1,6 @@
 # Spécification : faire valider le périmètre par le client
 
-Statut : brouillon à valider. Chantier 2 de l'[état des lieux](../etat-des-lieux.md).
+Statut : validée le 2026-10-11, en cours de réalisation. Chantier 2 de l'[état des lieux](../etat-des-lieux.md).
 
 ## Objectif
 
@@ -40,7 +40,7 @@ Le plan convenu en interne permet de démarrer le développement sans attendre l
 - Le tableau de bord mentionne l'accord : « Périmètre validé par Mme Le Goff le 20 octobre ».
 - Le skill, à l'étape 6 du premier plan, enchaîne `baseline` puis `scope`, et propose le message au client. Quand le développeur annonce l'accord du client, il l'enregistre.
 
-## Décisions à prendre
+## Décisions prises (2026-10-11)
 
 1. **La forme du document.** *Recommandé : page imprimable en PDF et texte pour l'e-mail, générés par la ligne de commande.* Le contenu est le même à chaque fois, et rien d'interne ne peut s'y glisser. Les alternatives : une page publiée sur claude.ai, que le client ne peut pas forcément ouvrir, ou un texte rédigé par Claude à chaque fois, moins sûr.
 2. **Le moment de la validation.** *Recommandé : plan convenu en interne d'abord, accord du client ensuite, enregistré à part.* L'alternative est d'attendre l'accord du client pour clore la planification, ce qui bloquerait le démarrage.

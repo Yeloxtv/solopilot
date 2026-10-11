@@ -67,6 +67,7 @@
     "generated": "Generated {date}"
   },
   "explain": {
+    "agreed": "<strong>Scope approved</strong> by {by} on {date}: the reference for any request to add something.",
     "thesis": "{goal} on {target}: the core is projected ready around {end}{margin}.",
     "withMargin": ", with {margin} to spare",
     "tooLate": ", {late} too late",
@@ -217,6 +218,9 @@
     "replan": "Replan",
     "baseline": "Agreed plan",
     "baselineTitle": "Plan agreed",
+    "agreed": "Scope approved",
+    "agreedTitle": "Scope approved by the client",
+    "agreedNote": "Approved by {by}.",
     "baselineNote": "{points} over {days} plan days, core up to {core}.",
     "collapse": "Collapse",
     "expand": "Read all",
@@ -245,5 +249,31 @@
     "notYet": "not yet",
     "budget": "At {ppd} points a work day, {points} make {days} work days, for {budget} days sold.",
     "budgetOver": "At {ppd} points a work day, {points} make {days} work days: {over} more than the {budget} days sold."
+  }
+,
+  "scope": {
+    "title": "{name}: project scope",
+    "subtitle": "{client}, document of {date}",
+    "subtitleNoClient": "Document of {date}",
+    "goal": "The goal",
+    "goalLine": "{goal} on {target}.",
+    "core": "Guaranteed for {target}",
+    "coreSub": "The core of the product: what ships on the target date.",
+    "planned": "Planned next, within the budget",
+    "plannedSub": "Built after the core, within the days of the quote.",
+    "later": "Not planned at this stage",
+    "laterSub": "Built only if time remains, with no commitment.",
+    "out": "Out of scope",
+    "outSub": "Not part of this project.",
+    "dependencies": "What we need from you",
+    "questions": "Questions to settle",
+    "requests": "Pending requests",
+    "requestsSub": "Not part of the current scope: they can be estimated separately.",
+    "by": "needed around {date}",
+    "toSet": "date to be set",
+    "source": "source: {source}",
+    "agreement": "Agreement",
+    "agreementBlank": "Approved: name, date and signature.",
+    "agreed": "Approved by {by} on {date}."
   }
 }

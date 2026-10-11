@@ -99,6 +99,9 @@ export function validate(b) {
   if (!isLocale(p.locale)) err(`project.locale: ${availableLocales().join(' or ')}, or a tag such as en-GB`);
   if (p.last_commit !== undefined && !/^[0-9a-f]{7,40}$/.test(String(p.last_commit))) err('project.last_commit: a commit hash, as written by `solopilot head`');
   if (p.dashboard_url !== undefined && !/^https:\/\/[^\s|<>]+$/.test(String(p.dashboard_url))) err('project.dashboard_url: an https URL');
+  if (p.scope_agreed !== undefined && !(p.scope_agreed && String(p.scope_agreed.by ?? '').trim() && isIso(p.scope_agreed.date))) {
+    err('project.scope_agreed: { by, date }, as written by `solopilot scope --agreed-by`');
+  }
   if (p.baseline !== undefined) {
     const s = p.baseline;
     if (!(s && isIso(s.date) && typeof s.points === 'number' && s.points >= 0 && isInt(s.plan_days) && s.plan_days >= 1)) {
@@ -220,7 +223,7 @@ export function validate(b) {
   }
   for (const e of b.log) {
     if (!isIso(e.date)) err(`log entry "${e.title}": date as YYYY-MM-DD`);
-    if (!['session', 'replan', 'baseline'].includes(e.type)) err(`log ${e.date}: type is session, replan or baseline`);
+    if (!['session', 'replan', 'baseline', 'agreed'].includes(e.type)) err(`log ${e.date}: type is session, replan, baseline or agreed`);
     if (e.type === 'replan' && !e.note) err(`log ${e.date}: replan without its reason`);
     if (e.effort !== undefined && !(e.effort > 0 && e.effort <= 1)) err(`log ${e.date}: effort, the share of the day spent on the project, between 0 and 1`);
   }

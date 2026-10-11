@@ -169,6 +169,24 @@ test('layout and baseline take a plan from drawn up to agreed', () => {
   assert.equal(run(['status', '--dir', dir, '--today', '2026-02-02']).status, 0);
   assert.match(run(['baseline', '--dir', dir]).stderr, /agreed on 2026-02-02/);
   assert.match(run(['layout', '--dir', dir]).stderr, /This plan is agreed/);
+
+  // Then the scope document for the client, and the client's approval.
+  assert.equal(run(['scope', '--dir', dir, '--today', '2026-02-02']).status, 0);
+  assert.ok(existsSync(join(dir, 'build', 'scope.html')) && existsSync(join(dir, 'build', 'scope.md')));
+  const approved = run(['scope', '--dir', dir, '--agreed-by', 'Mme Le Goff', '--on', '2026-02-10'], GIT_ID);
+  assert.equal(approved.status, 0, approved.stderr);
+  assert.match(readFileSync(file, 'utf8'), /scope_agreed: \{ by: "Mme Le Goff", date: 2026-02-10 \}/);
+  assert.match(readFileSync(join(dir, 'build', 'scope.md'), 'utf8'), /Approved by Mme Le Goff on February 10, 2026\./);
+  assert.match(gitOut(dir, 'tag'), /scope-agreed-2026-02-10/);
+  assert.equal(run(['check', '--dir', dir]).status, 0);
+});
+
+test('the scope document waits for an agreed plan', () => {
+  const dir = join(tmp(), 'acme-pilot');
+  run(['init', dir], GIT_ID);
+  const out = run(['scope', '--dir', dir]);
+  assert.notEqual(out.status, 0);
+  assert.match(out.stderr, /run `solopilot baseline` first/);
 });
 
 test('commit records the pilot directory, commits shows what the project has not committed', () => {

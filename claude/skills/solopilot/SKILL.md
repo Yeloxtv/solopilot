@@ -1,6 +1,6 @@
 ---
 name: solopilot
-description: Draws up a project's first plan from its spec and keeps the solopilot backlog (solopilot.yaml in the pilot directory) up to date from the work done, then regenerates the dashboard and posts the Slack digest. Use to plan a signed project from its documents ("draw up the plan", "plan from the spec", "planifie le projet", "à partir du cahier des charges"), at the end of a work session or day, and whenever the user says "update the plan", "where do we stand", "what's left", "fais le point", "mets à jour le suivi", "où on en est", "qu'est-ce qui reste". Also use when a milestone is reached, a dependency arrives, a question gets answered, a change request is triaged, or the plan changes after a client meeting.
+description: Draws up a project's first plan from its spec and keeps the solopilot backlog (solopilot.yaml in the pilot directory) up to date from the work done, then regenerates the dashboard and posts the Slack digest. Use to plan a signed project from its documents ("draw up the plan", "plan from the spec", "planifie le projet", "à partir du cahier des charges"), at the end of a work session or day, and whenever the user says "update the plan", "where do we stand", "what's left", "fais le point", "mets à jour le suivi", "où on en est", "qu'est-ce qui reste". Also use when a milestone is reached, a dependency arrives, a question gets answered, a change request is triaged, the client approves the scope ("le client a validé", "bon pour accord"), or the plan changes after a client meeting.
 ---
 
 # solopilot
@@ -18,6 +18,7 @@ solopilot head                # last commit of the project
 solopilot commit -m "…"       # commit the pilot directory ("update YYYY-MM-DD" by default)
 solopilot check               # validation, to run after every write
 solopilot build               # regenerate the dashboard
+solopilot scope               # the scope document for the client, in build/scope.html and scope.md
 solopilot slack               # digest of the day; --dry-run to print it without sending
 solopilot slack --milestone 5 # announce the milestone of plan day 5
 ```
@@ -62,6 +63,8 @@ Update the entry, add a log entry if the fact deserves a trace, then `check`, `b
 
 No request becomes `accepted` without a written decision from the user in the conversation. Never infer a decision from a discussion or from reported client feedback.
 
+First say where the request stands against the approved scope (`project.scope_agreed`, the scope as tagged `scope-agreed-…` in the pilot directory, or the agreed plan): already in it, explicitly out of scope, below the line, or new. Only a new or excluded one grows the scope.
+
 An accepted request becomes one or more tasks with the next free ids, placed on a day. Their ids go in the request's `tasks`, the decision in `decision`. If it adds a feature, give it the next free `F` id with the request's id as its `source`, so the growth of the scope stays traceable. If the day's load grows, update its `points` (or give the new tasks their points, when the plan estimates each task) and switch to mode 4 to measure the impact.
 
 ### 4. Replan
@@ -74,6 +77,10 @@ After a client meeting, a demo or a slip.
 4. Wait for approval, write, then add a `replan` entry to the log saying why the plan changes.
 
 Never delete a task. A dropped or postponed task becomes `deferred` with a note saying where it goes: the history must show it.
+
+### 5. The client approves the scope
+
+When the developer reports that the client approved the scope in writing, run `solopilot scope --agreed-by "<name>" --on YYYY-MM-DD`. It records the approval, logs it, regenerates the document, commits and tags it. Never infer an approval from a discussion or from silence. If the client asked for changes instead, replan (mode 4), then send a new `solopilot scope`.
 
 ## Writing rules
 

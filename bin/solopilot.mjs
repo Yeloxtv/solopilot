@@ -11,6 +11,7 @@ import { loadLocale } from '../src/i18n.mjs';
 import { layoutPlan } from '../src/plan.mjs';
 import { digestMessage, helpers, milestoneMessage, planningText, statusText } from '../src/report.mjs';
 import { git, head, projectRepo, readEnv, reportedBefore, taggedCommits } from '../src/repo.mjs';
+import { scopeData, writeScope } from '../src/scope.mjs';
 import { cliOnPath, init, install } from '../src/setup.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -31,6 +32,9 @@ Commands
   head                    last commit of the project, for project.last_commit
   commit [-m <message>]   commit the pilot directory (default message: update <today>)
   build                   generate the dashboard in build/
+  scope                   generate the scope document for the client, in build/
+  scope --agreed-by <name> [--on <date>]
+                          record the client's approval of the scope
   slack [--dry-run]       post the digest to Slack
   slack --milestone <n>   announce the milestone of plan day n
 
@@ -72,7 +76,7 @@ function ownRepo(dir) {
 
 function parse(argv) {
   const opts = { _: [] };
-  const valued = new Set(['dir', 'today', 'locale', 'name', 'milestone', 'message']);
+  const valued = new Set(['dir', 'today', 'locale', 'name', 'milestone', 'message', 'agreed-by', 'on']);
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === '-h' || a === '--help') opts.help = true;
@@ -237,6 +241,35 @@ const commands = {
     const { local, fragment } = writeDashboard(dir, renderDashboard(b, compute(b, { today }), locale), locale.lang);
     console.log(`Dashboard: ${local}`);
     console.log(`Fragment to publish: ${fragment}`);
+  },
+
+  // The scope document is built from chosen fields only (features, answers awaited, requests): no
+  // lead, delay, margin or projected date reaches the client.
+  scope(opts) {
+    const { dir, b, t, locale, today: asOf } = load(opts);
+    if (isPlanning(b)) fail('The scope document comes from an agreed plan: run `solopilot baseline` first.');
+    const today = asOf || localToday();
+    const generate = (backlog) => writeScope(dir, scopeData(backlog, compute(backlog, { today })), t, locale.lang);
+    if (opts['agreed-by'] === undefined) {
+      const { html, md } = generate(b);
+      console.log(`Scope document, to print as PDF: ${html}`);
+      console.log(`The same as text, for an email: ${md}`);
+      return;
+    }
+    const by = String(opts['agreed-by']).trim();
+    if (!by || by === 'true') fail('--agreed-by: the name of the person who approved the scope');
+    const date = opts.on || today;
+    if (!ISO.test(date)) fail('--on: a date as YYYY-MM-DD');
+    const file = writeEdits(dir, (ed) => {
+      ed.setProject('scope_agreed', { by, date });
+      ed.append('log', { date, type: 'agreed', title: t('log.agreedTitle'), note: t('log.agreedNote', { by }) });
+    });
+    console.log(`Scope approved by ${by} on ${date}. Written to ${file}.`);
+    const { html } = generate(readBacklog(dir));
+    console.log(`Scope document updated with the approval: ${html}`);
+    if (!ownRepo(dir)) return console.log('The pilot directory is not its own git repository: commit the approval yourself.');
+    if (git(['commit', '--quiet', '-m', `scope agreed by ${by}, ${date}`, '--', FILE], dir) === null) return console.log(`The commit failed: commit ${FILE} yourself, then tag it scope-agreed-${date}.`);
+    console.log(git(['tag', `scope-agreed-${date}`], dir) === null ? `Committed. The tag scope-agreed-${date} already exists: tag this commit yourself if it should move.` : `Committed and tagged scope-agreed-${date}: the approved scope stays readable as it was.`);
   },
 
   async slack(opts) {

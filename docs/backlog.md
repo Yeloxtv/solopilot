@@ -24,7 +24,8 @@ Dates are written `YYYY-MM-DD`. Only `project`, `days` and `tasks` are required;
 | `budget_days` | | The work days sold in the quote, which the plan is weighed against |
 | `plan_days` | once agreed | Number of work days in the plan. `days` must list every day from 1 to this number. Written by `solopilot layout` |
 | `core` | once agreed | Last day of the core, the minimum commitment. Written by `solopilot layout` |
-| `baseline` | | The agreed plan, `{ date, points, plan_days }`, written by `solopilot baseline`. The reference the scope is measured against |
+| `baseline` | | The agreed plan, `{ date, points, plan_days }`, written by `solopilot baseline` |
+| `scope_agreed` | | The client's approval of the scope, `{ by, date }`, written by `solopilot scope --agreed-by`. Once there, it is the reference any request is measured against; the scope as approved stays readable at the git tag `scope-agreed-<date>` |
 | `points_per_day` | yes | Load points a full work day is worth, at the plan estimate |
 | `focus` | yes | Share of each working day spent on the project, from 0 to 1. Drives the projection |
 | `holidays` | | Weekday dates not worked |
@@ -120,12 +121,12 @@ Statuses:
 
 ## log
 
-One `session` entry per day worked, one `replan` entry whenever the plan changes, and the `baseline` entry written when the plan is agreed.
+One `session` entry per day worked, one `replan` entry whenever the plan changes, the `baseline` entry written when the plan is agreed, and an `agreed` entry each time the client approves the scope.
 
 | Key | Meaning |
 | --- | --- |
 | `date` | The day |
-| `type` | `session`, `replan` or `baseline` |
+| `type` | `session`, `replan`, `baseline` or `agreed` |
 | `effort` | For sessions: the share of the day spent on the project, from 0 to 1. Defaults to `project.focus` |
 | `title` | A few words, shown above the note |
 | `note` | What happened. Required for `replan`: why the plan changes |
