@@ -65,9 +65,11 @@ export function growthView(g, t) {
   };
 }
 
+// A date as the reports write it: the year only when it is not the current one.
+const dateOf = (t, today) => (s) => t.date(String(s), { day: 'numeric', month: 'long', ...(String(s).slice(0, 4) !== today.slice(0, 4) && { year: 'numeric' }) });
+
 export function helpers(c, t) {
-  const year = c.today.slice(0, 4);
-  const date = (s) => t.date(String(s), { day: 'numeric', month: 'long', ...(String(s).slice(0, 4) !== year && { year: 'numeric' }) });
+  const date = dateOf(t, c.today);
   const day = (n) => t('day', { n });
   // The gap is counted in plan days: "2 d behind" means two plan days to catch up.
   const situation = (g) => (Math.abs(g) < 0.25 ? t('situation.onTime') : g > 0 ? t('situation.behind', { n: g }) : t('situation.ahead', { n: -g }));
@@ -100,6 +102,7 @@ export function statusText(b, c, t) {
   }
   const growth = growthView(c.growth, t);
   if (growth) out.push(`${growth.line}${growth.details ? ` ${growth.details}` : ''}`);
+  if (c.overload) out.push(t('status.overload', { load: t.num(c.overload.load, 2), from: date(c.overload.from), to: date(c.overload.to) }));
   if (c.nextMilestone) out.push(t('status.nextMilestone', { day: day(c.nextMilestone.day), title: c.nextMilestone.title }));
 
   const current = c.days.find((d) => d.day === c.currentDay);
@@ -128,6 +131,35 @@ export function statusText(b, c, t) {
   const byWho = (items) => [...new Set(items.map((x) => x.who))].map((who) => `  ${who}${t('colon')}${items.filter((x) => x.who === who).map((x) => x.id).join(', ')}`);
   if (c.chase.length) out.push('', t('status.chase'), ...byWho(c.chase));
   if (c.unasked.length) out.push('', t('status.neverAsked'), ...byWho(c.unasked));
+  return out.join('\n');
+}
+
+// ---------------------------------------------------------------- All projects
+
+// One line for each registered project, then the share of the working day promised to all of them,
+// week by week: over one day, at least one projection will not hold.
+export function projectsText(projects, ranges, t, today) {
+  if (!projects.length) return t('projects.none');
+  const date = dateOf(t, today);
+  const out = [];
+  for (const x of projects) {
+    if (x.missing) { out.push(t('projects.missing', { dir: x.dir })); continue; }
+    if (x.error) { out.push(`${x.name ?? x.dir}${t('colon')}${x.error}`, `  ${x.dir}`); continue; }
+    const parts = [t(x.done ? 'projects.done' : `projects.${x.phase}`), t('projects.target', { date: date(x.target) }), t('projects.focus', { n: t.num(x.focus, 2) })];
+    if (x.phase === 'agreed' && !x.done) {
+      parts.push(t(x.marginCore < 0 ? 'projects.coreLate' : 'projects.core', { date: date(x.finishCore), n: Math.abs(x.marginCore) }));
+      if (x.chase) parts.push(t('projects.chase', { n: x.chase }));
+      if (x.unasked) parts.push(t('projects.unasked', { n: x.unasked }));
+      if (x.growthLevel) parts.push(t('projects.growth'));
+    }
+    out.push(`${x.name}${x.client ? ` (${x.client})` : ''} · ${parts.join(' · ')}`, `  ${x.dir}`);
+  }
+  const busy = ranges.filter((r) => r.load > 0);
+  if (busy.length) {
+    out.push('', t('projects.load'));
+    for (const r of busy) out.push(`${r.over ? '! ' : '  '}${t('projects.range', { from: date(r.from), to: date(r.to), load: t.num(r.load, 2), projects: t.list(r.projects) })}`);
+    out.push('', t(busy.some((r) => r.over) ? 'projects.over' : 'projects.fine'));
+  }
   return out.join('\n');
 }
 

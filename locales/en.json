@@ -36,6 +36,7 @@
     "now": "now",
     "around": "around {date}",
     "before": "before {day}",
+    "overload": "All projects together: {load} d promised per working day from {from} to {to}. At least one projection will not hold.",
     "askedFor": "asked {date}, {n} d ago",
     "notAsked": "not asked yet",
     "chase": "To chase",
@@ -306,5 +307,24 @@
     "unrequested": { "one": "{points} added without a request", "other": "{points} added without a request" },
     "reestimated": "{points} re-estimated",
     "removed": { "one": "{points} removed", "other": "{points} removed" }
+  }
+,
+  "projects": {
+    "none": "No project registered yet: `solopilot init` and `solopilot install` add them.",
+    "planning": "being planned",
+    "agreed": "agreed",
+    "done": "delivered",
+    "target": "target {date}",
+    "core": { "one": "core {date}, {n} working day to spare", "other": "core {date}, {n} working days to spare" },
+    "coreLate": { "one": "core {date}, {n} working day late", "other": "core {date}, {n} working days late" },
+    "chase": { "one": "{n} to chase", "other": "{n} to chase" },
+    "unasked": { "one": "{n} never asked", "other": "{n} never asked" },
+    "focus": "{n} d per working day",
+    "growth": "scope grown",
+    "missing": "folder not found: {dir}",
+    "load": "Share of the day promised, week by week:",
+    "range": "{from} to {to}: {load} d per working day ({projects})",
+    "over": "Over one day: at least one projection will not hold.",
+    "fine": "Never over one day: the projections hold together."
   }
 }

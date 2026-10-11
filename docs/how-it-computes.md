@@ -68,6 +68,10 @@ The scope is measured against the client's approval (`solopilot scope --agreed-b
 
 The net change, in points and as a share of the reference, already deducts what was removed. A task's weight is its own points, or an equal share of its day's points when the plan estimates days. Without the tag, only the net change against the total recorded in `project.baseline` is known. The digest mentions the movement on the days the plan changed (a `replan` in the log); the scope document sent to the client never does.
 
+## All your projects
+
+Each plan assumes a share of the working day (`project.focus`), and its projection depends on it. `solopilot projects` adds up the shares of the registered projects, week by week, from this week to the end of the last one. A project counts from its start to its projected end, the end of everything at the plan's estimate (its target while it is being planned). A project fully delivered no longer counts. A week over one day means at least one projection will not hold. `status` says so when it happens while the project runs, from today to its projected end.
+
 ## Plan of record and living plan
 
 Your contractual roadmap, the one shown to the client, can stay where it is. `solopilot.yaml` is the living plan: it moves after every workshop, and every change is dated and explained in the log.

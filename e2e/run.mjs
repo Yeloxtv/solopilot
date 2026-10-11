@@ -38,11 +38,14 @@ try {
 }
 
 const scenario = (await import(`./scenarios/${name}.mjs`)).default;
-const ctx = { today: localToday() };
+// Every turn of the run, for the checks that span several exchanges.
+const ctx = { today: localToday(), runs: [] };
 const { model, effort, mode, allow } = opts;
 const safely = (fn) => { try { return fn(); } catch { return false; } };
 const settings = { bin: findClaude(), model, effort, mode, budget: opts.budget, allow: [...allow, ...(scenario.allow ?? [])] };
 const sandbox = mkdtempSync(join(tmpdir(), `solopilot-e2e-${name}-`));
+// The list of all projects lives in the sandbox too: the machine's own is never touched.
+process.env.SOLOPILOT_HOME = join(sandbox, 'solopilot-home');
 const fx = scenario.build(sandbox, ctx);
 scenario.before?.(fx, ctx);
 const session = randomUUID();
@@ -69,6 +72,7 @@ for (const t of plan) {
   process.stdout.write(`\nTurn ${i + 1}: ${t.prompt.length > 90 ? `${t.prompt.slice(0, 90)}…` : t.prompt}\n`);
   const run = await turn(t.prompt, { ...settings, cwd: fx.cwd, session, first: i === 0 });
   writeFileSync(join(out, `turn-${i + 1}.jsonl`), run.events.map((e) => JSON.stringify(e)).join('\n'));
+  ctx.runs.push(run);
   cost = run.cost ?? cost;
   // A repeated answer stops when the files show what it waits for, or after two turns that changed
   // nothing: a stuck session should not burn its whole budget.

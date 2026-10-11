@@ -9,8 +9,9 @@ import { renderDashboard, writeDashboard } from '../src/dashboard.mjs';
 import { BacklogEditor, EditRefused } from '../src/edit.mjs';
 import { loadLocale } from '../src/i18n.mjs';
 import { layoutPlan } from '../src/plan.mjs';
+import { forget, overloadFor, portfolio, register, registryFile } from '../src/projects.mjs';
 import { reference, scopeGrowth } from '../src/growth.mjs';
-import { digestMessage, growthView, helpers, milestoneMessage, planningText, statusText } from '../src/report.mjs';
+import { digestMessage, growthView, helpers, milestoneMessage, planningText, projectsText, statusText } from '../src/report.mjs';
 import { git, head, projectRepo, readEnv, reportedBefore, taggedCommits } from '../src/repo.mjs';
 import { scopeData, writeScope } from '../src/scope.mjs';
 import { cliOnPath, init, install } from '../src/setup.mjs';
@@ -38,6 +39,8 @@ Commands
                           record the client's approval of the scope
   slack [--dry-run]       post the digest to Slack
   slack --milestone <n>   announce the milestone of plan day n
+  projects                all your projects, and the share of the day promised to them week by week
+  projects --forget <dir> take a pilot directory off the list
 
 Options
   --dir <path>            pilot directory (default: SOLOPILOT_DIR, or the nearest ${FILE})
@@ -85,7 +88,7 @@ function ownRepo(dir) {
 
 function parse(argv) {
   const opts = { _: [] };
-  const valued = new Set(['dir', 'today', 'locale', 'name', 'milestone', 'message', 'agreed-by', 'on']);
+  const valued = new Set(['dir', 'today', 'locale', 'name', 'milestone', 'message', 'agreed-by', 'on', 'forget']);
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === '-h' || a === '--help') opts.help = true;
@@ -122,6 +125,8 @@ const commands = {
     const { dir, repo, own, committed, skill } = init(opts._[0] || '.', { name: opts.name, locale: opts.locale });
     console.log(`Pilot directory ready: ${dir}`);
     console.log(`  Skill /solopilot copied to ${skill}`);
+    register(dir);
+    console.log(`  Listed in ${registryFile()}: \`solopilot projects\` shows all your projects together`);
     if (!own && repo) console.log(`  It sits inside the git repository ${repo}: keep the pilot directory outside the project's repository. Nothing was committed.`);
     else if (!committed) console.log(`  The first commit failed (is a git identity set?). Commit it yourself: git -C "${dir}" add -A && git -C "${dir}" commit -m "solopilot init"`);
     console.log('Next: put the project documents (spec, workshop notes, mockups) in sources/, open Claude Code in that directory and run /solopilot to draw up the first plan.');
@@ -132,6 +137,7 @@ const commands = {
     const { dir } = load(opts, { strict: false });
     const { project, log } = install(dir, opts._[0]);
     for (const l of log) console.log(`  ${l}`);
+    register(dir);
     if (!readEnv(dir, 'SLACK_WEBHOOK_URL')) console.log('  SLACK_WEBHOOK_URL is not set in .env yet: the digest will be skipped (see .env.example)');
     if (!cliOnPath()) console.log('  `solopilot` is not on your PATH: the skill calls it by name. Run `npm install -g solopilot` (or `npm link` in a clone).');
     console.log(`Ready. Restart Claude Code in ${project} to load the skill and the hook.`);
@@ -148,7 +154,28 @@ const commands = {
 
   status(opts) {
     const { dir, b, t, today } = load(opts);
-    console.log(isPlanning(b) ? planningText(b, t, { today }) : statusText(b, computeAll(dir, b, t, today), t));
+    if (isPlanning(b)) return console.log(planningText(b, t, { today }));
+    const c = computeAll(dir, b, t, today);
+    c.overload = overloadFor(dir, { today: c.today, start: String(b.project.start), end: c.finish.all });
+    console.log(statusText(b, c, t));
+  },
+
+  // Every registered pilot directory, wherever it is: no pilot directory is needed to run it.
+  projects(opts) {
+    if (opts.forget !== undefined) {
+      if (opts.forget === true) fail('Usage: solopilot projects --forget <pilot-directory>');
+      const n = forget(opts.forget);
+      return console.log(n ? `Taken off the list: ${opts.forget}` : `Not on the list: ${opts.forget} (see ${registryFile()})`);
+    }
+    const today = opts.today || process.env.SOLOPILOT_TODAY || localToday();
+    if (!ISO.test(today)) fail('--today: a date as YYYY-MM-DD');
+    const { projects, ranges } = portfolio({ today });
+    // In the language of the pilot directory it is run from, if any, else of the first project.
+    const here = findPilotDir(opts.dir);
+    let lang = opts.locale;
+    if (!lang && here) try { lang = readBacklog(here).project.locale; } catch { /* not a readable plan */ }
+    const { t } = loadLocale(lang || projects.find((x) => x.locale)?.locale);
+    console.log(projectsText(projects, ranges, t, today));
   },
 
   layout(opts) {

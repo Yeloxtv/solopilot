@@ -1,11 +1,12 @@
 // The first plan of Kerlan, drawn up from its documents: a seven-page spec with deliberate gaps and
 // explicit exclusions, workshop notes, an 18-day quote, and two mockups showing default states only.
-// The developer approves every proposal, step after step, until the plan is agreed.
-import { existsSync, readFileSync } from 'node:fs';
+// The developer approves every proposal, step after step, until the plan is agreed. Another project is
+// already under way at three quarters of a day: with Kerlan's half day, the weeks they share are over one.
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { readBacklog, validate } from '../../src/backlog.mjs';
 import { reference, scopeGrowth } from '../../src/growth.mjs';
-import { buildKerlan, git } from '../fixtures.mjs';
+import { buildFieldbook, buildKerlan, git } from '../fixtures.mjs';
 
 const text = (x) => `${x.title ?? ''} ${x.note ?? ''} ${x.answer ?? ''} ${x.stake ?? ''}`.toLowerCase();
 
@@ -26,7 +27,12 @@ const DECISIONS = [/deux|2\b/, /à jour/, /semaine en cours/];
 export default {
   name: 'first-plan',
   title: 'First plan of Kerlan, from its documents',
-  build: buildKerlan,
+  build(root, ctx) {
+    const other = buildFieldbook(join(root, 'other'), ctx);
+    const plan = join(other.pilot, 'solopilot.yaml');
+    writeFileSync(plan, readFileSync(plan, 'utf8').replace(/^ {2}focus: .*$/m, '  focus: 0.75'));
+    return buildKerlan(root);
+  },
 
   before(fx, ctx) {
     ctx.initialPlan = readFileSync(join(fx.pilot, 'solopilot.yaml'), 'utf8');
@@ -48,12 +54,14 @@ export default {
       prompt: [
         'Pour ce qui manque : je consacre 0,5 jour par jour ouvré à ce projet, et une journée pleine vaut 6 points.',
         'Les dates et les jours vendus sont dans le devis.',
+        'Si mes autres projets chargent trop mes journées, je garde quand même 0,5 jour et la date du devis : je réduirai le temps passé sur l\'autre projet.',
         'Ta proposition me convient : je valide, écris-la et passe à l\'étape suivante. Pour le cœur et l\'ordre, garde ce que tu proposes.',
         'Quand le plan est prêt à être convenu, je le confirme : lance solopilot baseline.',
       ].join(' '),
       repeat: { max: 9, until: (fx) => Boolean(readBacklog(fx.pilot).project.baseline) },
-      checks(fx) {
+      checks(fx, run, ctx) {
         const b = readBacklog(fx.pilot);
+        const said = ctx.runs.map((r) => r.texts.join('\n')).join('\n');
         const answers = [...b.questions, ...b.dependencies];
         const covered = (re) => answers.some((x) => re.test(text(x)));
         const out = b.features.filter((f) => f.scope === 'out');
@@ -64,6 +72,8 @@ export default {
         return [
           ['the plan is agreed', Boolean(b.project.baseline) && b.project.phase === undefined && b.project.planning_step === undefined, JSON.stringify(b.project.baseline ?? null)],
           ['the plan is valid', validate(b).errors.length === 0, validate(b).errors.slice(0, 5).join('; ')],
+          ['the other projects looked at before planning', ctx.runs.some((r) => r.tools.some((x) => /solopilot projects/.test(x.what)))],
+          ['the overload with the other project is said', /1,25|1\.25/.test(said) && /fieldbook/i.test(said)],
           ['dates and days sold taken from the quote', String(b.project.start) === '2026-10-19' && String(b.project.target) === '2026-12-18' && b.project.budget_days === 18, `${b.project.start} → ${b.project.target}, ${b.project.budget_days} days sold`],
           ['every feature points to a document of sources/', b.features.length > 0 && b.features.every((f) => /cahier|atelier|devis|maquette|\.md|\.svg|R\d/i.test(String(f.source))), `${b.features.length} features`],
           ...Object.entries(GAPS).map(([label, re]) => [`gap turned into a question or dependency: ${label}`, covered(re)]),

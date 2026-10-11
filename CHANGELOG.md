@@ -37,6 +37,12 @@ The plan against reality:
 - The life of questions: `asked_on` and `reminded_on` on questions and dependencies. Each answer shows whether it was asked and since when; it is to chase after `project.chase_after` working days (5 by default) without an answer; an answer the work needs within two weeks that was never asked raises a risk (high if needed now). `status` and the digest list who to chase. The skill records what the developer sends, drafts the reminders, and at each update looks over the next three plan days for the questions still missing.
 - solopilot never measures the developer's hours. Measuring them from Claude Code's sessions was tried and dropped: it only sees a floor of the work, and an employer reads any count of hours as the time worked.
 
+All your projects together:
+
+- `init` and `install` add the pilot directory to `~/.solopilot/projects.json` (`SOLOPILOT_HOME` moves it), paths only. `solopilot projects --forget <dir>` takes one off.
+- `solopilot projects` shows one line per project (phase, target, share of the day, core finish and margin, answers to chase, never asked, scope grown) and the share of the working day promised to all of them, week by week. Over one day, at least one projection will not hold.
+- `status` says when all projects together take more than a day while this one runs. The skill checks the other projects before planning a new one, and flags the overload at the end of a session.
+
 ## 0.1.0
 
 First version, extracted from a tool used daily on a client project.

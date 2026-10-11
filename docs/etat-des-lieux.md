@@ -98,6 +98,8 @@ Il le valide par écrit, et sa validation est enregistrée avec le plan convenu.
 
 **Fini quand** l'outil alerte avant qu'un nouveau projet rende les autres intenables.
 
+**État (11 octobre).** Fait, selon la [spécification](specs/tous-les-projets.md). Dans le scénario `first-plan`, un autre projet fictif tourne déjà à 0,75 j par jour. Une fois la part de journée de Kerlan connue, et avant la première étape, le skill lance `solopilot projects` et l'annonce : « du 19 octobre au 6 novembre, 1,25 j par jour ouvré avec Fieldbook ». Le développeur décide de réduire l'autre projet, et le skill ne modifie rien.
+
 ## Ensuite
 
 - Apprendre à estimer à partir de l'historique : les points estimés face aux jours de charge déclarés que chaque type de tâche a consommés, d'après les commits.

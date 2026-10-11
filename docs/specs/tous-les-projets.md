@@ -1,6 +1,6 @@
 # Spécification : voir tous ses projets ensemble
 
-Statut : brouillon à valider. Chantier 6 de l'[état des lieux](../etat-des-lieux.md).
+Statut : validée le 2026-10-11, en cours de réalisation. Chantier 6 de l'[état des lieux](../etat-des-lieux.md).
 
 ## Objectif
 
@@ -24,7 +24,7 @@ Un registre personnel, `~/.solopilot/projects.json`, liste les dossiers de pilot
 - **Au démarrage d'un projet.** Avant la première étape du premier plan, le skill lance `solopilot projects`. Si la part de journée du nouveau projet fait dépasser une journée pendant sa durée, il le dit, et propose d'ajuster la part, la date cible ou les autres projets.
 - **Au quotidien.** `status` ajoute une ligne quand la charge totale dépasse une journée pendant la durée du projet. Le point de fin de session la signale.
 
-## Décisions à prendre
+## Décisions prises (2026-10-11)
 
 1. **Le registre.** *Recommandé : `~/.solopilot/projects.json`, rempli par `init` et `install`, avec `--forget` pour retirer un projet.* L'alternative est de chercher les dossiers de pilotage sous un dossier parent, ce qui suppose qu'ils soient tous rangés au même endroit.
 2. **Le calcul de la charge.** *Recommandé : la somme des parts de journée des projets actifs, semaine par semaine, chacun de son démarrage à sa fin projetée.* Un projet entièrement livré sort du calcul.

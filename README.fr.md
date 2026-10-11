@@ -17,6 +17,7 @@ solopilot y répond à partir d'un seul fichier YAML versionné dans git, sans f
 - **Le cœur et la totalité.** Vous vous engagez sur un cœur (du jour 1 au jour *n*) et visez le plan entier. Les deux sont suivis face à la date cible, avec la marge en jours ouvrés.
 - **Du cahier des charges au plan daté.** Claude rédige les fonctionnalités, les écrans et leurs vues, les questions et l'estimation à partir des documents du projet, une étape à la fois, et vous validez chacune.
 - **Un périmètre validé par le client, et sa croissance mesurée.** Le plan devient un document de périmètre que le client valide, sans vos retards ni vos marges. Ensuite, chaque demande montre les points qu'elle ajoute, et le tableau de bord dit de combien le périmètre a grossi depuis l'accord, et d'où vient la croissance.
+- **Tous vos projets ensemble.** Chaque plan suppose sa propre part de votre journée. `solopilot projects` les additionne semaine par semaine et prévient quand elles dépassent une journée : au moins une projection ne tiendra pas. Le skill le vérifie avant de planifier un nouveau projet.
 - **Des échéances qui suivent le travail.** Une question nécessaire avant le jour 9 devient urgente quand le travail atteint le jour 9, pas à une date fixée au lancement. Vous n'accusez plus un client d'être « en retard » sur un point que vous n'avez pas encore atteint.
 - **Confidentiel par construction.** Le plan vit dans son propre dossier, à côté du projet, jamais dedans. Votre client reçoit un dépôt propre ; vos retards et vos marges restent chez vous. Seuls les identifiants de tâche voyagent avec le code, dans les messages de commit : `[T024] recherche par ville`.
 - **Pensé pour Claude Code.** Le skill `/solopilot` lit vos commits taggés et propose les changements de statut. Il les écrit après votre validation, régénère le tableau de bord et poste le digest. Un hook vous rappelle quand des commits attendent d'être reportés.
@@ -108,8 +109,12 @@ Après un atelier client, demandez-lui de replanifier : il chiffre l'impact de c
 | `solopilot scope --agreed-by <nom> [--on <date>]` | Enregistre l'accord du client sur le périmètre, la référence de toute demande ultérieure |
 | `solopilot slack [--dry-run]` | Poste le digest sur Slack, ou l'affiche |
 | `solopilot slack --milestone <n>` | Annonce le jalon du jour *n* du plan |
+| `solopilot projects` | Tous vos projets, une ligne chacun, et la part de journée qui leur est promise semaine par semaine |
+| `solopilot projects --forget <dossier>` | Retire un dossier de pilotage de la liste |
 
 Options : `--dir <chemin>` (sinon `SOLOPILOT_DIR`, ou le `solopilot.yaml` le plus proche), `--today <AAAA-MM-JJ>` pour calculer à une autre date, `--locale en|fr` pour changer la langue du projet le temps d'une commande.
+
+`init` et `install` inscrivent le dossier de pilotage dans `~/.solopilot/projects.json` (`SOLOPILOT_HOME` le déplace), la liste que lit `solopilot projects`. Elle ne contient que des chemins et ne quitte pas votre machine.
 
 ## Le backlog
 

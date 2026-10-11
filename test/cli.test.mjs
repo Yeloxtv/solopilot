@@ -20,7 +20,7 @@ const tmp = () => mkdtempSync(join(tmpdir(), 'solopilot-'));
 const HOME = tmp();
 const run = (args, env = {}) => spawnSync(process.execPath, [BIN, ...args], {
   encoding: 'utf8',
-  env: { ...process.env, SOLOPILOT_DIR: '', SOLOPILOT_REPO: '', HOME, USERPROFILE: HOME, ...env },
+  env: { ...process.env, SOLOPILOT_HOME: '', SOLOPILOT_DIR: '', SOLOPILOT_REPO: '', HOME, USERPROFILE: HOME, ...env },
 });
 
 test('the demo checks and reports', () => {

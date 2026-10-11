@@ -36,6 +36,7 @@
     "now": "maintenant",
     "around": "vers le {date}",
     "before": "avant {day}",
+    "overload": "L'ensemble des projets : {load} j promis par jour ouvré du {from} au {to}. Au moins une projection ne tiendra pas.",
     "askedFor": "posée le {date}, il y a {n} j",
     "notAsked": "pas encore posée",
     "chase": "À relancer",
@@ -306,5 +307,24 @@
     "unrequested": { "one": "{points} ajouté sans demande", "other": "{points} ajoutés sans demande" },
     "reestimated": "{points} par réestimation",
     "removed": { "one": "{points} retiré", "other": "{points} retirés" }
+  }
+,
+  "projects": {
+    "none": "Aucun projet inscrit : `solopilot init` et `solopilot install` les ajoutent.",
+    "planning": "en planification",
+    "agreed": "convenu",
+    "done": "livré",
+    "target": "cible le {date}",
+    "core": { "one": "cœur le {date}, {n} j ouvré d'avance", "other": "cœur le {date}, {n} j ouvrés d'avance" },
+    "coreLate": { "one": "cœur le {date}, {n} j ouvré de retard", "other": "cœur le {date}, {n} j ouvrés de retard" },
+    "chase": { "one": "{n} à relancer", "other": "{n} à relancer" },
+    "unasked": { "one": "{n} jamais posée", "other": "{n} jamais posées" },
+    "focus": "{n} j par jour ouvré",
+    "growth": "périmètre en hausse",
+    "missing": "dossier introuvable : {dir}",
+    "load": "Part de journée promise, semaine par semaine :",
+    "range": "Du {from} au {to} : {load} j par jour ouvré ({projects})",
+    "over": "Au-delà d'une journée : au moins une projection ne tiendra pas.",
+    "fine": "Jamais au-delà d'une journée : les projections tiennent ensemble."
   }
 }

@@ -15,6 +15,7 @@ solopilot comes in once the project is signed: the budget and the date are fixed
    - `project.focus`: the share of each working day the developer gives the project, from 0 to 1;
    - `project.points_per_day`: what a full work day holds at the plan estimate, 6 by default. One point is then about an hour and a quarter of focused work, agent included.
    - `project.client` and `project.locale`, if they are still placeholders.
+5. Once the inputs are known, write them into `project` and run `solopilot projects`: it lists the developer's other projects and the share of the working day promised to all of them, week by week. If the total goes over one day while this project runs (lines starting with `!`), say so before step 1: the weeks, the total, the projects involved, and that at least one projection will not hold. Offer the ways out: a smaller share for this project and a later target, a later target alone, or less time on the other projects. The developer decides; record nothing they did not choose.
 
 ## The cycle of every step
 

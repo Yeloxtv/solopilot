@@ -17,6 +17,7 @@ solopilot answers them from one YAML file you keep in git, without timesheets.
 - **Core and everything.** You commit to a core (day 1 to day *n*) and aim for the whole plan. Both are tracked against the target date, with the margin in working days.
 - **From the spec to a dated plan.** Claude drafts the features, screens and views, questions and estimate from your project documents, one step at a time, and you approve each one.
 - **A scope the client approves, and its growth measured.** The plan becomes a scope document the client signs off, without your delays or margins. Every request after that shows the points it adds, and the dashboard tells how far the scope has grown since, and from where.
+- **All your projects together.** Each plan assumes its own share of your day. `solopilot projects` adds them up week by week and warns when they come to more than a day: at least one projection will not hold. The skill checks it before you start planning a new project.
 - **Due dates follow the work.** A question needed before day 9 becomes urgent when the work reaches day 9, not on a date fixed at kickoff. You stop blaming a client for being "late" on something you have not reached yet.
 - **Private by design.** The plan lives in its own directory, next to the project, never inside it. Your client gets a clean repository; your delays and margins stay yours. Only task ids travel with the code, in commit messages: `[T024] add search`.
 - **Claude Code native.** The `/solopilot` skill reads your tagged commits, proposes status changes, writes them once you approve, rebuilds the dashboard and posts the digest. A hook reminds you when commits are waiting to be reported.
@@ -107,8 +108,12 @@ After a client meeting, ask it to replan: it measures the impact of every change
 | `solopilot scope --agreed-by <name> [--on <date>]` | Record the client's approval of the scope, the reference for any later request |
 | `solopilot slack [--dry-run]` | Post the digest to Slack, or print it |
 | `solopilot slack --milestone <n>` | Announce the milestone of plan day *n* |
+| `solopilot projects` | All your projects, one line each, and the share of the working day promised to them week by week |
+| `solopilot projects --forget <dir>` | Take a pilot directory off the list |
 
 Options: `--dir <path>` (otherwise `SOLOPILOT_DIR`, or the nearest `solopilot.yaml`), `--today <YYYY-MM-DD>` to compute as of another date, `--locale en|fr` to override the project's language.
+
+`init` and `install` add the pilot directory to `~/.solopilot/projects.json` (`SOLOPILOT_HOME` moves it), the list `solopilot projects` reads. It holds paths only and stays on your machine.
 
 ## The backlog
 
