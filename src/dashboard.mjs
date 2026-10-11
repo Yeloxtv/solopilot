@@ -1,17 +1,25 @@
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { makeT } from './i18n.mjs';
+import { availableLocales, loadLocale, makeT } from './i18n.mjs';
+import { growthView } from './report.mjs';
 
 const TEMPLATE = join(dirname(fileURLToPath(import.meta.url)), '..', 'templates', 'dashboard.html');
 const escHtml = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
 // The page is a fragment: hosts such as claude.ai artifacts wrap it in their own document.
+// Every shipped language travels with it, so the reader can switch: the page opens in the plan's
+// language, and the plan's own text (titles, notes, questions) stays as it was written.
 export function renderDashboard(b, c, locale) {
+  const locales = Object.fromEntries(availableLocales().map((lang) => {
+    const l = lang === locale.lang ? locale : loadLocale(lang);
+    return [lang, { intl: l.intl, strings: l.strings, growthView: growthView(c.growth, l.t) }];
+  }));
+  const { growthView: _, ...calc } = c;
   const data = {
     project: b.project, people: b.people, sprints: b.sprints, milestones: b.milestones, meetings: b.meetings,
     dependencies: b.dependencies, questions: b.questions, requests: b.requests, areas: b.areas, log: b.log,
-    calc: c, lang: locale.lang, intl: locale.intl, strings: locale.strings,
+    calc, lang: locale.lang, locales,
   };
   const values = {
     __TITLE__: escHtml(`${b.project.name} · solopilot`),

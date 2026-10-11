@@ -73,7 +73,8 @@
     "subtitleClient": "Steering the {client} project",
     "current": "{day} in progress",
     "starts": "Starts on {date}",
-    "generated": "Generated {date}"
+    "generated": "Generated {date}",
+    "language": "Language of the page"
   },
   "explain": {
     "agreed": "<strong>Scope approved</strong> by {by} on {date}: the reference for any request to add something.",

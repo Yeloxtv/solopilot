@@ -21,7 +21,7 @@ solopilot answers them from one YAML file you keep in git, without timesheets.
 - **Due dates follow the work.** A question needed before day 9 becomes urgent when the work reaches day 9, not on a date fixed at kickoff. You stop blaming a client for being "late" on something you have not reached yet.
 - **Private by design.** The plan lives in its own directory, next to the project, never inside it. Your client gets a clean repository; your delays and margins stay yours. Only task ids travel with the code, in commit messages: `[T024] add search`.
 - **Claude Code native.** The `/solopilot` skill reads your tagged commits, proposes status changes, writes them once you approve, rebuilds the dashboard and posts the digest. A hook reminds you when commits are waiting to be reported.
-- **English and French**, for the dashboard, the digest and the terminal report.
+- **English and French**, for the dashboard, the digest and the terminal report. The dashboard opens in the plan's language, and a switch in its header changes to the other.
 
 ## What you need to start
 

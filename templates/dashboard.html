@@ -42,6 +42,10 @@ h2 { margin: 0; font: 700 22px/1.1 var(--font-title); text-wrap: balance; }
 .today .pill { display: inline-flex; align-items: center; gap: 8px; }
 .today .pill::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
 .today strong { color: var(--text); font-weight: 600; }
+.lang { display: inline-flex; border: 1px solid var(--line-strong); border-radius: 99px; padding: 2px; }
+.lang button { border: 0; background: transparent; color: var(--muted); border-radius: 99px; padding: 3px 9px; font-size: 12px; font-weight: 600; letter-spacing: 0.04em; }
+.lang button:hover { color: var(--text); }
+.lang button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
 
 /* How to read the page: the answer, then work against the calendar */
 .explain { padding: 24px; display: flex; flex-direction: column; gap: 18px; min-width: 0; }
@@ -333,11 +337,14 @@ const D = /*__DATA__*/null;
 const makeT = /*__MAKE_T__*/null;
 const C = D.calc;
 const P = D.project;
-const t = makeT(D.strings, D.intl);
-document.documentElement.lang = D.lang;
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-const num = t.num;
+// The page opens in the plan's language and the reader can switch to any other shipped one, a choice
+// this browser remembers when its storage allows it. Only the page's words change, never the plan's.
+const LANGS = Object.keys(D.locales);
+const LANG_KEY = 'solopilot.lang';
+let lang, L, t, goal, goalMid, focus;
+const num = (n, digits) => t.num(n, digits);
 const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 const YEAR = String(C.today).slice(0, 4);
 const dateShort = (s) => t.date(String(s), { day: 'numeric', month: 'short', ...(String(s).slice(0, 4) !== YEAR && { year: 'numeric' }) });
@@ -345,12 +352,20 @@ const LATER = 'later';
 const dayLabel = (d) => (d === LATER ? t('later.short') : t('day', { n: d }));
 const situation = (g) => cap(Math.abs(g) < 0.25 ? t('situation.onTime') : g > 0 ? t('situation.behind', { n: g }) : t('situation.ahead', { n: -g }));
 const workingDays = (n) => t('units.workingDays', { n });
-const goal = C.goal || t('goal');
-// After a colon, French writes on in lower case ("L'objectif : mise en ligne…"); MVP or V1 keep theirs.
-const goalMid = /^\p{Lu}\p{Ll}/u.test(goal) ? goal[0].toLocaleLowerCase() + goal.slice(1) : goal;
-const focus = num(C.focus, 2);
 const reduced = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 const pct = (a, b) => `${b ? Math.max(0, Math.min(100, (a / b) * 100)) : 0}%`;
+function setLang(next) {
+  lang = next;
+  L = D.locales[lang];
+  t = makeT(L.strings, L.intl);
+  document.documentElement.lang = lang;
+  goal = C.goal || t('goal');
+  // After a colon, French writes on in lower case ("L'objectif : mise en ligne…"); MVP or V1 keep theirs.
+  goalMid = /^\p{Lu}\p{Ll}/u.test(goal) ? goal[0].toLocaleLowerCase() + goal.slice(1) : goal;
+  focus = num(C.focus, 2);
+}
+const saved = (() => { try { return localStorage.getItem(LANG_KEY); } catch { return null; } })();
+setLang(LANGS.includes(saved) ? saved : D.lang);
 
 /* Derived data: days, tasks, and what waits for an answer */
 const plan = C.days.filter((d) => d.day !== LATER);
@@ -391,14 +406,17 @@ const byWho = (xs) => [...new Set([...(D.people || []), ...xs.map((x) => x.who)]
   .map((who) => [who, xs.filter((x) => x.who === who)]).filter(([, l]) => l.length);
 const ALL = '*';
 
-/* Header */
+/* Header, with the language switch */
 const sprint = sprintOf(C.currentDay);
-$('brand').innerHTML = `<b>${esc(P.name)}</b><i aria-hidden="true"></i><span>${esc(P.client ? t('header.subtitleClient', { client: P.client }) : t('header.subtitle'))}</span>`;
-$('today').innerHTML = `<span class="pill"><span>${C.notStarted ? `<strong>${t('header.starts', { date: dateShort(C.start) })}</strong>` : `<strong>${t('header.current', { day: dayLabel(C.currentDay) })}</strong>${sprint ? ' · ' + esc(t('sprint', { id: sprint.id })) : ''}`}</span></span>
-  <span>${t('header.generated', { date: new Date(C.generatedAt).toLocaleString(D.intl, { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) })}</span>`;
+function renderHeader() {
+  $('brand').innerHTML = `<b>${esc(P.name)}</b><i aria-hidden="true"></i><span>${esc(P.client ? t('header.subtitleClient', { client: P.client }) : t('header.subtitle'))}</span>`;
+  const langs = LANGS.length > 1 ? `<span class="lang" role="group" aria-label="${esc(t('header.language'))}">${LANGS.map((l) => `<button type="button" lang="${l}" data-lang="${l}" aria-pressed="${l === lang}">${l.toUpperCase()}</button>`).join('')}</span>` : '';
+  $('today').innerHTML = `<span class="pill"><span>${C.notStarted ? `<strong>${t('header.starts', { date: dateShort(C.start) })}</strong>` : `<strong>${t('header.current', { day: dayLabel(C.currentDay) })}</strong>${sprint ? ' · ' + esc(t('sprint', { id: sprint.id })) : ''}`}</span></span>
+    <span>${t('header.generated', { date: new Date(C.generatedAt).toLocaleString(L.intl, { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) })}</span>${langs}`;
+}
 
 /* How to read the page: a plan work day is not a calendar day */
-(() => {
+function renderExplain() {
   const m = C.margin.core;
   const range = (to) => t('range', { from: dayLabel(1), to: dayLabel(to) });
   $('thesis').innerHTML = t('explain.thesis', {
@@ -410,7 +428,7 @@ $('today').innerHTML = `<span class="pill"><span>${C.notStarted ? `<strong>${t('
     t('explain.focus', { focus, ratio: num(1 / C.focus) }),
     t('explain.work', { planDays: C.planDays, points: num(C.pointsPerDay) }),
     P.scope_agreed ? t('explain.agreed', { by: esc(P.scope_agreed.by), date: dateShort(P.scope_agreed.date) }) : '',
-    C.growthView ? esc(`${C.growthView.line}${C.growthView.details ? ` ${C.growthView.details}` : ''}`) : '',
+    L.growthView ? esc(`${L.growthView.line}${L.growthView.details ? ` ${L.growthView.details}` : ''}`) : '',
   ].filter(Boolean).map((p) => `<p>${p}</p>`).join('');
   const tone = (n) => (n < 0 ? 'warn' : 'ok');
   $('calc-table').innerHTML = `<thead><tr><th scope="col"></th><th scope="col">${t('explain.workLeft')}</th><th scope="col">${t('explain.calendar')}</th><th scope="col">${t('explain.readyBy')}</th></tr></thead><tbody>
@@ -418,11 +436,10 @@ $('today').innerHTML = `<span class="pill"><span>${C.notStarted ? `<strong>${t('
     <tr><td>${t('explain.allRow', { range: range(C.planDays) })}</td><td>${t('units.days', { n: C.work.all })}</td><td>${workingDays(C.calendarLeft.all)}</td><td class="${tone(C.margin.all)}">${dateShort(C.finish.all)}</td></tr>
     <tr class="available"><td>${t('explain.untilTarget')}</td><td>${t('explain.available', { n: C.work.available })}</td><td>${workingDays(C.remaining)}</td><td>${dateShort(C.target)}</td></tr></tbody>`;
   $('calc-note').textContent = t('explain.spent', { spent: C.spent, planDays: C.planDays });
-})();
+}
 
 /* Projection of the core and of everything */
-$('hero').setAttribute('aria-label', t('hero.label'));
-(() => {
+function renderCore() {
   const m = C.margin.core;
   $('card-core').classList.toggle('late', m < 0);
   $('card-core').innerHTML = `<div class="eyebrow"><span class="caps">${t('hero.core', { from: dayLabel(1), to: dayLabel(C.core) })}</span><span class="chip ${m < 0 ? 'urgent' : 'ok'}">${t(m < 0 ? 'hero.offTarget' : 'hero.onSchedule')}</span></div>
@@ -430,8 +447,8 @@ $('hero').setAttribute('aria-label', t('hero.label'));
     <div class="sentence">${t('hero.coreSentence', { end: dateShort(C.finish.core), target: dateShort(C.target), margin: m >= 0 ? t('hero.margin', { n: workingDays(m) }) : t('hero.afterTarget', { n: workingDays(-m) }) })}</div>
     <div class="gauge"><div class="gauge-track"><span style="width:${pct(C.planDone, C.core)}"></span><i style="left:${pct(C.expected.core, C.core)}"></i></div>
       <div class="gauge-legend"><span>${t('hero.doneExpected', { done: dayLabel(num(C.planDone)), expected: dayLabel(num(C.expected.core)) })}</span><span>${t('hero.daysOf', { done: Math.min(C.planDone, C.core), total: C.core })}</span></div></div>`;
-})();
-(() => {
+}
+function renderAll() {
   const m = C.margin.all;
   $('card-all').classList.toggle('off-target', m < 0);
   $('card-all').innerHTML = `<div class="eyebrow"><span class="caps">${t('hero.all', { from: dayLabel(1), to: dayLabel(C.planDays) })}</span><span class="chip ${m < 0 ? 'warn' : 'ok'}">${t(m < 0 ? 'hero.offTarget' : 'hero.withinTarget')}</span></div>
@@ -439,8 +456,8 @@ $('hero').setAttribute('aria-label', t('hero.label'));
     <div class="sentence">${t('hero.allSentence', { situation: situation(C.gap.all), target: dateShort(C.target) })} ${m < 0 ? t('hero.endsAfter', { n: workingDays(-m) }) : t('hero.endsBefore', { n: workingDays(m) })}</div>
     <div class="gauge"><div class="gauge-track"><span style="width:${pct(C.planDone, C.planDays)}"></span>${m < 0 ? `<i class="warn" style="left:${pct(C.planAtTarget, C.planDays)}"></i>` : ''}</div>
       <div class="gauge-legend"><span>${m < 0 ? t('hero.atTarget', { day: dayLabel(Math.floor(C.planAtTarget)) }) : t('hero.allFits')}</span><span>${t('hero.daysOf', { done: C.planDone, total: C.planDays })}</span></div></div>`;
-})();
-(() => {
+}
+function renderKpis() {
   const k = C.counters;
   const waiting = allTasks.filter((x) => waits(x).length).length;
   const openTasks = allTasks.filter((x) => x.status !== 'done' && x.status !== 'deferred').length;
@@ -453,10 +470,10 @@ $('hero').setAttribute('aria-label', t('hero.label'));
     { name: t('kpi.calendar'), value: num(C.remaining), total: C.workingDays, part: C.workingDays ? C.elapsed / C.workingDays : 1, sub: t('kpi.calendarSub', { n: C.work.available }) },
   ].map((x) => `<div class="kpi"><div class="kpi-name">${x.name}</div><div class="kpi-value"><b>${x.value}</b><span>/ ${num(x.total)}</span></div>
     <div class="kpi-bar"><span style="width:${pct(x.part, 1)}"></span></div><div class="kpi-sub">${x.sub}</div></div>`).join('');
-})();
+}
 
 /* Plan calendar */
-(() => {
+function renderTimeline() {
   $('timeline-title').textContent = t('timeline.title');
   $('legend').innerHTML = `<span><i class="l-done"></i>${t('timeline.done')}</span><span><i class="l-current"></i>${t('timeline.current')}</span><span><i class="l-tight"></i>${t('timeline.tight')}</span>
     <span><i class="l-client"></i>${t('milestone.client')}</span><span><i class="l-checkpoint"></i>${t('milestone.checkpoint')}</span><span>${t('timeline.hint')}</span>`;
@@ -485,10 +502,10 @@ $('hero').setAttribute('aria-label', t('hero.label'));
     return `<div class="milestone"><div class="milestone-head"><b>${dayLabel(m.day)}</b><span>${end ? '≈ ' + dateShort(end) : ''}</span></div>
       <div class="milestone-title">${esc(m.title)}</div><div class="milestone-type">${t('milestone.' + m.type)}</div></div>`;
   }).join('');
-})();
+}
 
 /* To settle now */
-(() => {
+function renderUrgent() {
   const toPrepare = open.filter(forMeeting);
   const next = meeting ? `<button type="button" class="next-btn" data-next="${esc(meeting.with)}">${t('urgent.next', { title: esc(meeting.title), with: esc(meeting.with), date: dateShort(meeting.date), questions: t('urgent.questions', { n: toPrepare.length }) })} →</button>` : '';
   $('urgent').classList.toggle('urgent', now.length > 0);
@@ -497,10 +514,11 @@ $('hero').setAttribute('aria-label', t('hero.label'));
     ${now.length ? `<div class="urgent-groups">${byWho(now).map(([who, l]) => `<div class="urgent-group"><div class="group-head"><span>${esc(who)}</span><span>${l.length}</span></div>
       ${l.map((x) => `<div class="urgent-item"><div><span class="mono id">${x.id}</span><span>${esc(x.title)}</span></div>${x.tasks?.length ? `<div class="blocks">${t('urgent.blocks', { ids: x.tasks.join(', ') })}</div>` : ''}</div>`).join('')}</div>`).join('')}</div>` : ''}
     ${next}`;
-})();
+}
 
 /* Risks, drawn from the data: nothing is written by hand */
-const RISKS = (() => {
+let RISKS = [];
+function findRisks() {
   const r = [];
   if (C.margin.core < 0) r.push({ level: 'high', title: t('risks.coreLate', { date: dateShort(C.finish.core), late: workingDays(-C.margin.core) }), detail: t('risks.coreLateDetail', { focus }), action: t('risks.seeDays'), tab: 'days' });
   if (C.margin.all < 0) r.push({ level: C.margin.core < 0 ? 'medium' : 'high', title: t('risks.allLate', { date: dateShort(C.finish.all), late: workingDays(-C.margin.all) }), detail: t('risks.allLateDetail', { day: dayLabel(Math.floor(C.planAtTarget)) }), action: t('risks.seeDays'), tab: 'days', day: Math.min(C.planDays, Math.max(1, Math.ceil(C.planAtTarget))) });
@@ -526,29 +544,31 @@ const RISKS = (() => {
   const never = open.filter((x) => x.unasked);
   if (never.length) r.push({ level: never.some((x) => x.level === 'now') ? 'high' : 'medium', title: t('risks.unasked', { n: never.length }), detail: t('risks.unaskedDetail', { ids: never.map((x) => x.id).join(', '), who: esc([...new Set(never.map((x) => x.who))].join(', ')) }), action: t('risks.seeAnswers'), tab: 'answers', who: ALL });
   // The scope grown past +10% since it was agreed, what was removed already deducted.
-  if (C.growthView && C.growthView.level) r.push({ level: C.growthView.level, title: t('risks.growth', { pct: esc(C.growthView.pct), since: esc(C.growthView.since) }), detail: `${esc(C.growthView.details)} ${t('risks.growthAdvice')}`.trim(), action: D.requests.length ? t('risks.seeRequests') : t('risks.seeDays'), tab: D.requests.length ? 'requests' : 'days' });
+  if (L.growthView && L.growthView.level) r.push({ level: L.growthView.level, title: t('risks.growth', { pct: esc(L.growthView.pct), since: esc(L.growthView.since) }), detail: `${esc(L.growthView.details)} ${t('risks.growthAdvice')}`.trim(), action: D.requests.length ? t('risks.seeRequests') : t('risks.seeDays'), tab: D.requests.length ? 'requests' : 'days' });
   // The real pace, once judged, durably under the estimate: the plan's own estimate may be wrong.
   if (C.pace && C.pace.risk && C.pace.finish) r.push({ level: C.pace.ratio < 0.6 ? 'high' : 'medium', title: t('risks.realPace', { n: Math.round((1 - C.pace.ratio) * 100) }), detail: t('risks.realPaceDetail', { pace: num(C.pace.value), estimate: num(C.pace.estimate), core: dateShort(C.pace.finish.core) }), action: t('risks.seeDays'), tab: 'days' });
   const order = { high: 0, medium: 1, low: 2 };
   return r.sort((a, b) => order[a.level] - order[b.level]).slice(0, 6);
-})();
-$('risks-title').textContent = t('risks.title');
-$('risks').innerHTML = RISKS.map((r, i) => `<div class="risk"><span class="level ${r.level}">${t('risks.' + r.level)}</span>
-  <div class="risk-body"><div class="risk-title">${esc(r.title)}</div><div class="risk-detail">${esc(r.detail)}</div>
-  <button type="button" class="link-btn" data-risk="${i}">${esc(r.action)} →</button></div></div>`).join('')
-  || `<p class="empty">${t('risks.none')}</p>`;
+}
+function renderRisks() {
+  RISKS = findRisks();
+  $('risks-title').textContent = t('risks.title');
+  $('risks').innerHTML = RISKS.map((r, i) => `<div class="risk"><span class="level ${r.level}">${t('risks.' + r.level)}</span>
+    <div class="risk-body"><div class="risk-title">${esc(r.title)}</div><div class="risk-detail">${esc(r.detail)}</div>
+    <button type="button" class="link-btn" data-risk="${i}">${esc(r.action)} →</button></div></div>`).join('')
+    || `<p class="empty">${t('risks.none')}</p>`;
+}
 
 /* Detail tabs */
-const TABS = [
+const tabs = () => [
   ['answers', t('tabs.answers'), open.length], ['days', t('tabs.days'), plan.length],
   ['areas', t('tabs.areas'), allTasks.filter((x) => x.status !== 'deferred').length],
   ...(D.requests.length ? [['requests', t('tabs.requests'), D.requests.length]] : []),
   ['log', t('tabs.log'), D.log.length],
 ];
-$('detail').setAttribute('aria-label', t('tabs.label'));
 const anchor = (typeof location !== 'undefined' && location.hash.slice(1)) || '';
 const state = {
-  tab: TABS.some(([id]) => id === anchor) ? anchor : 'answers', who: ALL, sprint: ALL, hideDone: false,
+  tab: tabs().some(([id]) => id === anchor) ? anchor : 'answers', who: ALL, sprint: ALL, hideDone: false,
   openDay: C.currentDay, request: ALL, openEntries: new Set(), areaFilter: 'all', search: '', openAreas: new Set(),
 };
 
@@ -665,7 +685,7 @@ function viewLog() {
 
 const VIEWS = { answers: viewAnswers, days: viewDays, areas: viewAreas, requests: viewRequests, log: viewLog };
 function renderDetail() {
-  $('tabs').innerHTML = TABS.map(([id, name, n]) => `<button type="button" role="tab" class="tab" aria-selected="${state.tab === id}" data-tab="${id}">${name}<span>${n}</span></button>`).join('');
+  $('tabs').innerHTML = tabs().map(([id, name, n]) => `<button type="button" role="tab" class="tab" aria-selected="${state.tab === id}" data-tab="${id}">${name}<span>${n}</span></button>`).join('');
   VIEWS[state.tab]();
 }
 function go(tab, options) {
@@ -681,11 +701,29 @@ function keepFocus(render) {
   if (key) document.querySelector(key)?.focus();
 }
 const dayValue = (v) => (v === LATER ? LATER : Number(v));
+// The whole page, drawn again when the reader switches language: the detail keeps its tab and filters.
+function renderPage() {
+  renderHeader();
+  renderExplain();
+  $('hero').setAttribute('aria-label', t('hero.label'));
+  renderCore();
+  renderAll();
+  renderKpis();
+  renderTimeline();
+  renderUrgent();
+  renderRisks();
+  $('detail').setAttribute('aria-label', t('tabs.label'));
+  renderDetail();
+}
 
 document.addEventListener('click', (e) => {
   const b = e.target.closest('button');
   if (!b) return;
   const d = b.dataset;
+  if (d.lang) {
+    try { localStorage.setItem(LANG_KEY, d.lang); } catch { /* no storage: the choice lasts as long as the page */ }
+    return keepFocus(() => { setLang(d.lang); renderPage(); });
+  }
   if (d.risk !== undefined) {
     const r = RISKS[Number(d.risk)];
     return go(r.tab, { ...(r.who && { who: r.who }), ...(r.day && { openDay: r.day, sprint: ALL, hideDone: false }) });
@@ -721,5 +759,5 @@ document.addEventListener('change', (e) => {
 document.addEventListener('input', (e) => {
   if (e.target.id === 'search') { state.search = e.target.value; listAreas(); }
 });
-renderDetail();
+renderPage();
 </script>

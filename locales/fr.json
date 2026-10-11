@@ -73,7 +73,8 @@
     "subtitleClient": "Pilotage du projet {client}",
     "current": "{day} en cours",
     "starts": "Démarre le {date}",
-    "generated": "Généré le {date}"
+    "generated": "Généré le {date}",
+    "language": "Langue de la page"
   },
   "explain": {
     "agreed": "<strong>Périmètre validé</strong> par {by} le {date} : la référence pour toute demande d'ajout.",

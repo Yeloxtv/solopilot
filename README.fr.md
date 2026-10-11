@@ -4,7 +4,7 @@
 
 [English version](README.md)
 
-![Le tableau de bord solopilot sur le projet de démo Fieldbook](docs/dashboard.png)
+![Le tableau de bord solopilot sur le projet de démo Fieldbook](docs/dashboard.fr.png)
 
 Vous développez seul une vraie application pour un client. Pas de chef de projet, pas d'outil de tickets : un cahier des charges et une échéance. Tous les trois jours, les mêmes questions reviennent : *le cœur sera-t-il prêt à temps ? Qu'est-ce qui me bloque ? Qu'est-ce que j'attends du client, et pour quand ?*
 
@@ -21,7 +21,7 @@ solopilot y répond à partir d'un seul fichier YAML versionné dans git, sans f
 - **Des échéances qui suivent le travail.** Une question nécessaire avant le jour 9 devient urgente quand le travail atteint le jour 9, pas à une date fixée au lancement. Vous n'accusez plus un client d'être « en retard » sur un point que vous n'avez pas encore atteint.
 - **Confidentiel par construction.** Le plan vit dans son propre dossier, à côté du projet, jamais dedans. Votre client reçoit un dépôt propre ; vos retards et vos marges restent chez vous. Seuls les identifiants de tâche voyagent avec le code, dans les messages de commit : `[T024] recherche par ville`.
 - **Pensé pour Claude Code.** Le skill `/solopilot` lit vos commits taggés et propose les changements de statut. Il les écrit après votre validation, régénère le tableau de bord et poste le digest. Un hook vous rappelle quand des commits attendent d'être reportés.
-- **En français et en anglais**, pour le tableau de bord, le digest et le rapport du terminal (`locale: fr`).
+- **En français et en anglais**, pour le tableau de bord, le digest et le rapport du terminal (`locale: fr`). Le tableau de bord s'ouvre dans la langue du plan, et un sélecteur dans son en-tête passe à l'autre.
 
 ## Ce qu'il faut pour démarrer
 

@@ -9,7 +9,7 @@ import { readBacklog } from '../src/backlog.mjs';
 import { compute } from '../src/compute.mjs';
 import { renderDashboard } from '../src/dashboard.mjs';
 import { loadLocale } from '../src/i18n.mjs';
-import { digestMessage, midSentence, milestoneMessage } from '../src/report.mjs';
+import { digestMessage, growthView, midSentence, milestoneMessage } from '../src/report.mjs';
 import { fixture } from './fixture.mjs';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
@@ -82,6 +82,27 @@ test('a marker in the data does not consume the next one', () => {
   const page = renderDashboard(b, compute(b, { today: '2026-01-07' }), loadLocale('en'));
   assert.match(page, /const D = \{/);
   assert.match(page, /const makeT = function makeT/);
+});
+
+test('the page carries every language and opens in the plan\'s', () => {
+  const b = fixture();
+  const c = compute(b, { today: '2026-01-07' });
+  c.growth = { basis: 'baseline', date: '2026-01-05', net: 0, ratio: 0, detailed: false };
+  const data = (locale) => JSON.parse(renderDashboard(b, c, loadLocale(locale)).match(/const D = (.*);\n/)[1]);
+  const fr = data('fr');
+  assert.equal(fr.lang, 'fr');
+  assert.deepEqual(Object.keys(fr.locales).sort(), ['en', 'fr']);
+  assert.equal(fr.locales.en.strings.header.subtitle, 'Project steering');
+  assert.equal(fr.locales.fr.strings.header.subtitle, 'Pilotage du projet');
+  // The scope's movement is phrased in each language, once per language rather than in the calc.
+  assert.equal(fr.locales.en.growthView.line, growthView(c.growth, loadLocale('en').t).line);
+  assert.equal(fr.locales.fr.growthView.line, growthView(c.growth, loadLocale('fr').t).line);
+  assert.equal(fr.calc.growthView, undefined);
+  // A date format chosen with a tag holds for its language only.
+  const gb = data('en-GB');
+  assert.equal(gb.lang, 'en');
+  assert.equal(gb.locales.en.intl, 'en-GB');
+  assert.equal(gb.locales.fr.intl, 'fr-FR');
 });
 
 test('Slack messages escape user text', () => {

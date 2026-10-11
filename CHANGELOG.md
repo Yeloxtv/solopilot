@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- The dashboard carries English and French. It opens in the plan's language, and a switch in its header changes the page's words and date formats; the browser remembers the reader's choice. The plan's own text (titles, notes, questions) stays as it was written.
+- `README.fr.md` shows the dashboard in French (`docs/dashboard.fr.png`).
+
 ## 0.2.0
 
 The first version published on npm.
