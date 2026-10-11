@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="390" height="760" viewBox="0 0 390 760" font-family="Helvetica, Arial, sans-serif">
+  <title>Les Voiles de Kerlan — Planning de la flotte (mobile, état par défaut). Maquette fictive.</title>
+  <rect width="390" height="760" fill="#f4f7f9"/>
+  <rect width="390" height="64" fill="#0f4c75"/>
+  <text x="20" y="40" font-size="20" fill="#fff" font-weight="bold">Planning</text>
+  <text x="300" y="40" font-size="14" fill="#cfe3f1">Mon compte</text>
+  <rect x="16" y="80" width="358" height="44" rx="8" fill="#fff" stroke="#d5dde3"/>
+  <text x="30" y="108" font-size="15" fill="#0f4c75">‹  Semaine du 19 au 25 octobre  ›</text>
+  <g font-size="12" fill="#5b6b76">
+    <text x="20" y="150">Filtrer :</text>
+    <rect x="80" y="136" width="80" height="22" rx="11" fill="#0f4c75"/><text x="96" y="151" fill="#fff">Dériveurs</text>
+    <rect x="168" y="136" width="90" height="22" rx="11" fill="#e3ebf0"/><text x="180" y="151">Catamarans</text>
+    <rect x="266" y="136" width="70" height="22" rx="11" fill="#e3ebf0"/><text x="282" y="151">Paddles</text>
+  </g>
+  <g font-size="13">
+    <rect x="16" y="176" width="358" height="72" rx="8" fill="#fff" stroke="#d5dde3"/>
+    <text x="30" y="200" font-weight="bold" fill="#1d2b33">Laser 4 — dériveur</text>
+    <text x="30" y="222" fill="#5b6b76">Lun. matin : libre · Lun. après-midi : réservé</text>
+    <text x="30" y="240" fill="#2e8b57">Réserver</text>
+    <rect x="16" y="258" width="358" height="72" rx="8" fill="#fff" stroke="#d5dde3"/>
+    <text x="30" y="282" font-weight="bold" fill="#1d2b33">Hobie Cat 16 — catamaran (niveau confirmé)</text>
+    <text x="30" y="304" fill="#5b6b76">Lun. matin : réservé · Lun. après-midi : libre</text>
+    <text x="30" y="322" fill="#2e8b57">Réserver</text>
+    <rect x="16" y="340" width="358" height="72" rx="8" fill="#fff" stroke="#d5dde3"/>
+    <text x="30" y="364" font-weight="bold" fill="#1d2b33">Paddle 2</text>
+    <text x="30" y="386" fill="#b8860b">En maintenance jusqu'au 22 octobre</text>
+  </g>
+  <rect x="16" y="690" width="358" height="48" rx="24" fill="#0f4c75"/>
+  <text x="128" y="720" font-size="15" fill="#fff">Mes réservations (2)</text>
+</svg>

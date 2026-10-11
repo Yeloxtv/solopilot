@@ -169,6 +169,29 @@ test('layout and baseline take a plan from drawn up to agreed', () => {
   assert.match(run(['layout', '--dir', dir]).stderr, /This plan is agreed/);
 });
 
+test('commit records the pilot directory, commits shows what the project has not committed', () => {
+  const pilot = join(tmp(), 'pilot');
+  run(['init', pilot], GIT_ID);
+  writeFileSync(join(pilot, 'notes.md'), 'workshop notes\n');
+  const done = run(['commit', '--dir', pilot, '-m', 'plan: step 1, features'], GIT_ID);
+  assert.equal(done.status, 0, done.stderr);
+  assert.match(done.stdout, /Committed in the pilot directory: \w+ plan: step 1, features/);
+  assert.equal(gitOut(pilot, 'status', '--porcelain'), '');
+  assert.match(run(['commit', '--dir', pilot], GIT_ID).stdout, /Nothing to commit/);
+
+  const project = join(tmp(), 'project');
+  execFileSync('git', ['init', '--quiet', project]);
+  execFileSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@t', 'commit', '--quiet', '--allow-empty', '-m', '[T001] first'], { cwd: project });
+  writeFileSync(join(project, 'wip.mjs'), '// started\n');
+  const agreed = join(tmp(), 'agreed');
+  mkdirSync(agreed);
+  cpSync(join(DEMO, 'solopilot.yaml'), join(agreed, 'solopilot.yaml'));
+  writeFileSync(join(agreed, '.env'), `PROJECT_REPO=${project}\n`);
+  const commits = run(['commits', '--dir', agreed]);
+  assert.match(commits.stdout, /T001 {2}Done/);
+  assert.match(commits.stdout, /Not committed in the project:\n {2}\?\? wip\.mjs/);
+});
+
 test('baseline refuses a plan that is not complete', () => {
   const dir = join(tmp(), 'acme-pilot');
   run(['init', dir], GIT_ID);
@@ -189,6 +212,8 @@ test('install wires a project without committing anything there', () => {
   const settings = JSON.parse(readFileSync(join(project, '.claude', 'settings.local.json'), 'utf8'));
   assert.ok(settings.env.SOLOPILOT_DIR.endsWith('/pilot'));
   assert.match(JSON.stringify(settings.hooks.Stop), /solopilot\/remind\.mjs/);
+  assert.ok(settings.permissions.allow.includes('Bash(solopilot *)'), 'the skill runs its commands without a prompt');
+  assert.ok(settings.permissions.allow.some((r) => /^Edit\(\/\/.*\/pilot\/solopilot\.yaml\)$/.test(r)), 'and edits the backlog');
   assert.ok(existsSync(join(home, '.claude', 'skills', 'solopilot', 'SKILL.md')));
   assert.match(readFileSync(join(project, '.git', 'info', 'exclude'), 'utf8'), /\.claude\/settings\.local\.json/);
   assert.match(readFileSync(join(pilot, '.env'), 'utf8'), /^PROJECT_REPO=/m);
@@ -196,6 +221,26 @@ test('install wires a project without committing anything there', () => {
   const noGlobal = join(tmp(), 'empty-excludes');
   writeFileSync(noGlobal, '');
   assert.equal(execFileSync('git', ['-c', `core.excludesFile=${noGlobal}`, 'status', '--porcelain'], { cwd: project, encoding: 'utf8' }), '');
+});
+
+test('the reminder hook speaks once, and keeps quiet when /solopilot already ran in the session', () => {
+  // The plan first, then work in the project: the hook counts commits since the plan's last commit.
+  const pilot = join(tmp(), 'pilot');
+  run(['init', pilot], GIT_ID);
+  const project = join(tmp(), 'project');
+  execFileSync('git', ['init', '--quiet', project]);
+  const later = new Date(Date.now() + 60e3).toISOString();
+  execFileSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@t', 'commit', '--quiet', '--allow-empty', '-m', '[T001] first task'], { cwd: project, env: { ...process.env, GIT_COMMITTER_DATE: later, GIT_AUTHOR_DATE: later } });
+  const hook = join(ROOT, 'claude', 'skills', 'solopilot', 'remind.mjs');
+  const remind = (transcript) => {
+    const file = join(tmp(), 'transcript.jsonl');
+    writeFileSync(file, transcript);
+    const input = JSON.stringify({ session_id: `test-${Math.random().toString(36).slice(2)}`, transcript_path: file });
+    return spawnSync(process.execPath, [hook], { input, encoding: 'utf8', env: { ...process.env, SOLOPILOT_DIR: pilot, SOLOPILOT_REPO: project } }).stdout;
+  };
+  assert.match(remind('{"type":"user","message":{"content":"fix the build"}}\n'), /1 task\(s\) committed since the last update \(T001\)/);
+  assert.equal(remind('{"type":"user","message":{"content":"<command-name>/solopilot</command-name>"}}\n'), '');
+  assert.equal(remind('{"type":"assistant","message":{"content":[{"type":"tool_use","name":"Skill","input":{"skill":"solopilot"}}]}}\n'), '');
 });
 
 test('install refuses a pilot directory inside the project', () => {

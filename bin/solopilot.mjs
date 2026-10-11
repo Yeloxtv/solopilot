@@ -10,7 +10,7 @@ import { BacklogEditor, EditRefused } from '../src/edit.mjs';
 import { loadLocale } from '../src/i18n.mjs';
 import { layoutPlan } from '../src/plan.mjs';
 import { digestMessage, helpers, milestoneMessage, planningText, statusText } from '../src/report.mjs';
-import { git, head, readEnv, taggedCommits } from '../src/repo.mjs';
+import { git, head, projectRepo, readEnv, reportedBefore, taggedCommits } from '../src/repo.mjs';
 import { cliOnPath, init, install } from '../src/setup.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -27,8 +27,9 @@ Commands
   status                  where the project stands, or where its first plan stands (default)
   layout [--dry-run]      lay the estimated tasks out on plan days, while planning
   baseline                record the agreed plan and end the planning phase
-  commits                 tagged commits in the project since the last update
+  commits                 tagged commits in the project since the last update, and what is not committed there
   head                    last commit of the project, for project.last_commit
+  commit [-m <message>]   commit the pilot directory (default message: update <today>)
   build                   generate the dashboard in build/
   slack [--dry-run]       post the digest to Slack
   slack --milestone <n>   announce the milestone of plan day n
@@ -71,10 +72,11 @@ function ownRepo(dir) {
 
 function parse(argv) {
   const opts = { _: [] };
-  const valued = new Set(['dir', 'today', 'locale', 'name', 'milestone']);
+  const valued = new Set(['dir', 'today', 'locale', 'name', 'milestone', 'message']);
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === '-h' || a === '--help') opts.help = true;
+    else if (a === '-m') opts.message = argv[++i];
     else if (a === '-v' || a === '--version') opts.version = true;
     else if (a.startsWith('--')) {
       const [k, inline] = a.slice(2).split('=');
@@ -191,18 +193,35 @@ const commands = {
     const { day } = helpers(compute(b, { today }), t);
     let commits;
     try { commits = taggedCommits(b, dir); } catch (e) { fail(e.message); }
-    if (!commits.length) return console.log('No tagged commit in the project since the last update.');
+    if (!commits.length) console.log('No tagged commit in the project since the last update.');
     const tasks = new Map(b.tasks.map((x) => [x.id, x]));
     const byTask = new Map();
     for (const c of commits) for (const id of c.ids) {
       if (!byTask.has(id)) byTask.set(id, []);
       byTask.get(id).push(c);
     }
+    const earlier = reportedBefore(b, dir, [...byTask.keys()]);
+    const files = (c) => (c.files.length ? `  (${c.files.slice(0, 6).join(', ')}${c.files.length > 6 ? ', …' : ''})` : '');
     for (const [id, cs] of byTask) {
       const x = tasks.get(id);
       console.log(`${id}  ${x ? `${t(`task.${x.status}`)}, ${day(x.day)}, ${x.title}` : 'UNKNOWN in the backlog'}`);
-      for (const c of cs) console.log(`      ${c.hash}  ${c.subject}`);
+      for (const c of cs) console.log(`      ${c.hash}  ${c.subject}${files(c)}`);
+      for (const c of earlier.filter((e) => e.ids.includes(id))) console.log(`      ${c.hash}  ${c.subject}${files(c)}  [taken into account by an earlier update]`);
     }
+    // Work under way that no commit shows yet: evidence that a task started, not that it is done.
+    const repo = projectRepo(dir);
+    const pending = repo && git(['status', '--porcelain'], repo);
+    if (pending) console.log(`\nNot committed in the project:\n${pending.split('\n').map((l) => `  ${l}`).join('\n')}`);
+  },
+
+  commit(opts) {
+    const { dir } = load(opts, { strict: false });
+    if (!ownRepo(dir)) fail('The pilot directory is not a git repository of its own: run `git init` there first.');
+    git(['add', '-A'], dir);
+    if (!git(['status', '--porcelain'], dir)) return console.log('Nothing to commit in the pilot directory.');
+    const message = opts.message || `update ${opts.today || process.env.SOLOPILOT_TODAY || localToday()}`;
+    if (git(['commit', '--quiet', '-m', message], dir) === null) fail('The commit failed: is a git identity set?');
+    console.log(`Committed in the pilot directory: ${git(['log', '-1', '--format=%h %s'], dir)}`);
   },
 
   head(opts) {

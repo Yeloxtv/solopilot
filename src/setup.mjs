@@ -86,6 +86,18 @@ export function cliOnPath() {
 
 const isObject = (v) => v !== null && typeof v === 'object' && !Array.isArray(v);
 
+// An absolute path in a permission rule: //c/Users/… on Windows, //home/… elsewhere.
+const rulePath = (p) => `/${slash(p).replace(/^([A-Za-z]):/, (m, drive) => `/${drive.toLowerCase()}`)}`;
+
+// Permission rules for what the skill runs: the CLI, which also commits the pilot directory and reads
+// the project's state (Claude Code never pre-approves a command that expands "$SOLOPILOT_DIR", so the
+// skill does not call git itself), and edits of the backlog.
+export const skillRules = (pilot) => [
+  'Bash(solopilot *)',
+  'PowerShell(solopilot *)',
+  `Edit(${rulePath(pilot)}/solopilot.yaml)`,
+];
+
 // Claude Code's local settings, checked before anything is written: a shape we do not expect is
 // refused rather than merged into something wrong.
 function readSettings(file) {
@@ -96,6 +108,7 @@ function readSettings(file) {
     && (s.env === undefined || isObject(s.env))
     && (s.permissions === undefined || isObject(s.permissions))
     && (s.permissions?.additionalDirectories === undefined || Array.isArray(s.permissions.additionalDirectories))
+    && (s.permissions?.allow === undefined || Array.isArray(s.permissions.allow))
     && (s.hooks === undefined || isObject(s.hooks))
     && (s.hooks?.Stop === undefined || Array.isArray(s.hooks.Stop));
   if (!ok) throw new Error(`${file} does not have the shape Claude Code expects (objects for env, permissions and hooks; lists for additionalDirectories and hooks.Stop); nothing was changed`);
@@ -141,12 +154,14 @@ export function install(dir, repoArg) {
   s.env = { ...(s.env || {}), SOLOPILOT_DIR: slash(pilot), SOLOPILOT_REPO: slash(project) };
   s.permissions = s.permissions || {};
   s.permissions.additionalDirectories = [...new Set([...(s.permissions.additionalDirectories || []), slash(pilot)])];
+  // The skill's own commands run without a prompt each time. Nothing else.
+  s.permissions.allow = [...new Set([...(s.permissions.allow || []), ...skillRules(pilot)])];
   s.hooks = s.hooks || {};
   const stop = (s.hooks.Stop || []).filter((g) => !JSON.stringify(g).includes('solopilot/remind.mjs'));
   stop.push({ hooks: [{ type: 'command', command: `node "${slash(join(skills, 'remind.mjs'))}"` }] });
   s.hooks.Stop = stop;
   mkdirSync(dirname(file), { recursive: true });
   writeFileSync(file, JSON.stringify(s, null, 2) + '\n');
-  log.push(`Pilot paths, folder access and reminder hook written to ${file}`);
+  log.push(`Pilot paths, folder access, the skill's commands and the reminder hook written to ${file}`);
   return { project, pilot, log };
 }

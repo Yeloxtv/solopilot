@@ -25,6 +25,13 @@ const git = (args, cwd) => {
 
 if (git(['status', '--porcelain', '--', 'solopilot.yaml'], pilot)) process.exit(0); // an update is under way
 
+// /solopilot already ran in this session, or is waiting for approval: no reminder. The transcript
+// format is Claude Code's own; if it changes, the hook just reminds as before.
+try {
+  const transcript = input.transcript_path && readFileSync(input.transcript_path, 'utf8');
+  if (transcript && /<command-name>\/solopilot<\/command-name>|"skill":\s*"solopilot"|Base directory for this skill: [^"\n]*?solopilot/.test(transcript)) process.exit(0);
+} catch {}
+
 const ref = (readFileSync(backlog, 'utf8').match(/^\s*last_commit:\s*"?([0-9a-f]{7,40})/m) || [])[1];
 let range = ['HEAD'];
 if (ref && git(['cat-file', '-e', `${ref}^{commit}`], project) !== null) range = [`${ref}..HEAD`];

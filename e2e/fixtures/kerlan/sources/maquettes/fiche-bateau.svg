@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="390" height="760" viewBox="0 0 390 760" font-family="Helvetica, Arial, sans-serif">
+  <title>Les Voiles de Kerlan — Fiche bateau et réservation (mobile, état par défaut). Maquette fictive.</title>
+  <rect width="390" height="760" fill="#f4f7f9"/>
+  <rect width="390" height="64" fill="#0f4c75"/>
+  <text x="20" y="40" font-size="20" fill="#fff" font-weight="bold">‹  Hobie Cat 16</text>
+  <rect x="0" y="64" width="390" height="210" fill="#c9d8e2"/>
+  <text x="150" y="175" font-size="14" fill="#5b6b76">[ photo du bateau ]</text>
+  <g font-size="14" fill="#1d2b33">
+    <text x="20" y="306" font-weight="bold" font-size="18">Hobie Cat 16</text>
+    <text x="20" y="332">Catamaran de sport, 2 équipiers</text>
+    <text x="20" y="356" fill="#b8860b">Niveau requis : confirmé</text>
+    <text x="20" y="392" fill="#5b6b76">Rapide et stable, idéal pour les sorties à deux par vent moyen.</text>
+  </g>
+  <rect x="16" y="420" width="358" height="150" rx="8" fill="#fff" stroke="#d5dde3"/>
+  <text x="30" y="446" font-size="14" font-weight="bold" fill="#1d2b33">Choisir un créneau</text>
+  <g font-size="13" fill="#1d2b33">
+    <rect x="30" y="462" width="150" height="36" rx="6" fill="#e3ebf0"/><text x="44" y="485">Mer. 21 · matin</text>
+    <rect x="196" y="462" width="160" height="36" rx="6" fill="#0f4c75"/><text x="208" y="485" fill="#fff">Mer. 21 · après-midi</text>
+    <rect x="30" y="510" width="150" height="36" rx="6" fill="#e3ebf0"/><text x="44" y="533">Jeu. 22 · journée</text>
+  </g>
+  <text x="30" y="595" font-size="13" fill="#5b6b76">Tarif : selon la grille de l'association</text>
+  <rect x="16" y="690" width="358" height="48" rx="24" fill="#2e8b57"/>
+  <text x="120" y="720" font-size="15" fill="#fff">Confirmer la réservation</text>
+</svg>

@@ -97,8 +97,9 @@ After a client meeting, ask it to replan: it measures the impact of every change
 | `solopilot status` | Where the project stands: gap, projection, current day, alerts. While planning: the six steps |
 | `solopilot layout [--dry-run]` | Lay the estimated tasks out on plan days, while planning |
 | `solopilot baseline` | Record the agreed plan and end the planning phase |
-| `solopilot commits` | Tagged project commits since the last update, grouped by task |
+| `solopilot commits` | Tagged project commits since the last update, grouped by task with the files they touch, and what is not committed in the project yet |
 | `solopilot head` | Last project commit, recorded in `project.last_commit` |
+| `solopilot commit [-m <message>]` | Commit the pilot directory |
 | `solopilot build` | Generate `build/index.html`, plus `build/publish.html` to host elsewhere |
 | `solopilot slack [--dry-run]` | Post the digest to Slack, or print it |
 | `solopilot slack --milestone <n>` | Announce the milestone of plan day *n* |

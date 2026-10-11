@@ -13,8 +13,9 @@ Commands, all read-only on the backlog (they find it through `$SOLOPILOT_DIR`):
 
 ```bash
 solopilot status              # where the project stands, current day, alerts; or the steps of the first plan
-solopilot commits             # tagged project commits since the last update
+solopilot commits             # tagged project commits since the last update, and what is not committed there
 solopilot head                # last commit of the project
+solopilot commit -m "…"       # commit the pilot directory ("update YYYY-MM-DD" by default)
 solopilot check               # validation, to run after every write
 solopilot build               # regenerate the dashboard
 solopilot slack               # digest of the day; --dry-run to print it without sending
@@ -22,6 +23,8 @@ solopilot slack --milestone 5 # announce the milestone of plan day 5
 ```
 
 Two commands write `solopilot.yaml`, and only while the first plan is drawn up: `solopilot layout` (the plan days) and `solopilot baseline` (the agreed plan). They change their own values and nothing else.
+
+Run each of these commands on its own, as written here, never chained with `;` or `&&` and never mixed with another command, and use them rather than git: `solopilot install` allows `solopilot …` and edits of `solopilot.yaml`, so they run without a prompt. Read the backlog with the file tools, not with shell commands on `"$SOLOPILOT_DIR"`: Claude Code asks before any command that expands a variable. Anything else asks the developer.
 
 Write every title and note in the language of `project.locale`.
 
@@ -39,14 +42,14 @@ When `project.phase` is `planning`, read `plan.md`, in this skill's directory, a
 
 ### 1. End-of-session update
 
-1. Run `solopilot status`, `solopilot commits` and `git -C "$SOLOPILOT_REPO" status`. Read the tasks of the current day and those in progress.
-2. Propose a table of changes: id, current status, proposed status, evidence (commit hash and subject, or file changed). A task touched without evidence that it is finished stays `doing`.
+1. Run `solopilot status` and `solopilot commits` (which also lists what is not committed in the project). Read the tasks of the current day and those in progress.
+2. Propose a table of changes: id, current status, proposed status, evidence (commit hash and subject, or file changed). A task touched without evidence that it is finished stays `doing`. Match the work not committed yet to the task it builds, by its name and place (a file named after a screen belongs to that screen): that task becomes `doing`, never `done`.
 3. Flag what does not fit the plan: a task from a future day started, a current day that does not move, a dependency or question needed "now" or within three working days, a core projected after `project.target`. A due date follows the work, not the calendar: an answer is not late until the work reaches its day.
 4. Ask how much of the day went to the project (`effort`, from 0 to 1) if the user has not said. Wait for approval. Write nothing before.
 5. Write the backlog (see the writing rules), add the `session` entry to the log (date, effort, title, note), then `solopilot check`.
 6. If a milestone is reached, set it to `reached` with `reached_on`. For a `client` milestone, also run `solopilot slack --milestone N`.
 7. Run `solopilot build`, publish the dashboard (see "Published dashboard"), then `solopilot slack`. If the webhook is missing, say so in one line and carry on.
-8. Write the output of `solopilot head` into `project.last_commit`, then commit in the pilot directory: `git -C "$SOLOPILOT_DIR" commit -am "update YYYY-MM-DD"`. This marker feeds the next `commits` and the reminder hook. Commit nothing in the project repository.
+8. Write the output of `solopilot head` into `project.last_commit`, then commit in the pilot directory: `solopilot commit`. This marker feeds the next `commits` and the reminder hook. Commit nothing in the project repository.
 9. End with three lines: the state of the core and of everything (first two lines of `status`), what changed, and the next due date that needs an action from the user.
 
 Time is not tracked by the hour: a solo developer often works on several projects a day. Each session records its `effort`, and `status` adds them up. A day spent only on planning, without development, is not a session: no `session` entry, no digest, only a rebuild. Progress is read from delivered points against the working-day calendar up to `project.target`. The projection follows the plan's estimate (`points_per_day`, `focus`), never the pace of the first days. These settings, like `plan_days`, `core` and `target`, change only on the user's explicit written decision.

@@ -98,8 +98,9 @@ Après un atelier client, demandez-lui de replanifier : il chiffre l'impact de c
 | `solopilot status` | Où en est le projet : écart, projection, jour courant, alertes. En planification : les six étapes |
 | `solopilot layout [--dry-run]` | Répartit les tâches estimées sur les jours de plan, en planification |
 | `solopilot baseline` | Enregistre le plan convenu et clôt la phase de planification |
-| `solopilot commits` | Commits taggés du projet depuis le dernier point, par tâche |
+| `solopilot commits` | Commits taggés du projet depuis le dernier point, par tâche avec les fichiers touchés, et ce qui n'est pas encore commité dans le projet |
 | `solopilot head` | Dernier commit du projet, reporté dans `project.last_commit` |
+| `solopilot commit [-m <message>]` | Commite le dossier de pilotage |
 | `solopilot build` | Génère `build/index.html`, et `build/publish.html` pour l'héberger ailleurs |
 | `solopilot slack [--dry-run]` | Poste le digest sur Slack, ou l'affiche |
 | `solopilot slack --milestone <n>` | Annonce le jalon du jour *n* du plan |

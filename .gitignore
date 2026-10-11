@@ -2,3 +2,4 @@ node_modules/
 build/
 .env
 .claude/settings.local.json
+e2e/results/

@@ -13,7 +13,8 @@
   "engines": { "node": ">=20" },
   "scripts": {
     "test": "node --test",
-    "demo": "node bin/solopilot.mjs build --dir examples/demo --today 2026-10-21"
+    "demo": "node bin/solopilot.mjs build --dir examples/demo --today 2026-10-21",
+    "e2e": "node e2e/run.mjs"
   },
   "dependencies": { "yaml": "^2.5.0" }
 }

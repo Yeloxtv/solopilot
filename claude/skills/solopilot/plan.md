@@ -22,7 +22,7 @@ solopilot comes in once the project is signed: the budget and the date are fixed
 2. Wait for the developer's approval. Write nothing before.
 3. Write the approved lines into `solopilot.yaml`, one entry per line, in the existing format, with targeted edits. Leave comments alone. In the same write, set `project.planning_step` to the number of the step just approved: this is how `status` knows a step is done, not from the sections it finds.
 4. Run `solopilot check`. Fix what it reports before going on.
-5. Commit in the pilot directory: `git -C "<pilot dir>" add -A` then `git -C "<pilot dir>" commit -m "plan: step N, <name>"`.
+5. Commit in the pilot directory: `solopilot commit -m "plan: step N, <name>"`.
 
 **Never invent.** Every feature points to its source. What the documents leave open becomes a question, never a silent assumption. A decision already recorded in workshop notes becomes an `answered` question, with its answer and its source.
 

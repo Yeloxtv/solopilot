@@ -39,17 +39,31 @@ function range(b, dir, repo) {
   return date ? [`--since=${date}`, 'HEAD'] : ['HEAD'];
 }
 
+// Tagged commits of a git log, each with the files it touched: the evidence a status change rests on.
+function tagged(repo, args) {
+  const out = git(['log', ...args, '--name-only', '--format=%x1e%h%x09%s'], repo) || '';
+  return out.split('\x1e').filter((s) => s.trim()).map((block) => {
+    const [head, ...files] = block.split('\n');
+    const [hash, ...rest] = head.split('\t');
+    const subject = rest.join('\t');
+    return { hash, subject, ids: tagIds(subject), files: files.map((f) => f.trim()).filter(Boolean) };
+  }).filter((c) => c.ids.length);
+}
+
 export function taggedCommits(b, dir) {
   const repo = projectRepo(dir);
   if (!repo) throw new Error(NO_REPO);
-  const lines = (git(['log', ...range(b, dir, repo), '--format=%h%x09%s'], repo) || '').split('\n').filter(Boolean);
-  return lines
-    .map((l) => {
-      const [hash, ...rest] = l.split('\t');
-      const subject = rest.join('\t');
-      return { hash, subject, ids: tagIds(subject) };
-    })
-    .filter((c) => c.ids.length);
+  return tagged(repo, range(b, dir, repo));
+}
+
+// Commits already taken into account by an earlier update, for the tasks given: a task spread over
+// several sessions shows all its evidence, not only the latest.
+export function reportedBefore(b, dir, ids) {
+  const repo = projectRepo(dir);
+  const ref = b.project.last_commit;
+  if (!repo || !ref || git(['cat-file', '-e', `${ref}^{commit}`], repo) === null) return [];
+  const wanted = new Set(ids);
+  return tagged(repo, ['-n', '2000', ref]).filter((c) => c.ids.some((id) => wanted.has(id)));
 }
 
 export const tagIds = (subject) => [...subject.matchAll(/\[([^\]]+)\]/g)].flatMap((m) => m[1].match(TAG_IDS) || []);

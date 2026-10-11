@@ -16,6 +16,13 @@ The first plan, drawn up with Claude from the project documents.
 - Before day 1, the projection and the due dates start on day 1 instead of today, and the dashboard header shows the start date.
 - `init` writes the goal in the plan's language ("Mise en ligne" in French), and French text goes on in lower case after a colon ("L'objectif : mise en ligne…").
 
+The daily mode, tried end to end:
+
+- `install` allows the skill's own commands (`solopilot …`, and edits of `solopilot.yaml`) in the project's local settings: an update no longer asks for a permission at every step.
+- `solopilot commit` commits the pilot directory, and `solopilot commits` lists what is not committed in the project, the files each commit touches, and a task's commits taken into account by earlier updates. The skill no longer calls git itself: Claude Code never pre-approves a command that expands `$SOLOPILOT_DIR`.
+- The reminder hook keeps quiet once `/solopilot` ran in the session, instead of asking for it while the update waits for approval.
+- `e2e/`: end-to-end scenarios that drive real Claude Code sessions on fictional projects rebuilt from scratch, with scripted answers and checks on the files written (`npm run e2e -- daily`). They spend real tokens and stay out of `npm test`.
+
 ## 0.1.0
 
 First version, extracted from a tool used daily on a client project.
