@@ -43,11 +43,12 @@ function describe(name, input = {}) {
 }
 
 // One turn of a session: the first one fixes the session id, the next ones resume it.
-export function turn(prompt, { bin, cwd, session, first, model, effort, mode = 'default', allow = [], timeoutMs = 20 * 60e3 }) {
+export function turn(prompt, { bin, cwd, session, first, model, effort, budget, mode = 'default', allow = [], timeoutMs = 20 * 60e3 }) {
   const args = ['-p', prompt, '--output-format', 'stream-json', '--verbose', '--permission-mode', mode, '--max-turns', '80'];
   args.push(first ? '--session-id' : '--resume', session);
   if (model) args.push('--model', model);
   if (effort) args.push('--effort', effort);
+  if (budget) args.push('--max-budget-usd', String(budget)); // per turn: a resumed run does not count earlier spend
   if (allow.length) args.push('--allowedTools', ...allow);
   args.push('--disallowedTools', ...OFF_LIMITS);
 

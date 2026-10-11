@@ -107,6 +107,8 @@ test('init starts a plan being drawn up, in a repository of its own with a first
   assert.equal(run(['init', dir], GIT_ID).status, 0);
   assert.ok(existsSync(join(dir, 'sources', '.gitkeep')));
   assert.ok(existsSync(join(HOME, '.claude', 'skills', 'solopilot', 'plan.md')), 'the skill is there for the first plan');
+  const allow = JSON.parse(readFileSync(join(dir, '.claude', 'settings.local.json'), 'utf8')).permissions.allow;
+  assert.ok(allow.includes('Bash(solopilot *)') && allow.some((r) => /^Read\(\/\/.*\/\.claude\/skills\/solopilot\/\*\*\)$/.test(r)), 'and allowed in the pilot directory');
   assert.equal(gitOut(dir, 'log', '--format=%s'), 'solopilot init');
   assert.equal(gitOut(dir, 'status', '--porcelain'), '');
   assert.match(run(['status', '--dir', dir]).stdout, /plan being drawn up, next step 1 of 6: Features/);

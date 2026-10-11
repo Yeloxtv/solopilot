@@ -31,6 +31,9 @@ export default {
     ctx.initialPlan = readFileSync(join(fx.pilot, 'solopilot.yaml'), 'utf8');
   },
 
+  // What changes when a turn gets somewhere: the plan, or the pilot directory's history.
+  progress: (fx) => `${readFileSync(join(fx.pilot, 'solopilot.yaml'), 'utf8')}\n${git(fx.pilot, ['rev-parse', 'HEAD'])}`,
+
   turns: [
     {
       prompt: '/solopilot',

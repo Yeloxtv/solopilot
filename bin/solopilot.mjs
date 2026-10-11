@@ -181,7 +181,9 @@ const commands = {
       ed.append('log', { date: today, type: 'baseline', title: t('log.baselineTitle'), note: t('log.baselineNote', { points: t('planning.points', { n: points }), days: p.plan_days, core: t('day', { n: p.core }) }) });
     });
     console.log(`Plan agreed on ${today}: ${points} points over ${p.plan_days} plan days, core up to day ${p.core}. Written to ${file}.`);
-    if (p.budget_days && p.plan_days > p.budget_days) console.log(`warning  the plan takes ${p.plan_days} work days, ${p.budget_days} were sold`);
+    // Plan days are filled up to points_per_day, not always to the brim: the load is what weighs.
+    const workDays = points / p.points_per_day;
+    if (p.budget_days && workDays > p.budget_days + 0.05) console.log(`warning  the plan holds ${round(workDays)} work days of load, ${p.budget_days} were sold`);
     if (!ownRepo(dir)) return console.log('The pilot directory is not its own git repository: commit the agreed plan yourself.');
     if (git(['commit', '--quiet', '-m', `baseline ${today}`, '--', FILE], dir) === null) return console.log(`The commit failed: commit ${FILE} yourself, then tag it baseline.`);
     console.log(git(['tag', 'baseline'], dir) === null ? 'Committed. The tag baseline already exists: tag this commit yourself if it should move.' : 'Committed and tagged baseline in the pilot directory.');

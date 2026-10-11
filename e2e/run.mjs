@@ -5,8 +5,8 @@
 //
 //   node e2e/run.mjs <scenario> [--model sonnet] [--effort medium] [--mode default] [--allow "Bash(solopilot *)"]...
 //
-// --allow may repeat. The report (turns, tools used, permission denials, hooks, checks, cost) lands
-// in e2e/results/.
+// --allow may repeat; --budget caps the spend of each turn, in dollars. The report (turns, tools
+// used, permission denials, hooks, checks, cost) lands in e2e/results/.
 import { execFileSync } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
 import { mkdirSync, mkdtempSync, readdirSync, writeFileSync } from 'node:fs';
@@ -41,7 +41,7 @@ const scenario = (await import(`./scenarios/${name}.mjs`)).default;
 const ctx = { today: localToday() };
 const { model, effort, mode, allow } = opts;
 const safely = (fn) => { try { return fn(); } catch { return false; } };
-const settings = { bin: findClaude(), model, effort, mode, allow: [...allow, ...(scenario.allow ?? [])] };
+const settings = { bin: findClaude(), model, effort, mode, budget: opts.budget, allow: [...allow, ...(scenario.allow ?? [])] };
 const sandbox = mkdtempSync(join(tmpdir(), `solopilot-e2e-${name}-`));
 const fx = scenario.build(sandbox, ctx);
 scenario.before?.(fx, ctx);
@@ -58,6 +58,8 @@ let failed = 0;
 let cost = 0;
 let n = 0;
 let remindedBefore = 0;
+let stalled = 0;
+let lastProgress = null;
 // A turn may repeat the same answer (`repeat: { max, until }`) until the files show what it waits
 // for: the number of exchanges a step takes varies from one session to the next.
 const plan = scenario.turns.flatMap((t) => Array.from({ length: t.repeat?.max ?? 1 }, (_, k) => ({ ...t, last: k === (t.repeat?.max ?? 1) - 1 })));
@@ -68,7 +70,13 @@ for (const t of plan) {
   const run = await turn(t.prompt, { ...settings, cwd: fx.cwd, session, first: i === 0 });
   writeFileSync(join(out, `turn-${i + 1}.jsonl`), run.events.map((e) => JSON.stringify(e)).join('\n'));
   cost = run.cost ?? cost;
-  const done = t.repeat ? t.last || safely(() => t.repeat.until(fx, ctx)) : true;
+  // A repeated answer stops when the files show what it waits for, or after two turns that changed
+  // nothing: a stuck session should not burn its whole budget.
+  const progress = scenario.progress ? safely(() => scenario.progress(fx)) : null;
+  stalled = progress !== null && progress === lastProgress ? stalled + 1 : 0;
+  lastProgress = progress;
+  if (t.repeat && stalled >= 2) console.log('  two turns without any change: stopping here');
+  const done = t.repeat ? t.last || stalled >= 2 || safely(() => t.repeat.until(fx, ctx)) : true;
   if (t.repeat && done) for (const rest of plan) if (rest.prompt === t.prompt && rest !== t && plan.indexOf(rest) > plan.indexOf(t)) rest.skip = true;
   let checks = [];
   if (done && t.checks) {

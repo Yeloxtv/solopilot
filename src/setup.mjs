@@ -43,7 +43,7 @@ export function init(dir, { name, locale = 'en', today = localToday() } = {}) {
     .replaceAll('__START__', today)
     .replaceAll('__TARGET__', guess);
   writeFileSync(join(target, FILE), starter);
-  writeIfMissing(join(target, '.gitignore'), 'build/\n.env\nnode_modules/\n');
+  writeIfMissing(join(target, '.gitignore'), `build/\n.env\nnode_modules/\n${LOCAL_SETTINGS}\n`);
   writeIfMissing(join(target, '.env.example'), '# Copy to .env (never committed). `solopilot install` adds PROJECT_REPO.\nSLACK_WEBHOOK_URL=https://hooks.slack.com/services/XXX/YYY/ZZZ\n');
   // The project documents the first plan is drawn from, versioned with it: features point to them.
   mkdirSync(join(target, 'sources'), { recursive: true });
@@ -65,6 +65,7 @@ export function init(dir, { name, locale = 'en', today = localToday() } = {}) {
   }
   // The first plan is drawn up with /solopilot in this directory, before any project is wired.
   const skill = installSkill();
+  allowSkillIn(target);
   return { dir: target, repo, own, committed, skill };
 }
 
@@ -96,7 +97,20 @@ export const skillRules = (pilot) => [
   'Bash(solopilot *)',
   'PowerShell(solopilot *)',
   `Edit(${rulePath(pilot)}/solopilot.yaml)`,
+  // The skill's own files, such as plan.md, sit outside the working directory.
+  `Read(${rulePath(join(homedir(), '.claude', 'skills', 'solopilot'))}/**)`,
 ];
+
+// The pilot directory's own Claude Code settings: the first plan is drawn up in a session opened
+// there, before any project is wired. Kept out of git, since it holds paths of this machine.
+function allowSkillIn(pilot) {
+  const file = join(pilot, LOCAL_SETTINGS);
+  const s = readSettings(file);
+  s.permissions = s.permissions || {};
+  s.permissions.allow = [...new Set([...(s.permissions.allow || []), ...skillRules(pilot)])];
+  mkdirSync(dirname(file), { recursive: true });
+  writeFileSync(file, JSON.stringify(s, null, 2) + '\n');
+}
 
 // Claude Code's local settings, checked before anything is written: a shape we do not expect is
 // refused rather than merged into something wrong.
