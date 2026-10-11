@@ -39,6 +39,8 @@ Dans l'ordre où on les mène.
 
 **Fini quand** un point de fin de session se fait sans friction, et la page publiée est lisible par quelqu'un d'autre que le développeur.
 
+**État (11 octobre).** Fait, sauf la publication réelle sur claude.ai, que le banc d'essai désactive. Le scénario automatisé `daily` passe toutes ses vérifications, sans aucune demande de permission. Il a trouvé et fait corriger cinq frictions : les permissions, le commit bloqué, les preuves partielles, le hook pendant `/solopilot`, le travail non commité.
+
 ### 2. Faire valider le périmètre par le client
 
 **Pourquoi.** C'est la cause racine du problème : le devis achète « l'application », pas une liste de fonctionnalités. Sans accord écrit sur le périmètre, chaque demande se discute contre un souvenir.
@@ -53,6 +55,8 @@ Il le valide par écrit, et sa validation est enregistrée avec le plan convenu.
 **À trancher.** La forme du document : page publiée, PDF, texte pour un e-mail. Le moment de la validation, avant ou après le plan convenu en interne. La façon d'enregistrer qui a validé et quand.
 
 **Fini quand** un projet peut montrer, à tout moment, le périmètre que le client a validé et la date de sa validation.
+
+**État (11 octobre).** Fait, selon la [spécification](specs/perimetre-client.md). Le scénario `first-plan` va des documents du projet jusqu'à l'accord du client.
 
 ### 3. Confronter le plan à la réalité
 
