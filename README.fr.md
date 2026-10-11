@@ -23,12 +23,39 @@ solopilot y répond à partir d'un seul fichier YAML versionné dans git, sans f
 - **Pensé pour Claude Code.** Le skill `/solopilot` lit vos commits taggés et propose les changements de statut. Il les écrit après votre validation, régénère le tableau de bord et poste le digest. Un hook vous rappelle quand des commits attendent d'être reportés.
 - **En français et en anglais**, pour le tableau de bord, le digest et le rapport du terminal (`locale: fr`).
 
-## Démarrage rapide
+## Ce qu'il faut pour démarrer
 
-Node.js 20 ou plus et git.
+- **Un document qui dit ce que l'application doit faire** : un cahier des charges, un brief, le compte rendu d'une réunion. Ses trous ne sont pas un problème : ils deviennent les questions à poser.
+- **La date de mise en production** et **les jours vendus** au devis.
+- **La part de votre journée** que vous pouvez donner au projet : une demi-journée par jour ouvré, par exemple.
+- Si vous les avez : les **notes d'ateliers**, les **maquettes** (images, PDF, liens Figma) et le **devis** lui-même.
+- Sur votre machine : [Claude Code](https://claude.com/claude-code), Node.js 20 ou plus, et git.
+
+## L'essayer
+
+Tirez le premier plan de Fieldbook, un projet fictif, de ses documents : un cahier des charges, les notes d'un atelier de lancement, un devis et deux maquettes. Ils sont en anglais ; le plan peut être en français.
 
 ```bash
-npm install -g github:Yeloxtv/solopilot
+npm install -g solopilot
+solopilot init fieldbook-pilot --example --locale fr   # les documents de Fieldbook arrivent dans sources/
+cd fieldbook-pilot                                     # puis, dans Claude Code : /solopilot
+```
+
+Ou voyez où en est Fieldbook à mi-parcours, avec son tableau de bord :
+
+```bash
+git clone https://github.com/Yeloxtv/solopilot && cd solopilot
+npm install
+node bin/solopilot.mjs build --dir examples/demo --today 2026-10-21 --locale fr
+# puis ouvrir examples/demo/build/index.html
+```
+
+[examples/demo](examples/demo) contient les deux : les documents dans `sources/`, et le plan tel qu'il est le 21 octobre, au bout d'un mois.
+
+## Démarrage rapide
+
+```bash
+npm install -g solopilot
 
 solopilot init ../acme-pilot --locale fr   # un dossier de pilotage à côté du projet
 cd ../acme-pilot
@@ -37,15 +64,6 @@ solopilot status                           # où en est le premier plan, étape 
 solopilot baseline                         # une fois le plan convenu
 solopilot install ../acme                  # le brancher sur Claude Code pour ce projet
 solopilot build                            # tableau de bord dans build/index.html
-```
-
-Pour essayer d'abord sur le projet de démo :
-
-```bash
-git clone https://github.com/Yeloxtv/solopilot && cd solopilot
-npm install
-node bin/solopilot.mjs build --dir examples/demo --today 2026-10-21 --locale fr
-# puis ouvrir examples/demo/build/index.html
 ```
 
 ## Organisation
@@ -96,6 +114,7 @@ Après un atelier client, demandez-lui de replanifier : il chiffre l'impact de c
 | Commande | Ce qu'elle fait |
 | --- | --- |
 | `solopilot init [dossier]` | Crée un dossier de pilotage, son `sources/` et un plan de départ en phase de planification, avec un premier commit |
+| `solopilot init [dossier] --example` | La même chose, avec les documents de Fieldbook dans `sources/`, pour essayer le premier plan |
 | `solopilot install <dépôt>` | Branche le dossier de pilotage sur un projet pour Claude Code |
 | `solopilot check` | Valide `solopilot.yaml` |
 | `solopilot status` | Où en est le projet : écart, projection, jour courant, alertes. En planification : les six étapes |
@@ -118,7 +137,7 @@ Options : `--dir <chemin>` (sinon `SOLOPILOT_DIR`, ou le `solopilot.yaml` le plu
 
 ## Le backlog
 
-Le format est en anglais, quelle que soit la langue de l'interface. Chaque section est décrite dans [docs/backlog.md](docs/backlog.md), et [examples/demo/solopilot.yaml](examples/demo/solopilot.yaml) montre un projet complet. Le calcul de l'écart et de la projection est expliqué dans [docs/how-it-computes.md](docs/how-it-computes.md).
+Le format est en anglais, quelle que soit la langue de l'interface. Chaque section est décrite dans [docs/backlog.md](docs/backlog.md), et [examples/demo/solopilot.yaml](examples/demo/solopilot.yaml) montre un projet complet. Le calcul de l'écart et de la projection est expliqué dans [docs/how-it-computes.md](docs/how-it-computes.md). Les raisons de ces choix sont dans la [vision produit](docs/vision.md) et les [notes de conception](docs/design/). Toute la documentation est en anglais.
 
 ## Slack et hébergement
 
@@ -127,9 +146,9 @@ Le format est en anglais, quelle que soit la langue de l'interface. Chaque secti
 
 ## État du projet
 
-solopilot vient d'un outil utilisé chaque jour sur un vrai projet client, et s'ouvre maintenant. Le format du fichier peut encore changer avant la 1.0. Les idées, les issues et les pull requests sont les bienvenues.
+solopilot vient d'un outil utilisé chaque jour sur un vrai projet client. Le format du fichier peut encore changer avant la 1.0. La suite est dans la [feuille de route](docs/roadmap.md).
 
-Les tests se lancent avec `npm test`.
+Les idées, les issues et les pull requests sont les bienvenues : [CONTRIBUTING.md](CONTRIBUTING.md) explique comment lancer les tests et les scénarios de bout en bout.
 
 ## Licence
 

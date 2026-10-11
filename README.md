@@ -23,12 +23,38 @@ solopilot answers them from one YAML file you keep in git, without timesheets.
 - **Claude Code native.** The `/solopilot` skill reads your tagged commits, proposes status changes, writes them once you approve, rebuilds the dashboard and posts the digest. A hook reminds you when commits are waiting to be reported.
 - **English and French**, for the dashboard, the digest and the terminal report.
 
-## Quick start
+## What you need to start
 
-Requires Node.js 20 or later and git.
+- **A document that says what the app must do**: a spec, a brief, the minutes of a meeting. Its gaps are fine: they become the questions to ask.
+- **The production date** and **the days sold** in the quote.
+- **The share of your day** you can give the project: half a day per working day, for example.
+- If you have them: **workshop notes**, **mockups** (images, PDF, Figma links) and **the quote** itself.
+- On your machine: [Claude Code](https://claude.com/claude-code), Node.js 20 or later, and git.
+
+## Try it
+
+Draw up the first plan of Fieldbook, a fictional project, from its documents: a spec, kickoff workshop notes, a quote and two mockups.
 
 ```bash
-npm install -g github:Yeloxtv/solopilot
+npm install -g solopilot
+solopilot init fieldbook-pilot --example   # the Fieldbook documents land in sources/
+cd fieldbook-pilot                         # then, in Claude Code: /solopilot
+```
+
+Or see where Fieldbook stands mid-way, with its dashboard:
+
+```bash
+git clone https://github.com/Yeloxtv/solopilot && cd solopilot
+npm install
+npm run demo                               # then open examples/demo/build/index.html
+```
+
+[examples/demo](examples/demo) holds both: the documents in `sources/`, and the plan as it stands on October 21, a month in.
+
+## Quick start
+
+```bash
+npm install -g solopilot
 
 solopilot init ../acme-pilot          # a pilot directory next to your project
 cd ../acme-pilot
@@ -37,14 +63,6 @@ solopilot status                      # where the first plan stands, step by ste
 solopilot baseline                    # once you agree the plan
 solopilot install ../acme             # wire it into Claude Code for that project
 solopilot build                       # dashboard in build/index.html
-```
-
-To try it on the demo project first:
-
-```bash
-git clone https://github.com/Yeloxtv/solopilot && cd solopilot
-npm install
-npm run demo                          # then open examples/demo/build/index.html
 ```
 
 ## Layout
@@ -95,6 +113,7 @@ After a client meeting, ask it to replan: it measures the impact of every change
 | Command | What it does |
 | --- | --- |
 | `solopilot init [dir]` | Create a pilot directory, its `sources/` and a starter plan in the planning phase, with a first commit |
+| `solopilot init [dir] --example` | The same, with the Fieldbook documents in `sources/`, to try the first plan |
 | `solopilot install <repo>` | Wire the pilot directory into a project for Claude Code |
 | `solopilot check` | Validate `solopilot.yaml` |
 | `solopilot status` | Where the project stands: gap, projection, current day, alerts. While planning: the six steps |
@@ -129,19 +148,22 @@ project:
   points_per_day: 6.3    # what a full work day is worth
   focus: 0.5             # share of each working day spent on this project
 
+features:
+  - { id: F01, area: accounts, core: true, priority: 1, source: "spec.md §3.1", title: "Sign in with a link sent by email" }
+
 days:
   - { day: 1, points: 5, title: "Repository and data model" }
   # …
 
 tasks:
-  - { id: T001, day: 1, area: setup, status: done, done_on: 2026-09-28, title: "Repository, CI and test command" }
-  - { id: S01, day: 7, area: accounts, status: todo, views: 3, title: "Sign-in screen" }
+  - { id: T001, day: 1, area: setup, kind: setup, points: 1.5, status: done, done_on: 2026-09-28, title: "Repository, CI and test command" }
+  - { id: S01, day: 7, area: accounts, feature: F01, points: 2, status: todo, views: [default, error, loading], title: "Sign-in screen" }
 
 questions:
-  - { id: Q01, before: 6, status: open, who: "Harbor & Pine", title: "Can an inspector edit a submitted inspection?", tasks: [T014] }
+  - { id: Q01, before: 6, status: open, who: "Harbor & Pine", asked_on: 2026-10-08, title: "Can an inspector edit a submitted inspection?", tasks: [T014] }
 ```
 
-Every section is described in [docs/backlog.md](docs/backlog.md), and [examples/demo/solopilot.yaml](examples/demo/solopilot.yaml) shows a complete project. How the gap and the projection are computed is explained in [docs/how-it-computes.md](docs/how-it-computes.md).
+Every section is described in [docs/backlog.md](docs/backlog.md), and [examples/demo/solopilot.yaml](examples/demo/solopilot.yaml) shows a complete project. How the gap and the projection are computed is explained in [docs/how-it-computes.md](docs/how-it-computes.md). Why solopilot works this way is in the [product vision](docs/vision.md) and the [design notes](docs/design/).
 
 ## Slack and hosting
 
@@ -150,9 +172,9 @@ Every section is described in [docs/backlog.md](docs/backlog.md), and [examples/
 
 ## Status
 
-solopilot comes from a tool used daily on a real client project, and is now being opened up. The file format may still change before 1.0. Ideas, issues and pull requests are welcome.
+solopilot comes from a tool used daily on a real client project. The file format may still change before 1.0. What comes next is in the [roadmap](docs/roadmap.md).
 
-Run the tests with `npm test`.
+Ideas, issues and pull requests are welcome: [CONTRIBUTING.md](CONTRIBUTING.md) tells how to run the tests and the end-to-end scenarios.
 
 ## License
 

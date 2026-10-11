@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="390" height="760" viewBox="0 0 390 760" font-family="Helvetica, Arial, sans-serif">
+  <title>Fieldbook, list of sites (phone, default state). Fictional mockup by the design team of Harbor and Pine.</title>
+  <rect width="390" height="760" fill="#f5f6f2"/>
+  <rect width="390" height="64" fill="#2f5d50"/>
+  <text x="20" y="40" font-size="20" fill="#fff" font-weight="bold">Sites · North region</text>
+  <rect x="16" y="80" width="358" height="46" rx="8" fill="#fff" stroke="#c9cfc8"/>
+  <text x="32" y="109" font-size="15" fill="#9aa39e">Search by name or city</text>
+  <g font-size="14" fill="#1e2a26">
+    <rect x="16" y="142" width="358" height="84" rx="8" fill="#fff" stroke="#dde2dc"/>
+    <text x="32" y="172" font-weight="bold" font-size="16">Brookside Primary School</text>
+    <text x="32" y="196" fill="#5e6b66">Ashford · 2 buildings</text>
+    <text x="32" y="216" fill="#b4472f" font-size="12">Inspection overdue</text>
+    <rect x="16" y="238" width="358" height="84" rx="8" fill="#fff" stroke="#dde2dc"/>
+    <text x="32" y="268" font-weight="bold" font-size="16">Quayside Offices</text>
+    <text x="32" y="292" fill="#5e6b66">Ashford · 1 building</text>
+    <text x="32" y="312" fill="#5e6b66" font-size="12">Next inspection: 12 November</text>
+    <rect x="16" y="334" width="358" height="84" rx="8" fill="#fff" stroke="#dde2dc"/>
+    <text x="32" y="364" font-weight="bold" font-size="16">Millbank Warehouse</text>
+    <text x="32" y="388" fill="#5e6b66">Corfield · 3 buildings</text>
+    <text x="32" y="408" fill="#5e6b66" font-size="12">Next inspection: 3 December</text>
+    <rect x="16" y="430" width="358" height="84" rx="8" fill="#fff" stroke="#dde2dc"/>
+    <text x="32" y="460" font-weight="bold" font-size="16">Orchard Lane Community Hall</text>
+    <text x="32" y="484" fill="#5e6b66">Corfield · 1 building</text>
+    <text x="32" y="504" fill="#5e6b66" font-size="12">Next inspection: 9 December</text>
+  </g>
+  <rect y="696" width="390" height="64" fill="#fff" stroke="#dde2dc"/>
+  <g font-size="12" fill="#5e6b66" text-anchor="middle">
+    <text x="65" y="734" fill="#2f5d50" font-weight="bold">Sites</text>
+    <text x="195" y="734">Inspections</text>
+    <text x="325" y="734">Account</text>
+  </g>
+</svg>

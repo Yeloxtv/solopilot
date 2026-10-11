@@ -5,6 +5,7 @@ import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { readBacklog } from '../src/backlog.mjs';
 import { compute } from '../src/compute.mjs';
 import { renderDashboard } from '../src/dashboard.mjs';
 import { loadLocale } from '../src/i18n.mjs';
@@ -29,6 +30,27 @@ test('the demo checks and reports', () => {
   assert.equal(status.status, 0);
   assert.match(status.stdout, /Launch on November 27/);
   assert.match(run(['status', '--dir', DEMO, '--today', '2026-10-21', '--locale', 'fr']).stdout, /le 27 novembre/);
+});
+
+test('the demo tells one story: each feature points to a document of its sources/', () => {
+  const b = readBacklog(DEMO);
+  assert.ok(b.features.length > 0 && b.tasks.every((t) => typeof t.points === 'number'), 'features and points per task');
+  for (const f of b.features) {
+    const files = String(f.source).match(/[\w-]+\.(md|svg)/g) ?? [];
+    assert.ok(files.length || /^R\d+$/.test(f.source), `${f.id}: ${f.source}`);
+    for (const file of files) assert.ok(existsSync(join(DEMO, 'sources', file)), `${f.id}: ${file} in sources/`);
+  }
+  for (const t of b.tasks.filter((x) => x.design)) assert.ok(existsSync(join(DEMO, 'sources', t.design)), `${t.id}: ${t.design}`);
+});
+
+test('init --example starts a plan from the Fieldbook documents', () => {
+  const dir = join(tmp(), 'fieldbook-pilot');
+  const out = run(['init', dir, '--example'], GIT_ID);
+  assert.equal(out.status, 0, out.stderr);
+  assert.match(out.stdout, /documents of Fieldbook/);
+  assert.ok(['spec.md', 'kickoff-workshop.md', 'quote.md', 'mockups/sign-in.svg'].every((f) => existsSync(join(dir, 'sources', f))));
+  assert.equal(readBacklog(dir).project.name, 'Fieldbook');
+  assert.match(gitOut(dir, 'ls-files'), /sources\/spec\.md/);
 });
 
 test('slack --dry-run prints Block Kit JSON', () => {

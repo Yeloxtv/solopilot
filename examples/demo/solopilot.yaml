@@ -3,7 +3,10 @@
 #   solopilot build --dir examples/demo --today 2026-10-21
 #
 # Fieldbook is a mobile inspection app built by a solo developer, Alex, for Harbor & Pine, a
-# facilities cooperative. Everything here is made up.
+# facilities cooperative. The plan was drawn up from the documents in sources/ (the spec, the
+# kickoff workshop notes, the quote and two mockups), agreed on September 25, and here it stands
+# on October 21, mid-way. `solopilot init <dir> --example` copies the same documents into a new
+# pilot directory, to draw up the first plan yourself. Everything here is made up.
 
 project:
   name: Fieldbook
@@ -13,11 +16,14 @@ project:
   goal: "Launch"
   start: 2026-09-28
   target: 2026-11-27
+  budget_days: 20
   plan_days: 20
   core: 14
   points_per_day: 6.3
   focus: 0.5
   holidays: [2026-11-26]
+  baseline: { date: 2026-09-25, points: 126, plan_days: 20 }
+  scope_agreed: { by: "Maya Lindqvist", date: 2026-09-25 }
 
 people: ["Alex", "Harbor & Pine", "Design team"]
 
@@ -38,17 +44,19 @@ meetings:
   - { date: 2026-10-23, title: "Workshop #2", with: "Harbor & Pine" }
 
 dependencies:
-  - { id: D01, before: 3, status: received, who: "Harbor & Pine", title: "List of sites and buildings", tasks: [T003] }
-  - { id: D02, before: 7, status: waiting, who: "Design team", title: "Screens for the inspection flow", tasks: [S04, S05, S06] }
-  - { id: D03, before: 11, status: waiting, who: "Harbor & Pine", title: "Sample checklists from the three sites", tasks: [T020], meeting: "2026-10-23", priority: 4, stake: "Real checklists to test offline storage with" }
+  - { id: D01, before: 3, status: received, who: "Harbor & Pine", asked_on: 2026-09-22, title: "List of sites and buildings", tasks: [T003] }
+  - { id: D02, before: 7, status: waiting, who: "Design team", asked_on: 2026-09-22, reminded_on: 2026-10-19, title: "Screens for the inspection flow", tasks: [S04, S05, S06] }
+  - { id: D03, before: 11, status: waiting, who: "Harbor & Pine", asked_on: 2026-09-22, title: "Sample checklists from the three largest sites", tasks: [T020], meeting: "2026-10-23", priority: 4, stake: "Real checklists to test offline storage with" }
   - { id: D04, before: 14, status: waiting, who: "Harbor & Pine", title: "Staging server, domain and certificate", tasks: [T029] }
 
 questions:
-  - { id: Q01, before: 6, status: open, who: "Harbor & Pine", title: "Can an inspector edit an inspection after submitting it?", tasks: [T014], meeting: "2026-10-23", priority: 1, stake: "Locks the inspection model before the screens start" }
-  - { id: Q02, before: 2, status: answered, who: "Harbor & Pine", title: "Which roles do we need?", answer: "Inspector, manager and admin; a manager sees every site of their region" }
-  - { id: Q03, before: 9, status: open, who: "Harbor & Pine", title: "How long do we keep inspection photos?", tasks: [T015, T022], meeting: "2026-10-23", priority: 2, stake: "Sizes storage and the offline cache" }
+  - { id: Q01, before: 6, status: open, who: "Harbor & Pine", asked_on: 2026-10-08, title: "Can an inspector edit an inspection after submitting it?", tasks: [T014], meeting: "2026-10-23", priority: 1, stake: "Locks the inspection model before the screens start" }
+  - { id: Q02, before: 2, status: answered, who: "Harbor & Pine", asked_on: 2026-09-22, title: "Which roles do we need?", answer: "Inspector, manager and admin; a manager sees every site of their region" }
+  - { id: Q03, before: 9, status: open, who: "Harbor & Pine", asked_on: 2026-09-22, reminded_on: 2026-10-16, title: "How long do we keep inspection photos?", tasks: [T015, T022], meeting: "2026-10-23", priority: 2, stake: "Sizes storage and the offline cache" }
   - { id: Q04, before: 13, status: open, who: "Harbor & Pine", title: "What must page one of the PDF report show?", tasks: [T026, S07], meeting: "2026-10-23", priority: 3 }
   - { id: Q05, before: 12, status: open, who: "Alex", title: "Which edit wins when two devices change the same inspection offline?", tasks: [T024] }
+  - { id: Q06, before: 5, status: answered, who: "Harbor & Pine", title: "Which severities can a finding have?", answer: "Low, medium, high and critical; critical findings first everywhere (kickoff workshop)", tasks: [T012] }
+  - { id: Q07, before: 4, status: answered, who: "Harbor & Pine", title: "Does a past inspection keep its checklist version?", answer: "Yes, the version it was run with: past reports never change (kickoff workshop)", tasks: [T010] }
 
 requests:
   - { id: R01, status: accepted, title: "Signature at the end of an inspection", recommendation: "Accept: half a day on day 10", decision: "Accepted at workshop #1: one signature, drawn on screen", tasks: [T019] }
@@ -64,6 +72,40 @@ areas:
   - { id: reports, title: "Reports and insights" }
   - { id: admin, title: "Administration" }
   - { id: release, title: "Quality and release" }
+
+# What the app must do, each feature traced to its source in sources/.
+features:
+  - { id: F01, area: accounts, core: true, priority: 1, source: "spec.md §3.1", title: "Sign in with a link sent by email" }
+  - { id: F02, area: accounts, core: true, priority: 1, source: "spec.md §2, §3.2", title: "Roles and access by region" }
+  - { id: F03, area: sites, core: true, priority: 2, source: "spec.md §4", title: "Sites and buildings, found by name or city" }
+  - { id: F04, area: inspections, core: true, priority: 3, source: "spec.md §5.1; kickoff-workshop.md", title: "Checklists, in versions" }
+  - { id: F05, area: inspections, core: true, priority: 4, source: "spec.md §5.2; kickoff-workshop.md", title: "Run an inspection: items, findings, photos, notes" }
+  - { id: F06, area: inspections, core: true, priority: 5, source: "spec.md §5.3", title: "Traceability and corrections after submission" }
+  - { id: F07, area: inspections, core: true, priority: 6, source: "R01", title: "Signature at the end of an inspection" }
+  - { id: F08, area: offline, core: true, priority: 7, source: "spec.md §6", title: "A whole day of inspections without network" }
+  - { id: F09, area: reports, core: true, priority: 8, source: "spec.md §7.1", title: "PDF report of each inspection" }
+  - { id: F10, area: admin, priority: 9, source: "spec.md §8.1", title: "Checklist editor" }
+  - { id: F11, area: admin, priority: 10, source: "spec.md §8.2", title: "Users, invitations and back office" }
+  - { id: F12, area: reports, priority: 11, source: "spec.md §7.2", title: "Findings dashboard for managers" }
+  - { id: F13, area: reports, priority: 12, source: "spec.md §7.3", title: "CSV export and monthly summary by email" }
+  - { id: F14, area: inspections, priority: 13, source: "spec.md §5.4", title: "Reminders of overdue inspections", note: "Nice to have" }
+  - { id: F15, area: accounts, priority: 14, source: "spec.md §3.3", title: "Single sign-on with the members' directory", note: "Not needed for the launch" }
+  - { id: F16, area: release, scope: out, source: "spec.md §10", title: "Native apps in the app stores" }
+  - { id: F17, area: reports, scope: out, source: "spec.md §10", title: "Link with the maintenance software" }
+  - { id: F18, area: admin, scope: out, source: "spec.md §10", title: "Invoicing the members" }
+  - { id: F19, area: setup, scope: out, source: "spec.md §10", title: "Other languages than English" }
+
+# The sizes agreed before the tasks were estimated.
+estimation:
+  basis: hypotheses
+  grid:
+    - { kind: screen, size: "2 or 3 simple views", points: 2 }
+    - { kind: screen, size: "4 or 5 views, offline states included", points: 4 }
+    - { kind: logic, size: "an endpoint with its rules and tests", points: 2 }
+    - { kind: logic, size: "a rule across the app (access, audit, versions)", points: 3 }
+    - { kind: integration, size: "a service or a device API (email, camera, PDF)", points: 3 }
+    - { kind: setup, size: "repository, CI, data model, design system", points: 2 }
+    - { kind: release, size: "an environment deployed and monitored", points: 2 }
 
 days:
   - { day: 1, sprint: 1, points: 5, load: normal, phase: "Foundations", title: "Repository and data model" }
@@ -90,79 +132,81 @@ days:
 
 tasks:
   # D1, Repository and data model
-  - { id: T001, day: 1, area: setup, status: done, done_on: 2026-09-28, title: "Repository, CI and test command" }
-  - { id: T002, day: 1, area: setup, status: done, done_on: 2026-09-29, title: "Data model: sites, buildings, checklists, inspections" }
-  - { id: T003, day: 1, area: sites, status: done, done_on: 2026-09-29, title: "Seed data from the client's site list" }
+  - { id: T001, day: 1, area: setup, kind: setup, points: 1.5, status: done, done_on: 2026-09-28, title: "Repository, CI and test command" }
+  - { id: T002, day: 1, area: setup, kind: setup, points: 2.5, status: done, done_on: 2026-09-29, title: "Data model: sites, buildings, checklists, inspections" }
+  - { id: T003, day: 1, area: sites, feature: F03, kind: content, points: 1, status: done, done_on: 2026-09-29, title: "Seed data from the client's site list" }
   # D2, Sign-in and roles
-  - { id: T004, day: 2, area: accounts, status: done, done_on: 2026-09-30, title: "Sign-in with a magic link" }
-  - { id: T005, day: 2, area: accounts, status: done, done_on: 2026-10-01, title: "Roles: inspector, manager, admin" }
-  - { id: T006, day: 2, area: accounts, status: done, done_on: 2026-10-01, title: "Access rules per region" }
+  - { id: T004, day: 2, area: accounts, feature: F01, kind: integration, points: 2.5, status: done, done_on: 2026-09-30, title: "Sign-in with a magic link" }
+  - { id: T005, day: 2, area: accounts, feature: F02, kind: logic, points: 2, status: done, done_on: 2026-10-01, title: "Roles: inspector, manager, admin" }
+  - { id: T006, day: 2, area: accounts, feature: F02, kind: logic, points: 2.5, status: done, done_on: 2026-10-01, title: "Access rules per region" }
   # D3, Sites and buildings
-  - { id: T007, day: 3, area: sites, status: done, done_on: 2026-10-05, title: "Sites and buildings API" }
-  - { id: T008, day: 3, area: sites, status: done, done_on: 2026-10-05, title: "Search sites by name and city" }
+  - { id: T007, day: 3, area: sites, feature: F03, kind: logic, points: 4, status: done, done_on: 2026-10-05, title: "Sites and buildings API" }
+  - { id: T008, day: 3, area: sites, feature: F03, kind: logic, points: 2, status: done, done_on: 2026-10-05, title: "Search sites by name and city" }
   # D4, Checklists
-  - { id: T009, day: 4, area: inspections, status: done, done_on: 2026-10-07, title: "Checklist templates API" }
-  - { id: T010, day: 4, area: inspections, status: done, done_on: 2026-10-08, title: "Checklist versions, so past inspections keep theirs" }
+  - { id: T009, day: 4, area: inspections, feature: F04, kind: logic, points: 4, status: done, done_on: 2026-10-07, title: "Checklist templates API" }
+  - { id: T010, day: 4, area: inspections, feature: F04, kind: logic, points: 3, status: done, done_on: 2026-10-08, title: "Checklist versions, so past inspections keep theirs" }
   # D5, Inspection runs
-  - { id: T011, day: 5, area: inspections, status: done, done_on: 2026-10-12, title: "Start, save and submit an inspection" }
-  - { id: T012, day: 5, area: inspections, status: done, done_on: 2026-10-13, title: "Findings with a severity" }
-  - { id: T013, day: 5, area: inspections, status: done, done_on: 2026-10-14, title: "Audit trail of every change" }
+  - { id: T011, day: 5, area: inspections, feature: F05, kind: logic, points: 4, status: done, done_on: 2026-10-12, title: "Start, save and submit an inspection" }
+  - { id: T012, day: 5, area: inspections, feature: F05, kind: logic, points: 2, status: done, done_on: 2026-10-13, title: "Findings with a severity" }
+  - { id: T013, day: 5, area: inspections, feature: F06, kind: logic, points: 2, status: done, done_on: 2026-10-14, title: "Audit trail of every change" }
   # D6, Photos, notes and edits
-  - { id: T014, day: 6, area: inspections, status: blocked, note: "Waits for Q01", title: "Rules for editing a submitted inspection" }
-  - { id: T015, day: 6, area: inspections, status: done, done_on: 2026-10-16, title: "Photo upload, resized on the server" }
-  - { id: T016, day: 6, area: inspections, status: done, done_on: 2026-10-20, title: "Notes on findings" }
+  - { id: T014, day: 6, area: inspections, feature: F06, kind: logic, points: 2, status: blocked, note: "Waits for Q01", title: "Rules for editing a submitted inspection" }
+  - { id: T015, day: 6, area: inspections, feature: F05, kind: integration, points: 2.5, status: done, done_on: 2026-10-16, title: "Photo upload, resized on the server" }
+  - { id: T016, day: 6, area: inspections, feature: F05, kind: logic, points: 1.5, status: done, done_on: 2026-10-20, title: "Notes on findings" }
   # D7, Design system and sign-in
-  - { id: T017, day: 7, area: setup, status: doing, title: "Design system: colors, type, components" }
-  - { id: S01, day: 7, area: accounts, status: todo, views: 3, title: "Sign-in screen" }
+  - { id: T017, day: 7, area: setup, kind: setup, points: 4, status: doing, title: "Design system: colors, type, components" }
+  - { id: S01, day: 7, area: accounts, feature: F01, points: 2, status: todo, views: [default, error, loading], design: "mockups/sign-in.svg", title: "Sign-in screen" }
   # D8, Sites
-  - { id: S02, day: 8, area: sites, status: todo, views: 4, title: "Site list" }
-  - { id: S03, day: 8, area: sites, status: todo, views: 3, title: "Site detail" }
+  - { id: S02, day: 8, area: sites, feature: F03, points: 3.5, status: todo, views: [default, empty search, loading, offline], design: "mockups/site-list.svg", title: "Site list" }
+  - { id: S03, day: 8, area: sites, feature: F03, points: 2.5, status: todo, views: [default, loading, error], title: "Site detail" }
   # D9, Inspection flow, checklist
-  - { id: S04, day: 9, area: inspections, status: todo, views: 5, title: "Inspection: checklist" }
-  - { id: T018, day: 9, area: inspections, status: todo, title: "Keep an inspection's state when switching apps" }
+  - { id: S04, day: 9, area: inspections, feature: F05, points: 5, status: todo, views: [default, in progress, item not compliant, offline, error], title: "Inspection: checklist" }
+  - { id: T018, day: 9, area: inspections, feature: F05, kind: logic, points: 2, status: todo, title: "Keep an inspection's state when switching apps" }
   # D10, Inspection flow, findings and signature
-  - { id: S05, day: 10, area: inspections, status: todo, views: 4, title: "Inspection: finding with photos" }
-  - { id: S06, day: 10, area: inspections, status: todo, views: 3, title: "Inspection summary" }
-  - { id: T019, day: 10, area: inspections, status: todo, title: "Signature at the end of an inspection" }
+  - { id: S05, day: 10, area: inspections, feature: F05, points: 4, status: todo, views: [default, adding photos, upload waiting, offline], title: "Inspection: finding with photos" }
+  - { id: S06, day: 10, area: inspections, feature: F05, points: 3, status: todo, views: [default, signature, submitted], title: "Inspection summary" }
+  - { id: T019, day: 10, area: inspections, feature: F07, kind: logic, points: 1, status: todo, title: "Signature at the end of an inspection" }
   # D11, Offline storage
-  - { id: T020, day: 11, area: offline, status: todo, title: "Store sites and checklists on the device" }
-  - { id: T021, day: 11, area: offline, status: todo, title: "Queue of pending uploads" }
+  - { id: T020, day: 11, area: offline, feature: F08, kind: logic, points: 5, status: todo, title: "Store sites and checklists on the device" }
+  - { id: T021, day: 11, area: offline, feature: F08, kind: logic, points: 3, status: todo, title: "Queue of pending uploads" }
   # D12, Sync and conflicts
-  - { id: T022, day: 12, area: offline, status: todo, title: "Background sync, photos included" }
-  - { id: T023, day: 12, area: offline, status: todo, title: "Sync status on screen" }
-  - { id: T024, day: 12, area: offline, status: todo, title: "Conflict resolution" }
+  - { id: T022, day: 12, area: offline, feature: F08, kind: integration, points: 4, status: todo, title: "Background sync, photos included" }
+  - { id: T023, day: 12, area: offline, feature: F08, kind: logic, points: 1, status: todo, title: "Sync status on screen" }
+  - { id: T024, day: 12, area: offline, feature: F08, kind: logic, points: 3, status: todo, title: "Conflict resolution" }
   # D13, PDF report
-  - { id: T025, day: 13, area: reports, status: todo, title: "PDF report generation" }
-  - { id: T026, day: 13, area: reports, status: todo, title: "Report layout, page one first" }
-  - { id: S07, day: 13, area: reports, status: todo, views: 2, title: "Report preview" }
+  - { id: T025, day: 13, area: reports, feature: F09, kind: integration, points: 3, status: todo, title: "PDF report generation" }
+  - { id: T026, day: 13, area: reports, feature: F09, kind: content, points: 1.5, status: todo, title: "Report layout, page one first" }
+  - { id: S07, day: 13, area: reports, feature: F09, points: 1.5, status: todo, views: [default, generating], title: "Report preview" }
   # D14, Staging and core release
-  - { id: T027, day: 14, area: release, status: todo, title: "Staging deployment" }
-  - { id: T028, day: 14, area: release, status: todo, title: "Backups and monitoring" }
-  - { id: T029, day: 14, area: release, status: todo, title: "Domain and certificate" }
+  - { id: T027, day: 14, area: release, kind: release, points: 2, status: todo, title: "Staging deployment" }
+  - { id: T028, day: 14, area: release, kind: release, points: 2, status: todo, title: "Backups and monitoring" }
+  - { id: T029, day: 14, area: release, kind: release, points: 1, status: todo, title: "Domain and certificate" }
   # D15, Checklist editor
-  - { id: S08, day: 15, area: admin, status: todo, views: 4, title: "Checklist editor" }
-  - { id: T030, day: 15, area: admin, status: todo, title: "Publish a new checklist version" }
+  - { id: S08, day: 15, area: admin, feature: F10, points: 4.5, status: todo, views: [default, empty, editing an item, publishing], title: "Checklist editor" }
+  - { id: T030, day: 15, area: admin, feature: F10, kind: logic, points: 1.5, status: todo, title: "Publish a new checklist version" }
   # D16, Users and invitations
-  - { id: T031, day: 16, area: admin, status: todo, title: "Invitations by email" }
-  - { id: S09, day: 16, area: admin, status: todo, views: 3, title: "Users and roles" }
-  - { id: S10, day: 16, area: admin, status: todo, views: 2, admin: true, title: "Back office, from the framework" }
+  - { id: T031, day: 16, area: admin, feature: F11, kind: integration, points: 2, status: todo, title: "Invitations by email" }
+  - { id: S09, day: 16, area: admin, feature: F11, points: 3, status: todo, views: [default, empty, invitation sent], title: "Users and roles" }
+  - { id: S10, day: 16, area: admin, feature: F11, points: 1, status: todo, views: [list, edit], admin: true, title: "Back office, from the framework" }
   # D17, Findings dashboard
-  - { id: S11, day: 17, area: reports, status: todo, views: 4, title: "Findings dashboard" }
-  - { id: T032, day: 17, area: reports, status: todo, title: "Findings by site and severity" }
+  - { id: S11, day: 17, area: reports, feature: F12, points: 4.5, status: todo, views: [default, empty, filtered, loading], title: "Findings dashboard" }
+  - { id: T032, day: 17, area: reports, feature: F12, kind: logic, points: 2.5, status: todo, title: "Findings by site and severity" }
   # D18, Exports
-  - { id: T033, day: 18, area: reports, status: todo, title: "CSV export" }
-  - { id: T034, day: 18, area: reports, status: todo, title: "Monthly report by email" }
+  - { id: T033, day: 18, area: reports, feature: F13, kind: logic, points: 2, status: todo, title: "CSV export" }
+  - { id: T034, day: 18, area: reports, feature: F13, kind: integration, points: 3, status: todo, title: "Monthly report by email" }
   # D19, Accessibility and performance
-  - { id: T035, day: 19, area: release, status: todo, title: "Accessibility pass" }
-  - { id: T036, day: 19, area: release, status: todo, title: "Performance budget on a mid-range phone" }
+  - { id: T035, day: 19, area: release, kind: release, points: 3, status: todo, title: "Accessibility pass" }
+  - { id: T036, day: 19, area: release, kind: release, points: 2, status: todo, title: "Performance budget on a mid-range phone" }
   # D20, Production and handover
-  - { id: T037, day: 20, area: release, status: todo, title: "Production deployment" }
-  - { id: T038, day: 20, area: release, status: todo, title: "Handover: documentation and access" }
+  - { id: T037, day: 20, area: release, kind: release, points: 2.5, status: todo, title: "Production deployment" }
+  - { id: T038, day: 20, area: release, kind: content, points: 2.5, status: todo, title: "Handover: documentation and access" }
   # Below the line
-  - { id: T039, day: later, area: inspections, status: todo, title: "Push notifications for overdue inspections" }
-  - { id: T040, day: later, area: accounts, status: todo, title: "Single sign-on" }
+  - { id: T039, day: later, area: inspections, feature: F14, kind: integration, points: 3, status: todo, title: "Push notifications for overdue inspections" }
+  - { id: T040, day: later, area: accounts, feature: F15, kind: integration, points: 3, status: todo, title: "Single sign-on" }
 
 log:
+  - { date: 2026-09-25, type: baseline, title: "Plan agreed", note: "126 points over 20 plan days, core up to D14." }
+  - { date: 2026-09-25, type: agreed, title: "Scope approved by the client", note: "Approved by Maya Lindqvist." }
   - { date: 2026-09-28, type: session, effort: 0.5, title: "Repository and data model", note: "Repository, CI and test command; first pass on the data model" }
   - { date: 2026-09-29, type: session, effort: 0.5, title: "D1 done", note: "Data model complete; seed data from the site list (D01 received)" }
   - { date: 2026-09-30, type: session, effort: 0.5, title: "Sign-in", note: "Magic link sign-in, with rate limiting" }
@@ -170,9 +214,9 @@ log:
   - { date: 2026-10-05, type: session, effort: 0.5, title: "D3 done", note: "Sites and buildings API, search by name and city" }
   - { date: 2026-10-06, type: replan, title: "Workshop #1: signature added", note: "Harbor & Pine asked for a signature at the end of an inspection (R01, accepted): T019 on day 10, +1 point, no compensation. Map view (R02) left pending until the list is in their hands; chat (R03) declined" }
   - { date: 2026-10-07, type: session, effort: 0.5, title: "Checklist templates", note: "Checklist templates API" }
-  - { date: 2026-10-08, type: session, effort: 0.5, title: "D4 done", note: "Checklist versions: a past inspection keeps the version it was run with" }
+  - { date: 2026-10-08, type: session, effort: 0.5, title: "D4 done", note: "Checklist versions: a past inspection keeps the version it was run with. Q01 sent to Harbor & Pine, before the edit rules of day 6" }
   - { date: 2026-10-12, type: session, effort: 1, title: "Inspection runs", note: "Start, save and submit an inspection" }
   - { date: 2026-10-13, type: session, effort: 0.5, title: "Findings", note: "Findings with a severity, validated server side" }
   - { date: 2026-10-14, type: session, effort: 0.5, title: "D5 done", note: "Audit trail of every change; milestone D5 reached" }
-  - { date: 2026-10-16, type: session, effort: 0.5, title: "Photos", note: "Photo upload, resized and stripped of location data on the server" }
+  - { date: 2026-10-16, type: session, effort: 0.5, title: "Photos", note: "Photo upload, resized and stripped of location data on the server. Reminded Harbor & Pine about Q03" }
   - { date: 2026-10-20, type: session, effort: 0.5, title: "Notes; T014 blocked", note: "Notes on findings. T014 blocked until Q01 is answered at workshop #2" }

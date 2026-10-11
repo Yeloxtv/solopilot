@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased
+## 0.2.0
+
+The first version published on npm.
 
 The first plan, drawn up with Claude from the project documents.
 
@@ -42,6 +44,12 @@ All your projects together:
 - `init` and `install` add the pilot directory to `~/.solopilot/projects.json` (`SOLOPILOT_HOME` moves it), paths only. `solopilot projects --forget <dir>` takes one off.
 - `solopilot projects` shows one line per project (phase, target, share of the day, core finish and margin, answers to chase, never asked, scope grown) and the share of the working day promised to all of them, week by week. Over one day, at least one projection will not hold.
 - `status` says when all projects together take more than a day while this one runs. The skill checks the other projects before planning a new one, and flags the overload at the end of a session.
+
+Ready to try:
+
+- The Fieldbook demo tells one story: its documents in `examples/demo/sources/` (a spec, kickoff workshop notes, a quote, two mockups), and its plan mid-way, in the current format (features traced to these documents, points per task, named views, the agreed plan and the client's approval).
+- `solopilot init <dir> --example` starts a pilot directory with the Fieldbook documents, to draw up a first plan without a project of your own.
+- The docs are in English: the product vision, the roadmap, and the design notes of each part (`docs/design/`). `CONTRIBUTING.md` tells how to run the tests and the end-to-end scenarios.
 
 ## 0.1.0
 

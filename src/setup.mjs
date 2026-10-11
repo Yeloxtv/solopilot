@@ -12,6 +12,8 @@ import { git } from './repo.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const SKILL = join(ROOT, 'claude', 'skills', 'solopilot');
+// The documents of the Fieldbook demo, for `init --example`.
+const EXAMPLE = join(ROOT, 'examples', 'demo', 'sources');
 const LOCAL_SETTINGS = '.claude/settings.local.json';
 const slash = (p) => p.replace(/\\/g, '/');
 
@@ -29,11 +31,11 @@ export function installSkill() {
   return skills;
 }
 
-export function init(dir, { name, locale = 'en', today = localToday() } = {}) {
+export function init(dir, { name, locale = 'en', today = localToday(), example = false } = {}) {
   const target = resolve(dir);
   if (existsSync(join(target, FILE))) throw new Error(`${join(target, FILE)} already exists`);
   mkdirSync(target, { recursive: true });
-  const projectName = name || target.split(/[\\/]/).filter(Boolean).pop().replace(/-pilot$/, '');
+  const projectName = name || (example ? 'Fieldbook' : target.split(/[\\/]/).filter(Boolean).pop().replace(/-pilot$/, ''));
   // A first guess at the target: 31 plan days at half a day per working day, about 12 weeks out.
   const guess = calendar().add(today, 62);
   const starter = readFileSync(join(ROOT, 'templates', 'solopilot.yaml'), 'utf8')
@@ -47,7 +49,8 @@ export function init(dir, { name, locale = 'en', today = localToday() } = {}) {
   writeIfMissing(join(target, '.env.example'), '# Copy to .env (never committed). `solopilot install` adds PROJECT_REPO.\nSLACK_WEBHOOK_URL=https://hooks.slack.com/services/XXX/YYY/ZZZ\n');
   // The project documents the first plan is drawn from, versioned with it: features point to them.
   mkdirSync(join(target, 'sources'), { recursive: true });
-  writeIfMissing(join(target, 'sources', '.gitkeep'), '');
+  if (example) cpSync(EXAMPLE, join(target, 'sources'), { recursive: true });
+  else writeIfMissing(join(target, 'sources', '.gitkeep'), '');
 
   // Its own repository, with a first commit: the skill records each update with `commit -am`, and the
   // reminder hook reads the history of the backlog. Never a commit in an enclosing repository, which
@@ -60,7 +63,7 @@ export function init(dir, { name, locale = 'en', today = localToday() } = {}) {
   const own = Boolean(repo) && realpathSync(resolve(repo)) === realpathSync(target);
   let committed = false;
   if (own) {
-    git(['add', '--', FILE, '.gitignore', '.env.example', 'sources/.gitkeep'], target);
+    git(['add', '--', FILE, '.gitignore', '.env.example', 'sources'], target);
     committed = git(['commit', '--quiet', '-m', 'solopilot init'], target) !== null;
   }
   // The first plan is drawn up with /solopilot in this directory, before any project is wired.

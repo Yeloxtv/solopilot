@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="390" height="760" viewBox="0 0 390 760" font-family="Helvetica, Arial, sans-serif">
+  <title>Fieldbook, sign-in (phone, default state). Fictional mockup by the design team of Harbor and Pine.</title>
+  <rect width="390" height="760" fill="#f5f6f2"/>
+  <rect x="155" y="120" width="80" height="80" rx="18" fill="#2f5d50"/>
+  <text x="195" y="172" font-size="34" fill="#fff" text-anchor="middle" font-weight="bold">F</text>
+  <text x="195" y="250" font-size="26" fill="#1e2a26" text-anchor="middle" font-weight="bold">Fieldbook</text>
+  <text x="195" y="280" font-size="15" fill="#5e6b66" text-anchor="middle">Inspections, on site, even offline</text>
+  <text x="32" y="372" font-size="14" fill="#1e2a26" font-weight="bold">Work email</text>
+  <rect x="32" y="384" width="326" height="52" rx="8" fill="#fff" stroke="#c9cfc8"/>
+  <text x="48" y="416" font-size="16" fill="#9aa39e">name@harborandpine.example</text>
+  <rect x="32" y="460" width="326" height="56" rx="8" fill="#2f5d50"/>
+  <text x="195" y="494" font-size="17" fill="#fff" text-anchor="middle" font-weight="bold">Send me a sign-in link</text>
+  <text x="195" y="552" font-size="13" fill="#5e6b66" text-anchor="middle">No password: the link is valid for 15 minutes.</text>
+  <text x="195" y="720" font-size="12" fill="#9aa39e" text-anchor="middle">Harbor and Pine · help: facilities desk</text>
+</svg>

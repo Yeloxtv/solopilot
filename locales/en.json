@@ -91,7 +91,7 @@
     "allRow": "Everything, {range}",
     "untilTarget": "Until the target",
     "available": "{n} d available",
-    "spent": "Already spent: {spent} work days out of {planDays}, from each session's actual time."
+    "spent": "Already spent: {spent} work days out of {planDays}, from the effort declared at each session."
   },
   "hero": {
     "label": "Projection and counters",

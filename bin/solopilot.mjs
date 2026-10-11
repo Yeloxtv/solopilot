@@ -25,6 +25,7 @@ Usage: solopilot <command> [options]
 
 Commands
   init [dir]              create a pilot directory, its sources/ and a plan in the planning phase
+  init [dir] --example    the same, with the documents of the Fieldbook demo in sources/
   install <project-repo>  wire this pilot directory into a project for Claude Code
   check                   validate ${FILE}
   status                  where the project stands, or where its first plan stands (default)
@@ -122,14 +123,15 @@ function load(opts, { strict = true } = {}) {
 
 const commands = {
   init(opts) {
-    const { dir, repo, own, committed, skill } = init(opts._[0] || '.', { name: opts.name, locale: opts.locale });
+    const { dir, repo, own, committed, skill } = init(opts._[0] || '.', { name: opts.name, locale: opts.locale, example: Boolean(opts.example) });
     console.log(`Pilot directory ready: ${dir}`);
     console.log(`  Skill /solopilot copied to ${skill}`);
     register(dir);
     console.log(`  Listed in ${registryFile()}: \`solopilot projects\` shows all your projects together`);
     if (!own && repo) console.log(`  It sits inside the git repository ${repo}: keep the pilot directory outside the project's repository. Nothing was committed.`);
     else if (!committed) console.log(`  The first commit failed (is a git identity set?). Commit it yourself: git -C "${dir}" add -A && git -C "${dir}" commit -m "solopilot init"`);
-    console.log('Next: put the project documents (spec, workshop notes, mockups) in sources/, open Claude Code in that directory and run /solopilot to draw up the first plan.');
+    if (opts.example) console.log('Next: the documents of Fieldbook, a fictional project, are in sources/. Open Claude Code in that directory and run /solopilot to draw up its first plan. Its quote dates from September 2026: give the skill other dates if you like.');
+    else console.log('Next: put the project documents (spec, workshop notes, mockups) in sources/, open Claude Code in that directory and run /solopilot to draw up the first plan.');
   },
 
   install(opts) {

@@ -91,7 +91,7 @@
     "allRow": "Totalité, {range}",
     "untilTarget": "D'ici la cible",
     "available": "{n} j disponibles",
-    "spent": "Déjà consommé : {spent} jours de travail sur {planDays}, d'après le temps réel de chaque session."
+    "spent": "Déjà consommé : {spent} jours de travail sur {planDays}, d'après la charge déclarée à chaque session."
   },
   "hero": {
     "label": "Projection et compteurs",

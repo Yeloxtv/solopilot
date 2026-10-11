@@ -1,110 +1,109 @@
-# Vision produit
+# Product vision
 
-## Pourquoi solopilot existe
+## Why solopilot exists
 
-solopilot est né dans une petite agence où son auteur est le seul développeur. Il n'y a ni chef de projet, ni PO technique.
+solopilot was born in a small agency where its author is the only developer. There is no project manager, and no technical product owner (PO).
 
-Un projet démarre toujours de la même façon. Il y a un cahier des charges qui décrit ce que l'application doit faire, et quelques ateliers UX et UI. Ensuite, le développeur se débrouille. Le client signe un devis pour « le développement de l'application », mais personne ne s'est mis d'accord sur une liste de fonctionnalités. Ce que le développeur reçoit vraiment tient en une phrase : *on veut cette application, et elle sort tel jour.*
+A project always starts the same way. There is a spec that describes what the app must do, and a few UX and UI workshops. Then the developer is on their own. The client signs a quote for "the development of the app", but nobody agreed on a list of features. What the developer really receives fits in one sentence: *we want this app, and it ships on this day.*
 
-Mené ainsi, un projet va presque à coup sûr dans le mur. La date est fixe, le périmètre ne l'est pas, et personne n'est chargé de concilier les deux. Les problèmes apparaissent tard : une fonctionnalité ne peut pas être développée parce que le client n'a jamais dit comment elle devait marcher, le plan a grossi en silence après chaque atelier, et le retard se découvre la semaine de la mise en production.
+Run this way, a project almost certainly hits the wall. The date is fixed, the scope is not, and nobody is in charge of reconciling the two. Problems show up late: a feature cannot be built because the client never said how it should work, the plan grew silently after every workshop, and the delay comes to light the week of the launch.
 
-Ce n'est pas propre aux petites structures. Les projets web se vendent de moins en moins cher, et l'IA pousse à livrer toujours plus vite. Le pilotage est le premier poste sacrifié : il n'y a plus le budget pour qu'une personne passe des heures à tenir un planning, relancer le client et rédiger des points d'avancement. C'est pourtant sans pilotage que les projets dérapent.
+This is not peculiar to small companies. Web projects sell for less and less, and AI pushes to deliver ever faster. Steering is the first thing to go: there is no longer the budget for someone to spend hours keeping a schedule, chasing the client and writing status updates. Yet it is without steering that projects go off the rails.
 
-solopilot fait du pilotage un sous-produit du développement. Le plan se met à jour à partir du travail réellement fait, et celui qui suit le projet n'a qu'à ouvrir le tableau de bord pour savoir où il en est.
+solopilot makes steering a by-product of development. The plan is updated from the work actually done, and whoever follows the project only has to open the dashboard to know where it stands.
 
-## Pour qui
+## Who it is for
 
-**Ceux qui livrent.** Les développeurs qui construisent seuls des applications web pour des clients, avec une date fixe, un budget serré et un périmètre encore ouvert, en agence ou en freelance, sans personne pour planifier et arbitrer à leur place.
+**Those who deliver.** Developers who build web apps for clients on their own, with a fixed date, a tight budget and a scope still open, in an agency or freelance, with nobody to plan and make the calls for them.
 
-**Ceux qui suivent.** Côté agence : le PO, le chef de projet ou la direction, qui doivent savoir où en est le projet sans organiser de réunion ni attendre un point écrit.
+**Those who follow.** On the agency's side: the PO, the project manager or management, who need to know where the project stands without calling a meeting or waiting for a written update.
 
-solopilot intervient une fois le projet lancé : le devis est signé, le budget et la date sont fixés.
+solopilot comes in once the project is under way: the quote is signed, the budget and the date are set.
 
-Plusieurs développeurs sur un même projet, c'est une piste pour une V2. solopilot ne s'adresse pas non plus au travail facturé à l'heure, ni aux produits sans date de livraison.
+Several developers on the same project is an idea for a V2. Nor is solopilot meant for work billed by the hour, or for products with no delivery date.
 
-## Ce qu'il doit faire
+## What it must do
 
-### 1. Transformer un cahier des charges en plan daté
+### 1. Turn a spec into a dated plan
 
-Partir des documents du projet (cahier des charges, notes d'ateliers, maquettes s'il y en a) pour lister toutes les fonctionnalités dont l'application a besoin, et en déduire les écrans et leurs vues. Estimer chaque tâche, et répartir le tout sur des jours de plan, regroupés en sprints, en partant de la date de mise en production.
+Start from the project documents (spec, workshop notes, mockups if there are any) to list every feature the app needs, and derive the screens and their views from them. Estimate each task, and lay it all out on plan days, grouped into sprints, starting from the launch date.
 
-L'estimation ne sert pas à chiffrer, puisque le budget est déjà signé : elle sert à décider. Elle sépare le **cœur**, le minimum qui doit sortir à la date, du reste, et place explicitement **sous la ligne** ce qui ne tiendra pas. Quand le budget ou le délai est tendu, c'est elle qui trace la ligne : on sécurise d'abord le cœur, puis on construit le reste.
+The estimate is not for pricing, since the budget is already signed: it is for deciding. It separates the **core**, the minimum that must ship on the date, from the rest, and explicitly puts **below the line** what will not fit. When the budget or the deadline is tight, the estimate draws the line: you secure the core first, then build the rest.
 
-La question à laquelle répondre dès le premier jour : *avec ce budget, cette date, et le temps que je peux donner à ce projet, qu'est-ce que je peux promettre ?*
+The question to answer from day one: *with this budget, this date and the time I can give this project, what can I promise?*
 
-Ce travail se fait avec Claude, étape par étape, et le développeur valide chacune (voir « Le premier plan, pas à pas »).
+This work is done with Claude, step by step, and the developer approves each step (see "The first plan, step by step").
 
-### 2. Suivre l'avancement et le rythme réel
+### 2. Track progress and the real pace
 
-Savoir à tout moment où en est le projet par rapport au plan : ce qui est fait, l'avance ou le retard du cœur et de la totalité, et la date à laquelle chacun devrait se terminer. Comparer le rythme réel, les points livrés par jour de charge déclarée, à l'estimation du plan, et alerter quand l'écart dure.
+Know at any time where the project stands against the plan: what is done, the lead or delay of the core and of everything, and the date each one should finish. Compare the real pace, the points delivered per day of declared effort, with the plan's estimate, and raise an alert when the gap lasts.
 
-### 3. Poser les questions bloquantes avant qu'elles bloquent
+### 3. Ask the blocking questions before they block
 
-La plupart des retards ne sont pas des problèmes de développement. Ce sont des réponses qui manquent : une règle métier jamais tranchée, un contenu jamais livré, un serveur jamais ouvert. Chaque question qui bloquera une fonctionnalité doit être repérée tôt, rattachée au travail qui l'attend, et posée avant que ce travail commence, pas au moment où le développeur l'atteint et doit s'arrêter.
+Most delays are not development problems. They are missing answers: a business rule never settled, content never delivered, a server never opened. Every question that will block a feature must be spotted early, tied to the work waiting on it, and asked before that work starts, not when the developer reaches it and has to stop.
 
-### 4. Rendre les risques visibles
+### 4. Make the risks visible
 
-Montrer clairement ce qui menace la date : un cœur projeté en retard, des réponses qui bloquent le travail en cours, un client qui doit la plupart des réponses attendues, des jours trop tendus, un périmètre qui ne cesse de grossir. Les risques doivent venir des données, pas de l'humeur de quelqu'un.
+Show clearly what threatens the date: a core projected late, answers that block the work in progress, a client who owes most of the answers awaited, days too tight, a scope that keeps growing. Risks must come from the data, not from someone's mood.
 
-### 5. Donner l'état du projet à ceux qui le suivent
+### 5. Give the project's status to those who follow it
 
-Le PO ou le chef de projet ouvre le tableau de bord et sait en une minute où en est le projet, ce qui bloque, et ce qu'on attend de qui. Pas de réunion de suivi, pas de point d'avancement à rédiger : le développeur ne perd pas de temps à raconter, et le PO n'en perd pas à demander.
+The PO or the project manager opens the dashboard and knows in a minute where the project stands, what is blocking, and what is expected from whom. No status meeting, no progress report to write: the developer wastes no time telling, and the PO none asking.
 
-### 6. Apprendre de chaque projet pour mieux estimer le suivant
+### 6. Learn from each project to estimate the next one better
 
-Estimer un projet est devenu trop difficile : avec le code agentique, on va bien plus vite, mais personne ne sait encore de combien, ni sur quel type de travail. Plutôt que de deviner, solopilot accumule les données de chaque projet (ce qui était estimé, la charge réellement consommée) et s'en sert pour proposer de meilleures estimations au projet suivant (voir « Apprendre à estimer »).
+Estimating a project has become too hard: with agentic coding, you go much faster, but nobody knows yet by how much, or on which kind of work. Rather than guess, solopilot gathers the data of each project (what was estimated, the effort actually spent) and uses it to propose better estimates for the next project (see "Learning to estimate").
 
-## Principes
+## Principles
 
-- **La date tient, le périmètre bouge.** Le cœur est l'engagement, la totalité est l'objectif, le reste passe sous la ligne. Chaque changement de périmètre a un coût visible.
-- **Honnête par construction.** La projection suit l'estimation du plan et la part de chaque journée réellement donnée au projet, jamais le rythme des premiers jours. L'estimation, elle, s'améliore d'un projet à l'autre à partir de la charge que chaque type de tâche a réellement consommée, vitesse du code agentique comprise. Jours de travail et jours de calendrier ne sont jamais confondus.
-- **Le pilotage se fait en travaillant.** Pas de feuille de temps, pas de chronomètre, pas de tickets à déplacer, pas de point d'avancement à rédiger. Claude Code lit le travail réellement fait (commits taggés, tests au vert), propose les mises à jour, et le développeur les valide.
-- **Pas de surveillance.** solopilot ne mesure jamais les heures du développeur. Une mesure tirée de ses sessions ne verrait qu'un plancher de son travail, et un nombre d'heures se lit toujours comme du temps travaillé. La charge est déclarée, en part de journée.
-- **Le développeur décide.** solopilot propose, mesure et alerte. Il n'accepte jamais une demande de changement, ne déplace jamais une échéance et ne recalibre jamais le plan de lui-même.
-- **Le plan appartient à l'agence.** C'est un seul fichier texte versionné, gardé hors du dépôt du client. Retards et marges n'atteignent jamais le client.
-- **Trois publics, trois niveaux de détail.** Le développeur tient le plan à jour sans effort. Le PO, côté agence, lit le tableau de bord avec toute la vérité interne : retards, marges, risques. Le client ne voit que les fonctionnalités livrées, les jalons, et ce qu'on attend de lui.
-- **Petit et local.** Un outil en ligne de commande, une dépendance, pas de serveur, pas de compte. Les données restent sur la machine du développeur.
+- **The date holds, the scope moves.** The core is the commitment, everything is the goal, the rest goes below the line. Every change of scope has a visible cost.
+- **Honest by design.** The projection follows the plan's estimate and the share of each day really given to the project, never the pace of the first days. The estimate, for its part, improves from one project to the next, from the effort each kind of task really took, the speed of agentic coding included. Work days and calendar days are never confused.
+- **Steering happens while you work.** No timesheet, no stopwatch, no tickets to move, no progress report to write. Claude Code reads the work actually done (tagged commits, green tests), proposes the updates, and the developer approves them.
+- **No surveillance.** solopilot never measures the developer's hours. A measure drawn from their sessions would only see a floor of their work, and a number of hours always reads as time worked. Effort is declared, as a share of the day.
+- **The developer decides.** solopilot proposes, measures and alerts. It never accepts a change request, never moves a due date and never recalibrates the plan on its own.
+- **The plan belongs to the agency.** It is a single versioned text file, kept out of the client's repository. Delays and margins never reach the client.
+- **Three audiences, three levels of detail.** The developer keeps the plan up to date effortlessly. The PO, on the agency's side, reads the dashboard with the whole internal truth: delays, margins, risks. The client sees only the features delivered, the milestones, and what is expected from them.
+- **Small and local.** A command-line tool, one dependency, no server, no account. The data stays on the developer's machine.
 
-## Où en est solopilot aujourd'hui
+## Where solopilot stands today
 
-L'état détaillé, besoin par besoin, et la feuille de route des chantiers sont dans l'[état des lieux](etat-des-lieux.md).
+What is done, and what comes next, is in the [roadmap](roadmap.md). The reasoning behind each part is in the [design notes](design/).
 
-## Le premier plan, pas à pas
+## The first plan, step by step
 
-C'est le travail qui demande le plus de temps au démarrage, et celui qui décide de la suite. Il se fait avec Claude, en six étapes. Claude rédige, et le développeur corrige et valide chaque étape avant de passer à la suivante.
+This is the work that takes the most time at the start, and the one that decides what follows. It is done with Claude, in six steps. Claude drafts, and the developer corrects and approves each step before moving on to the next.
 
-**Entrées.** Le ou les cahiers des charges, les notes des ateliers, le devis (le nombre de jours vendus), la date de mise en production, la part de chaque journée que le développeur peut donner au projet, et les maquettes si elles existent.
+**Inputs.** The spec or specs, the workshop notes, the quote (the number of days sold), the launch date, the share of each day the developer can give the project, and the mockups if there are any.
 
-1. **Les fonctionnalités.** L'inventaire complet de ce que l'application doit faire, regroupé par domaines. Chaque fonctionnalité renvoie à l'endroit du cahier des charges d'où elle vient : quand le client demande un ajout, on sait s'il était prévu. Ce que le cahier des charges laisse dans le flou devient une question.
-2. **Les écrans et leurs vues.** Les écrans dont l'application a besoin pour porter ces fonctionnalités, et pour chacun ses vues : par défaut, vide, chargement, erreur, variantes. À ce stade, les maquettes n'existent généralement pas : l'inventaire se déduit du cahier des charges. S'il y en a, Claude les lit, rattache chaque écran dessiné à son entrée, et signale les écrans et les vues qui restent à dessiner.
-3. **Les questions.** Pour chaque fonctionnalité et chaque écran, ce qui manque pour le développer : une règle métier, un contenu, un accès, une décision. Chaque question nomme qui doit répondre et le travail qui l'attend.
-4. **Les tâches et leur estimation.** Chaque fonctionnalité se découpe en tâches (back, front, intégration), chaque écran devient une tâche avec son nombre de vues, et chaque tâche reçoit ses points de charge, proposés à partir de l'historique du développeur quand il existe.
-5. **Le plan daté.** Les tâches se répartissent sur des jours de plan et des sprints, en commençant par ce qui lève le plus d'incertitude : un parcours de bout en bout avant d'aller en largeur. Les jalons (démonstrations, recettes, mise en production) se posent, et chaque question reçoit le jour avant lequel il faut sa réponse.
-6. **Ce qu'on peut promettre.** Face à la date et aux jours vendus : ce que couvre le cœur, ce qui tient en plus, ce qui passe sous la ligne, et les questions à poser tout de suite. Si tout ne tient pas, le cœur passe en premier, et le reste se construit ensuite, dans l'ordre de valeur.
+1. **The features.** The full inventory of what the app must do, grouped by area. Each feature points to the place in the spec it comes from: when the client asks for an addition, you know whether it was planned. What the spec leaves vague becomes a question.
+2. **The screens and their views.** The screens the app needs to carry these features, and for each one its views: default, empty, loading, error, variants. At this stage, mockups usually do not exist: the inventory is derived from the spec. If there are some, Claude reads them, links each drawn screen to its entry, and flags the screens and views still to be drawn.
+3. **The questions.** For each feature and each screen, what is missing to build it: a business rule, a content, an access, a decision. Each question names who must answer and the work waiting on it.
+4. **The tasks and their estimate.** Each feature is split into tasks (back end, front end, integration), each screen becomes a task with its number of views, and each task gets its load points, proposed from the developer's history when there is one.
+5. **The dated plan.** The tasks are laid out on plan days and sprints, starting with what removes the most uncertainty: an end-to-end path before going wide. The milestones (demos, acceptance rounds, launch) are set, and each question gets the day its answer is needed by.
+6. **What you can promise.** Against the date and the days sold: what the core covers, what fits on top, what goes below the line, and the questions to ask right away. If everything does not fit, the core comes first, and the rest is built after it, in order of value.
 
-Une fois validé, ce premier plan devient le **plan convenu** : la référence à partir de laquelle on mesure ensuite la croissance du périmètre.
+Once approved, this first plan becomes the **agreed plan**: the reference the growth of the scope is then measured against.
 
-## Apprendre à estimer
+## Learning to estimate
 
-Personne ne sait encore bien estimer le développement avec un agent. Les repères d'hier, construits en codant à la main, surestiment une partie du travail, celle que l'agent écrit vite, et en sous-estiment une autre : relire, tester, corriger ce qu'il a produit. Plutôt que de deviner, solopilot apprend.
+Nobody knows yet how to estimate well when developing with an agent. Yesterday's benchmarks, built by coding by hand, overestimate one part of the work, the part the agent writes fast, and underestimate another: reviewing, testing and fixing what it produced. Rather than guess, solopilot learns.
 
-À chaque tâche terminée, il garde ce qui était estimé (les points), la charge réellement consommée et le type de tâche : écran et nombre de vues, logique métier, intégration d'un service tiers, mise en production. La charge se rattache aux tâches par les commits : les jours de charge déclarés entre le premier et le dernier commit d'une tâche lui reviennent, partagés avec les tâches menées en même temps. Ces données s'accumulent d'un projet à l'autre dans un historique local, propre au développeur, jamais dans le dépôt du client.
+For each task finished, it keeps what was estimated (the points), the effort actually spent and the kind of task: a screen and its number of views, business logic, a third-party integration, a production release. Effort is tied to tasks through the commits: the effort-days declared between a task's first and last commit go to it, shared with the tasks carried out at the same time. This data builds up from one project to the next in a local history, the developer's own, never in the client's repository.
 
-Au projet suivant, l'estimation du premier plan part de cet historique : ce que vaut, pour ce développeur, un écran de cinq vues ou une intégration de paiement, et combien de jours de charge coûte réellement un point. Au premier projet, sans historique, l'estimation part d'hypothèses écrites, que les premières données viendront corriger.
+On the next project, the first plan's estimate starts from this history: what a five-view screen or a payment integration is worth for this developer, and how many effort-days a point really costs. On the first project, with no history, the estimate starts from written assumptions, which the first data will correct.
 
-En cours de projet, le rythme réel peut conduire à recalibrer le plan, mais seulement sur décision du développeur, et jamais sur la foi des premiers jours.
+During a project, the real pace may lead to recalibrating the plan, but only when the developer decides it, and never on the strength of the first days.
 
-## Hors périmètre
+## Out of scope
 
-- Chiffrer un devis : solopilot intervient une fois le projet signé.
-- Le suivi des heures, saisies ou mesurées : feuilles de temps, chronomètres, mesure de l'activité.
-- Les fonctions d'équipe (attribution des tâches, charge par personne), jusqu'à une éventuelle V2.
-- Remplacer la roadmap contractuelle montrée au client. solopilot est le plan vivant qui se tient derrière.
-- Un service hébergé.
+- Pricing a quote: solopilot comes in once the project is signed.
+- Tracking hours, entered or measured: timesheets, stopwatches, activity tracking.
+- Team features (assigning tasks, workload per person), until a possible V2.
+- Replacing the contractual roadmap shown to the client. solopilot is the living plan behind it.
+- A hosted service.
 
-## Questions ouvertes
+## Open questions
 
-- **Démarrer sans historique.** Au premier projet, sur quelles hypothèses Claude propose-t-il les points, et comment les rendre explicites pour que les données les corrigent ?
-- **Où publier le tableau de bord.** Une page que le PO ouvre sans compte particulier, toujours à jour après chaque point.
-- **Plusieurs projets à la fois.** Chaque projet a son propre plan. solopilot doit-il aussi les montrer tous ensemble, et alerter quand le temps promis sur l'ensemble des projets dépasse une journée de travail ?
-- **Sans Claude Code.** Quelle utilité doit avoir l'outil en ligne de commande seul ?
+- **Starting without history.** On the first project, on what assumptions does Claude propose the points, and how can they be made explicit so the data corrects them?
+- **Where to publish the dashboard.** A page the PO opens without any particular account, always up to date after each update.
+- **Without Claude Code.** What use should the command-line tool have on its own?

@@ -151,7 +151,7 @@ export function buildFieldbook(root, { today }) {
     .replace(/^(#.*\r?\n)+/, '# Fieldbook, a fictional project for the solopilot end-to-end scenarios.\n')
     .replace(/^(  holidays: .*)$/m, `$1\n  last_commit: ${lastCommit}`)
     // Q01 went to the client on the Monday of the week before: to chase by now.
-    .replace('{ id: Q01, before: 6, status: open,', `{ id: Q01, before: 6, status: open, asked_on: ${addDays(wednesday, -9)},`);
+    .replace(/(\{ id: Q01, [^}]*?asked_on: )[\d-]+/, `$1${addDays(wednesday, -9)}`);
   writeFileSync(join(pilot, 'solopilot.yaml'), plan);
   git(pilot, ['add', '-A']);
   git(pilot, ['commit', '--quiet', '-m', `plan as of ${wednesday}`]);
@@ -170,5 +170,17 @@ export function buildKerlan(root) {
   cpSync(join(ROOT, 'e2e', 'fixtures', 'kerlan', 'sources'), join(pilot, 'sources'), { recursive: true });
   git(pilot, ['add', '-A']);
   git(pilot, ['commit', '--quiet', '-m', 'sources du projet']);
+  return { pilot, cwd: pilot };
+}
+
+// ---------------------------------------------------------------- Fieldbook, from its documents
+
+// Fieldbook before its first plan, as `solopilot init --example` starts it: the documents of the
+// demo in sources/ (a spec with deliberate gaps and explicit exclusions, kickoff workshop notes, the
+// quote and two mockups showing default states only), in English.
+export function buildFieldbookDocs(root) {
+  const pilot = join(root, 'fieldbook-pilot');
+  newRepo(pilot);
+  solopilot(['init', pilot, '--example'], root);
   return { pilot, cwd: pilot };
 }
