@@ -511,6 +511,8 @@ const RISKS = (() => {
   const ahead = plan.filter((d) => !delivered(d));
   const tight = ahead.filter((d) => d.load === 'tight').length;
   if (tight * 2 > ahead.length) r.push({ level: 'medium', title: t('risks.tight', { n: tight, total: ahead.length }), detail: t('risks.tightDetail'), action: t('risks.seeCalendar'), tab: 'days' });
+  // The real pace, once judged, durably under the estimate: the plan's own estimate may be wrong.
+  if (C.pace && C.pace.risk && C.pace.finish) r.push({ level: C.pace.ratio < 0.6 ? 'high' : 'medium', title: t('risks.realPace', { n: Math.round((1 - C.pace.ratio) * 100) }), detail: t('risks.realPaceDetail', { pace: num(C.pace.value), estimate: num(C.pace.estimate), core: dateShort(C.pace.finish.core) }), action: t('risks.seeDays'), tab: 'days' });
   const order = { high: 0, medium: 1, low: 2 };
   return r.sort((a, b) => order[a.level] - order[b.level]).slice(0, 6);
 })();

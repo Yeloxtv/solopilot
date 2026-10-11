@@ -83,6 +83,21 @@ export function compute(b, { today = localToday(), now = new Date() } = {}) {
   // Time spent is what each session records (effort, in days); a session without it counts as focus.
   const spent = sessions.reduce((s, e) => s + (e.effort ?? focus), 0);
 
+  // The real pace: points delivered per day of effort. It is judged only once the plan has gone far
+  // enough to say something (5 sessions, 15% of the points); below 80% of the estimate it is a risk.
+  // The projection stays on the plan's estimate: the date at the real pace is information.
+  const finishAt = (points, pointsPerDay) => cal.add(from, Math.max(0, Math.ceil(points / (pointsPerDay * focus) - EPS) - 1));
+  const paceValue = spent > EPS ? pointsDone / spent : null;
+  const judged = paceValue !== null && sessions.length >= 5 && pointsTotal > EPS && pointsDone / pointsTotal >= 0.15;
+  const pace = paceValue === null ? null : {
+    value: paceValue,
+    estimate: p.points_per_day,
+    ratio: paceValue / p.points_per_day,
+    judged,
+    risk: judged && paceValue < 0.8 * p.points_per_day,
+    finish: judged && paceValue > EPS ? { core: finishAt(left(coreDay), paceValue), all: finishAt(left(planDays), paceValue) } : null,
+  };
+
   // "before: n" means the answer is needed when the work reaches day n, not on a calendar date the
   // project may run ahead of or behind. That moment is dated at the plan estimate, like the projection.
   const dueDate = (before) => {
@@ -126,7 +141,7 @@ export function compute(b, { today = localToday(), now = new Date() } = {}) {
     today, horizon, start, target, goal: p.goal || null, notStarted,
     planDays, core: coreDay, focus, capacity, pointsPerDay: p.points_per_day,
     workingDays, elapsed, remaining, expected, gap, finish, margin, work, calendarLeft,
-    currentDay, planDone, planAtTarget, lastSession, spent,
+    currentDay, planDone, planAtTarget, lastSession, spent, pace,
     pointsTotal, pointsDone, pointsCore, dayDates,
     counters: {
       tasks: { done: tasks.filter((t) => t.status === 'done').length, total: tasks.length },

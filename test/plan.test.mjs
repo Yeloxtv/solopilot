@@ -125,6 +125,22 @@ test('before day 1, the projection and the due dates start on day 1', () => {
   assert.deepEqual(early.watch.map((x) => x.date), onDay1.watch.map((x) => x.date));
 });
 
+test('the real pace is judged only after 5 sessions and 15% of the plan, and is a risk under 80%', () => {
+  const early = compute(fixture(), { today: '2026-01-07' });
+  assert.equal(early.pace.judged, false, 'two sessions say nothing yet');
+  assert.equal(early.pace.finish, null);
+
+  const b = fixture();
+  for (const date of ['2026-01-07', '2026-01-08', '2026-01-09']) b.log.push({ date, type: 'session', effort: 0.5, title: 'More' });
+  const c = compute(b, { today: '2026-01-09' });
+  // 6 points delivered over 1 + 0.5 + 1.5 days of effort: 2 points a day, for 4 estimated.
+  assert.equal(c.pace.value, 2);
+  assert.equal(c.pace.ratio, 0.5);
+  assert.equal(c.pace.judged, true);
+  assert.equal(c.pace.risk, true);
+  assert.ok(c.pace.finish.core > c.finish.core, 'at the real pace the core ends later than at the estimate');
+});
+
 test('features need a source, a known area and well-formed flags', () => {
   const b = draft();
   b.features.push({ id: 'F03', area: 'nope', title: 'Dup', scope: 'maybe', core: 'yes' });

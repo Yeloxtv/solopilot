@@ -72,6 +72,10 @@ export function statusText(b, c, t) {
   out.push(t('status.tasks', { done: k.tasks.done, total: k.tasks.total })
     + (k.screens.total ? t('status.screens', { done: k.screens.done, total: k.screens.total, vdone: k.views.done, vtotal: k.views.total }) : ''));
   out.push(t('status.spent', { spent: t('units.days', { n: c.spent }), planDays: c.planDays, focus }));
+  if (c.pace?.finish) {
+    const n = Math.round(Math.abs(1 - c.pace.ratio) * 100);
+    out.push(t(c.pace.ratio < 1 ? 'status.paceUnder' : 'status.paceOver', { pace: c.pace.value, estimate: c.pace.estimate, n, core: when(c.pace.finish.core) }));
+  }
   if (c.nextMilestone) out.push(t('status.nextMilestone', { day: day(c.nextMilestone.day), title: c.nextMilestone.title }));
 
   const current = c.days.find((d) => d.day === c.currentDay);

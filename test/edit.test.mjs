@@ -82,6 +82,26 @@ test('an entry is appended to a list, one-line or block', () => {
   assert.match(out, /\ndays:\n {2}- \{ day: 1, title: "One" \}\n/);
 });
 
+test('several entries go into an empty or a missing list, in order', () => {
+  const out = edited((ed) => {
+    ed.append('days', { day: 1, title: 'One' });
+    ed.append('days', { day: 2, title: 'Two' });
+    ed.append('time', { date: '2026-01-05', attention: 1.5 });
+    ed.append('time', { date: '2026-01-06', attention: 2 });
+  });
+  assert.match(out, /\ndays:\n {2}- \{ day: 1, title: "One" \}\n {2}- \{ day: 2, title: "Two" \}\n/);
+  assert.match(out, /\n\ntime:\n {2}- \{ date: 2026-01-05, attention: 1\.5 \}\n {2}- \{ date: 2026-01-06, attention: 2 \}\n$/);
+});
+
+test('upsert replaces the entry of the same key, or adds one', () => {
+  const out = edited((ed) => {
+    ed.upsert('log', 'date', '2026-01-05', { date: '2026-01-05', type: 'session', title: 'Start, amended' });
+    ed.upsert('log', 'date', '2026-01-06', { date: '2026-01-06', type: 'session', title: 'Next' });
+  });
+  assert.match(out, /- \{ date: 2026-01-05, type: session, title: "Start, amended" \}\n {2}- \{ date: 2026-01-06, type: session, title: "Next" \}\n$/);
+  assert.equal(out.match(/2026-01-05/g).length, 1);
+});
+
 test('line endings are kept', () => {
   const crlf = FILE.replace(/\n/g, '\r\n');
   const out = edited((ed) => ed.setProject('core', 3), crlf);

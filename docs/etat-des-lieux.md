@@ -9,7 +9,7 @@ solopilot répond bien au cœur de la douleur : passer d'un cahier des charges f
 Il ne répond pas encore totalement au problème de départ, pour trois raisons :
 
 - **la cause racine reste ouverte** : le périmètre n'est jamais validé par le client. Le plan est interne, et « aucune liste de fonctionnalités décidée en amont » reste vrai ;
-- **le plan ne se confronte jamais à la réalité** : l'estimation repose sur des hypothèses, le temps passé est déclaré, et rien n'apprend ;
+- **le plan ne se confronte jamais à la réalité** : l'estimation repose sur des hypothèses, et rien n'apprend ;
 - **le mode quotidien n'a jamais servi en vrai**, alors que c'est lui qui doit faire gagner du temps.
 
 ## Besoin par besoin
@@ -17,11 +17,11 @@ Il ne répond pas encore totalement au problème de départ, pour trois raisons 
 | Besoin | Ce qui marche | Ce qui manque |
 | --- | --- | --- |
 | Lister les fonctionnalités, des sprints vers la date | Planification en six étapes, sources tracées, cœur et sous la ligne, plan convenu | Rien à envoyer au client pour qu'il valide le périmètre par écrit |
-| Suivre l'avancement et la performance | Avance ou retard, projection, preuves par les commits | L'évolution dans le temps, le rythme réel face à l'estimation, le temps mesuré plutôt que déclaré |
+| Suivre l'avancement et la performance | Avance ou retard, projection, preuves par les commits | L'évolution dans le temps, le rythme réel face à l'estimation |
 | Anticiper les questions bloquantes | Passage au crible initial, échéances qui suivent le travail, réponses groupées par rendez-vous | La recherche des nouvelles questions pendant le développement, la date où une question a été posée et sa relance |
 | Voir les risques | Retard projeté, réponses bloquantes, dépendance à une seule partie, jours tendus | La croissance du périmètre, l'écart durable entre rythme réel et estimation, l'incertitude de l'estimation |
 | Un PO qui ouvre juste le tableau de bord | Tableau de bord complet, digest Slack | La publication jamais testée avec solopilot, l'accès d'un PO à la page à vérifier |
-| Apprendre à estimer, mesurer le temps | Conçu dans la vision | Rien n'est codé |
+| Apprendre à estimer | Conçu dans la vision | Rien n'est codé |
 | Gagner du temps sur le pilotage | Le skill fait la saisie à partir des commits | Jamais testé en vrai ; frictions probables (permissions, hook de rappel) ; aucune vue d'ensemble de plusieurs projets |
 
 ## Les chantiers
@@ -60,17 +60,13 @@ Il le valide par écrit, et sa validation est enregistrée avec le plan convenu.
 
 ### 3. Confronter le plan à la réalité
 
-**Pourquoi.** Une projection qui ignore indéfiniment la réalité n'est pas honnête, et l'outil ne peut apprendre à estimer que sur des mesures.
+**Pourquoi.** Une projection qui ignore indéfiniment la réalité n'est pas honnête.
 
-**Ce qu'on fait.**
-- Relever à chaque point le temps tiré des journaux de Claude Code (temps de l'agent, attention du développeur), et le garder dans le dossier de pilotage.
-- Proposer la charge de la session à partir de cette mesure, au lieu de la demander.
-- Afficher le rythme réel à côté de l'estimation.
-- Lever un risque quand l'écart dure. La projection reste sur l'estimation du plan ; recalibrer reste la décision du développeur.
+**Ce qu'on fait.** Afficher le rythme réel, les points livrés par jour de charge déclarée, à côté de l'estimation, et lever un risque quand l'écart dure. La projection reste sur l'estimation du plan ; recalibrer reste la décision du développeur.
 
-**À trancher.** La source (journaux ou hooks), les seuils qui distinguent une lecture d'une absence, la quantité de données qu'il faut avant de lever le risque.
+**Fini quand** le tableau de bord montre le rythme réel face au plan, et alerte quand il décroche.
 
-**Fini quand** chaque point enregistre un temps mesuré, et le tableau de bord montre le rythme réel face au plan.
+**État (11 octobre).** Fait, selon la [spécification](specs/temps-et-rythme.md). La mesure des heures à partir des journaux de Claude Code a été essayée, puis abandonnée avant d'être livrée. Elle ne voyait qu'un plancher du travail, et un employeur lit tout nombre d'heures comme du temps travaillé. La charge reste déclarée, et l'apprentissage des estimations se fera en jours de charge.
 
 ### 4. Afficher la croissance du périmètre
 
@@ -100,6 +96,6 @@ Il le valide par écrit, et sa validation est enregistrée avec le plan convenu.
 
 ## Ensuite
 
-- Apprendre à estimer à partir de l'historique (chantier 3 d'abord, pour avoir des données).
+- Apprendre à estimer à partir de l'historique : les points estimés face aux jours de charge déclarés que chaque type de tâche a consommés, d'après les commits.
 - Une vue client générée, au-delà du document de périmètre.
 - Avant de passer en public : relire le README, montrer ce qu'il faut pour démarrer avec des documents d'exemple, traduire les documents de travail, ajouter les topics GitHub et un CONTRIBUTING, publier sur npm.

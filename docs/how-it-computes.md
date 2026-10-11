@@ -1,6 +1,6 @@
 # How solopilot computes
 
-solopilot never asks for hours. A solo developer often works on several projects a day, and a timesheet would be a fiction. Progress is read from what is delivered, against the calendar.
+solopilot never asks for hours, and never measures them. A solo developer often works on several projects a day, a timesheet would be a fiction, and any count of hours would be read as the time worked, which it never is. Progress is read from what is delivered, against the calendar.
 
 ## Plan done
 
@@ -30,6 +30,10 @@ The points left, for the core or for everything, are divided by this capacity, `
 
 Each `session` entry of the log records its `effort`, the share of that day spent on the project. Their sum is the time spent, shown against `plan_days`. A session without `effort` counts as `project.focus`.
 
+## The real pace
+
+The real pace is the points delivered per day of effort, against `points_per_day`. The first days say little, so it is judged only after 5 sessions and 15% of the plan's points; then `status` shows it, with the date the core would end at that pace. Below 80% of the estimate, the dashboard raises a risk. The projection itself stays on the plan's estimate: recalibrating `points_per_day` is your decision, logged as a `replan`.
+
 ## Due dates that follow the work
 
 `before: n` on a dependency, a question or a request means the answer is needed when the work reaches day *n*, not on a date of the calendar, which the project may run ahead of or behind. An answer is due **now** when the points delivered reach the start of day *n*. Otherwise its date is when the plan estimate gets there, and it becomes **soon** two working days ahead.
@@ -44,7 +48,8 @@ The dashboard raises risks from the data alone, nothing written by hand:
 - answers that block the current day, and the task waiting on the most of them;
 - one party holding half or more of the open answers;
 - dependencies due now or soon;
-- more than half of the remaining days marked `tight`.
+- more than half of the remaining days marked `tight`;
+- a real pace, once judged, under 80% of the estimate.
 
 ## Plan of record and living plan
 

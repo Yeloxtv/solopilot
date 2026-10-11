@@ -34,9 +34,9 @@ La question à laquelle répondre dès le premier jour : *avec ce budget, cette 
 
 Ce travail se fait avec Claude, étape par étape, et le développeur valide chacune (voir « Le premier plan, pas à pas »).
 
-### 2. Suivre l'avancement et le temps
+### 2. Suivre l'avancement et le rythme réel
 
-Savoir à tout moment où en est le projet par rapport au plan : ce qui est fait, l'avance ou le retard du cœur et de la totalité, et la date à laquelle chacun devrait se terminer. Savoir combien de temps le projet a réellement pris, sans rien saisir.
+Savoir à tout moment où en est le projet par rapport au plan : ce qui est fait, l'avance ou le retard du cœur et de la totalité, et la date à laquelle chacun devrait se terminer. Comparer le rythme réel, les points livrés par jour de charge déclarée, à l'estimation du plan, et alerter quand l'écart dure.
 
 ### 3. Poser les questions bloquantes avant qu'elles bloquent
 
@@ -52,13 +52,14 @@ Le PO ou le chef de projet ouvre le tableau de bord et sait en une minute où en
 
 ### 6. Apprendre de chaque projet pour mieux estimer le suivant
 
-Estimer un projet est devenu trop difficile : avec le code agentique, on va bien plus vite, mais personne ne sait encore de combien, ni sur quel type de travail. Plutôt que de deviner, solopilot accumule les données de chaque projet (ce qui était estimé, le temps réellement passé) et s'en sert pour proposer de meilleures estimations au projet suivant (voir « Apprendre à estimer »).
+Estimer un projet est devenu trop difficile : avec le code agentique, on va bien plus vite, mais personne ne sait encore de combien, ni sur quel type de travail. Plutôt que de deviner, solopilot accumule les données de chaque projet (ce qui était estimé, la charge réellement consommée) et s'en sert pour proposer de meilleures estimations au projet suivant (voir « Apprendre à estimer »).
 
 ## Principes
 
 - **La date tient, le périmètre bouge.** Le cœur est l'engagement, la totalité est l'objectif, le reste passe sous la ligne. Chaque changement de périmètre a un coût visible.
-- **Honnête par construction.** La projection suit l'estimation du plan et la part de chaque journée réellement donnée au projet, jamais le rythme des premiers jours. L'estimation, elle, s'améliore d'un projet à l'autre à partir du temps réellement mesuré, vitesse du code agentique comprise. Jours de travail et jours de calendrier ne sont jamais confondus.
+- **Honnête par construction.** La projection suit l'estimation du plan et la part de chaque journée réellement donnée au projet, jamais le rythme des premiers jours. L'estimation, elle, s'améliore d'un projet à l'autre à partir de la charge que chaque type de tâche a réellement consommée, vitesse du code agentique comprise. Jours de travail et jours de calendrier ne sont jamais confondus.
 - **Le pilotage se fait en travaillant.** Pas de feuille de temps, pas de chronomètre, pas de tickets à déplacer, pas de point d'avancement à rédiger. Claude Code lit le travail réellement fait (commits taggés, tests au vert), propose les mises à jour, et le développeur les valide.
+- **Pas de surveillance.** solopilot ne mesure jamais les heures du développeur. Une mesure tirée de ses sessions ne verrait qu'un plancher de son travail, et un nombre d'heures se lit toujours comme du temps travaillé. La charge est déclarée, en part de journée.
 - **Le développeur décide.** solopilot propose, mesure et alerte. Il n'accepte jamais une demande de changement, ne déplace jamais une échéance et ne recalibre jamais le plan de lui-même.
 - **Le plan appartient à l'agence.** C'est un seul fichier texte versionné, gardé hors du dépôt du client. Retards et marges n'atteignent jamais le client.
 - **Trois publics, trois niveaux de détail.** Le développeur tient le plan à jour sans effort. Le PO, côté agence, lit le tableau de bord avec toute la vérité interne : retards, marges, risques. Le client ne voit que les fonctionnalités livrées, les jalons, et ce qu'on attend de lui.
@@ -66,14 +67,7 @@ Estimer un projet est devenu trop difficile : avec le code agentique, on va bien
 
 ## Où en est solopilot aujourd'hui
 
-| Mission | Couvert aujourd'hui | Ce qui manque |
-| --- | --- | --- |
-| Du cahier des charges au plan daté | Le format : jours de plan avec points de charge, sprints, cœur, jour « later » sous la ligne, date cible, écrans avec leur nombre de vues | La construction du premier plan, décrite plus bas. Aujourd'hui, il se prépare hors de l'outil et s'écrit à la main |
-| Avancement et temps | Plan réalisé, avance ou retard du cœur et de la totalité, projection, preuves par les commits. Le temps consommé vient d'une charge déclarée à chaque session, de 0 à 1 jour | Le temps réellement passé, mesuré plutôt que déclaré |
-| Questions bloquantes | Questions et dépendances rattachées aux tâches qui les attendent, échéances qui suivent le travail, réponses regroupées pour le prochain rendez-vous client | Trouver les questions : une passe systématique sur chaque fonctionnalité du cahier des charges, à la planification et chaque fois que le travail démarre sur une fonctionnalité |
-| Risques | Cœur ou totalité projetés en retard, réponses qui bloquent le jour en cours, une partie qui détient la plupart des réponses, dépendances bientôt dues, trop de jours tendus | La croissance du périmètre : combien de points le plan a gagné depuis qu'il a été convenu, et par quelles demandes |
-| État du projet pour ceux qui le suivent | Tableau de bord régénéré à chaque mise à jour et publié sur une page, digest Slack. Pour le client, un texte rédigé à la demande, sans retards ni marges | Un lien que le PO ouvre sans friction, quel que soit son outil : aujourd'hui, la publication passe par une page claude.ai. Une vue client générée, au lieu d'un texte à rédiger |
-| Apprendre à estimer | Rien : chaque plan repart des seules hypothèses du développeur | L'historique des estimations et du temps réel, et des estimations proposées à partir de cet historique |
+L'état détaillé, besoin par besoin, et la feuille de route des chantiers sont dans l'[état des lieux](etat-des-lieux.md).
 
 ## Le premier plan, pas à pas
 
@@ -90,40 +84,20 @@ C'est le travail qui demande le plus de temps au démarrage, et celui qui décid
 
 Une fois validé, ce premier plan devient le **plan convenu** : la référence à partir de laquelle on mesure ensuite la croissance du périmètre.
 
-## Mesurer le temps et apprendre à estimer
-
-### Mesurer le temps sans le saisir
-
-Le temps réellement passé est la mesure la plus précieuse : pour savoir ce qu'un projet a coûté, et pour mieux estimer le suivant. Mais avec un agent, le temps du développeur et le temps de travail ne se confondent plus. Le développeur lance une demande, valide un plan, passe l'agent en mode automatique et fait autre chose pendant qu'il travaille.
-
-Claude Code tient déjà, en local, un journal horodaté de chaque session, rangé par dossier de projet. On y distingue les messages du développeur, le travail de l'agent, et les permissions accordées à la main ou par le mode automatique. On peut en tirer trois mesures, sans rien saisir :
-
-- **le temps de l'agent** : du message du développeur jusqu'à la fin du travail de l'agent ;
-- **le temps d'attention du développeur** : écrire les demandes, lire les résultats, valider. Un court délai avant un message compte en entier. Un long délai veut dire que le développeur était ailleurs : il ne compte que pour un temps de lecture plafonné ;
-- **l'amplitude** : de la première à la dernière activité de la journée.
-
-Le temps d'attention compte pour le projet de la session où il est passé : faire autre chose sur un autre projet pendant que l'agent travaille, c'est du temps pour cet autre projet.
-
-Cette mesure ne voit pas le travail fait hors de Claude Code (code écrit à la main, réunions, appels, e-mails), ni la durée réelle d'une lecture faite pendant une longue pause. Elle donne donc un plancher, que le développeur complète au moment du point. solopilot ne lirait que les horodatages et le dossier de chaque événement, jamais le contenu des échanges.
-
-Claude Code efface ses journaux au bout de 30 jours par défaut. solopilot relève donc les mesures à chaque point et les garde dans le dossier de pilotage : l'historique ne dépend pas de la durée de conservation des journaux.
-
-Le temps mesuré proposerait la charge de chaque session au lieu de la demander, et montrerait le temps réel face au plan.
-
-### Apprendre à estimer
+## Apprendre à estimer
 
 Personne ne sait encore bien estimer le développement avec un agent. Les repères d'hier, construits en codant à la main, surestiment une partie du travail, celle que l'agent écrit vite, et en sous-estiment une autre : relire, tester, corriger ce qu'il a produit. Plutôt que de deviner, solopilot apprend.
 
-À chaque tâche terminée, il garde ce qui était estimé (les points), le temps mesuré (attention du développeur et temps de l'agent) et le type de tâche : écran et nombre de vues, logique métier, intégration d'un service tiers, mise en production. Le temps se rattache aux tâches par les commits : le temps passé entre deux commits taggés va aux tâches du commit suivant. Ces données s'accumulent d'un projet à l'autre dans un historique local, propre au développeur, jamais dans le dépôt du client.
+À chaque tâche terminée, il garde ce qui était estimé (les points), la charge réellement consommée et le type de tâche : écran et nombre de vues, logique métier, intégration d'un service tiers, mise en production. La charge se rattache aux tâches par les commits : les jours de charge déclarés entre le premier et le dernier commit d'une tâche lui reviennent, partagés avec les tâches menées en même temps. Ces données s'accumulent d'un projet à l'autre dans un historique local, propre au développeur, jamais dans le dépôt du client.
 
-Au projet suivant, l'estimation du premier plan part de cet historique : ce que vaut, pour ce développeur, un écran de cinq vues ou une intégration de paiement, et combien de temps réel coûte un point. Au premier projet, sans historique, l'estimation part d'hypothèses écrites, que les premières données viendront corriger.
+Au projet suivant, l'estimation du premier plan part de cet historique : ce que vaut, pour ce développeur, un écran de cinq vues ou une intégration de paiement, et combien de jours de charge coûte réellement un point. Au premier projet, sans historique, l'estimation part d'hypothèses écrites, que les premières données viendront corriger.
 
-En cours de projet, le rythme mesuré peut conduire à recalibrer le plan, mais seulement sur décision du développeur, et jamais sur la foi des premiers jours.
+En cours de projet, le rythme réel peut conduire à recalibrer le plan, mais seulement sur décision du développeur, et jamais sur la foi des premiers jours.
 
 ## Hors périmètre
 
 - Chiffrer un devis : solopilot intervient une fois le projet signé.
-- La saisie manuelle du temps : feuilles de temps, chronomètres.
+- Le suivi des heures, saisies ou mesurées : feuilles de temps, chronomètres, mesure de l'activité.
 - Les fonctions d'équipe (attribution des tâches, charge par personne), jusqu'à une éventuelle V2.
 - Remplacer la roadmap contractuelle montrée au client. solopilot est le plan vivant qui se tient derrière.
 - Un service hébergé.
@@ -131,9 +105,6 @@ En cours de projet, le rythme mesuré peut conduire à recalibrer le plan, mais 
 ## Questions ouvertes
 
 - **Démarrer sans historique.** Au premier projet, sur quelles hypothèses Claude propose-t-il les points, et comment les rendre explicites pour que les données les corrigent ?
-- **Où vivent les étapes du premier plan.** Tout dans `solopilot.yaml`, ou un document de cadrage à côté (fonctionnalités et sources, écrans et vues) dont le plan est tiré ?
-- **Mesurer le temps : quelle source ?** Les journaux de session existent déjà et couvrent le passé, mais leur format est interne à Claude Code et peut changer. Les hooks de Claude Code (message envoyé, fin de réponse, demande de permission) forment un contrat stable, mais ne mesurent qu'à partir de l'installation. Et quels seuils pour distinguer une lecture d'une absence ?
 - **Où publier le tableau de bord.** Une page que le PO ouvre sans compte particulier, toujours à jour après chaque point.
 - **Plusieurs projets à la fois.** Chaque projet a son propre plan. solopilot doit-il aussi les montrer tous ensemble, et alerter quand le temps promis sur l'ensemble des projets dépasse une journée de travail ?
-- **La vue client.** Le point destiné au client doit-il être une page générée, comme le tableau de bord, plutôt qu'un texte écrit à la demande ?
 - **Sans Claude Code.** Quelle utilité doit avoir l'outil en ligne de commande seul ?

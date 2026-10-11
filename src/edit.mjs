@@ -63,7 +63,7 @@ export class BacklogEditor {
 
   edit(start, end, text) {
     // Insertions at the same point follow each other, in the order they were asked for.
-    const same = start === end && this.edits.find((e) => e.start === start && e.end === start);
+    const same = start === end && this.edits.find((e) => !e.made && e.start === start && e.end === start);
     if (same) same.text += text;
     else this.edits.push({ start, end, text });
   }
@@ -151,21 +151,42 @@ export class BacklogEditor {
     this.expected[key] = structuredClone(items);
   }
 
+  // Replaces the one-line entry whose `key` is `value`, or adds it at the end of the list.
+  upsert(sectionKey, key, value, item) {
+    const seq = this.section(sectionKey)?.value;
+    const index = YAML.isSeq(seq) ? seq.items.findIndex((m) => YAML.isMap(m) && String(m.get(key)) === String(value)) : -1;
+    if (index < 0) return this.append(sectionKey, item);
+    const node = seq.items[index];
+    if (!node.flow || !node.range) throw new EditRefused(`the ${sectionKey} entry of ${value} is not written on one line`);
+    this.edit(node.range[0], node.range[1], yamlValue(item));
+    this.expected[sectionKey][index] = structuredClone(item);
+  }
+
   // Adds a one-line entry at the end of a list, creating the list at the end of the file if needed.
   append(key, item) {
     const pair = this.section(key);
-    if (!pair) return this.replaceList(key, [...(this.expected[key] ?? []), item]);
-    const seq = pair.value;
-    if (!YAML.isSeq(seq) || !seq.range) throw new EditRefused(`${key} is not a list`);
-    if (seq.flow) {
-      if (seq.items.length) throw new EditRefused(`${key} is written on one line`);
-      this.edit(this.afterKey(seq), seq.range[1], `\n  - ${yamlValue(item)}`);
-    } else {
+    const seq = pair?.value;
+    if (pair && (!YAML.isSeq(seq) || !seq.range)) throw new EditRefused(`${key} is not a list`);
+    if (pair && seq.flow && seq.items.length) throw new EditRefused(`${key} is written on one line`);
+    this.expected[key] = [...(this.expected[key] ?? []), structuredClone(item)];
+    if (pair && !seq.flow) {
       const last = seq.items[seq.items.length - 1];
       const at = this.lineEnd(last.range[1]);
       this.edit(at, at, `\n${this.indentOf(seq.range[0])}- ${yamlValue(item)}`);
+      return;
     }
-    this.expected[key] = [...(this.expected[key] ?? []), structuredClone(item)];
+    // A list that is empty (`[]`) or missing: its new lines grow with each entry added in this edit.
+    this.made ??= new Map();
+    let made = this.made.get(key);
+    if (!made) {
+      made = pair
+        ? { items: [], edit: { start: this.afterKey(seq), end: seq.range[1], made: true }, wrap: (lines) => lines }
+        : { items: [], edit: { start: this.src.length, end: this.src.length, made: true }, wrap: (lines) => `${this.src.endsWith('\n') ? '' : '\n'}\n${key}:${lines}\n` };
+      this.made.set(key, made);
+      this.edits.push(made.edit);
+    }
+    made.items.push(item);
+    made.edit.text = made.wrap(made.items.map((x) => `\n  - ${yamlValue(x)}`).join(''));
   }
 
   // The edited text, once it reads back as the expected data.
