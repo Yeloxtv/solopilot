@@ -13,6 +13,8 @@ The first plan comes first: from the project documents to a dated plan, in six s
 5. **Follow the life of questions.** When each question was asked, how long it has waited, who to chase, and what the work needs within two weeks that was never asked. At each update, the skill looks over the next three plan days for the answers still missing ([design](design/life-of-questions.md)).
 6. **See all your projects together.** The share of the day each plan assumes, added up week by week: over one day, at least one projection will not hold. The skill checks it before planning a new project ([design](design/all-projects.md)).
 
+Then solopilot went public, on October 12, 2026: the repository is open, 0.3.0 is on npm, the tests run on Linux, macOS and Windows at every push, and testers have a trial report to tell how it went ([design](design/public-release.md)).
+
 ## Next
 
 - **A month of real use first.** The six workstreams were validated on one real project and on fictional ones. Nothing below starts before solopilot has run a month on a real project as it is: what that month teaches outranks any planned feature.
@@ -20,4 +22,3 @@ The first plan comes first: from the project documents to a dated plan, in six s
 - **A generated view for the client**, beyond the scope document, once the need is confirmed.
 - **A page of all projects** to publish for an agency's management, once the need is confirmed.
 - **Teams.** solopilot is built for one developer; a version for a small team may follow.
-- **Going public** is under way ([design](design/public-release.md)).

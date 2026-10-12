@@ -1,6 +1,6 @@
 # Specification: preparing the public release
 
-Status: agreed on 2026-10-11, in progress. Follows the [roadmap](../roadmap.md), section "Next".
+Status: agreed on 2026-10-11, done on 2026-10-12: the repository is public, and 0.3.0 is on npm. Follows the [roadmap](../roadmap.md), section "Next".
 
 ## Goal
 
