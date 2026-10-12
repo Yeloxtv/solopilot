@@ -22,6 +22,7 @@
     "calendar": { "one": "{n} jour ouvré restant sur {total}", "other": "{n} jours ouvrés restants sur {total}" },
     "split": "Cœur ({core}) : {coreGap}. Totalité ({all}) : {allGap}.",
     "projection": "À l'estimation du plan, {focus} j par jour ouvré : cœur {core}, totalité {all}.",
+    "hypotheses": "Estimation sur hypothèses, pas encore confrontée au rythme réel : il est jugé après 5 sessions et 15 % du plan.",
     "on": "le {date}",
     "onLate": "le {date}, après la cible",
     "tasks": "Tâches {done}/{total}",
@@ -85,6 +86,7 @@
     "goalClient": "<strong>L'objectif :</strong> {goalMid} pour {client} le {target}, avec au minimum le cœur du produit ({range} du plan). Le reste s'ajoute s'il tient avant.",
     "focus": "<strong>{focus} jour par jour ouvré, en moyenne.</strong> Le temps consacré au projet varie d'un jour à l'autre ; le plan en compte la moyenne. Un jour de travail prévu occupe donc {ratio} jours ouvrés du calendrier.",
     "work": "<strong>Travail ou calendrier.</strong> Les « jours » du plan sont des jours de travail, estimés au départ : {planDays} jours, soit environ {points} points de charge par jour. Les dates de la page sont des dates de calendrier qui en découlent. Elles ne sont pas extrapolées des premiers jours.",
+    "hypotheses": "<strong>Estimation sur hypothèses.</strong> Elle n'a pas encore été confrontée au rythme réel : il est jugé après 5 sessions et 15 % du plan.",
     "workLeft": "Travail restant",
     "calendar": "Calendrier",
     "readyBy": "Prêt vers",
@@ -292,6 +294,7 @@
     "by": "nécessaire vers le {date}",
     "toSet": "date à préciser",
     "source": "source : {source}",
+    "sourceRequest": "à la demande de {who}",
     "agreement": "Accord",
     "agreementBlank": "Bon pour accord : nom, date et signature.",
     "agreed": "Validé par {by} le {date}."

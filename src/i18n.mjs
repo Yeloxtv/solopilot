@@ -16,7 +16,12 @@ export function makeT(strings, intl) {
     let s = lookup(key);
     if (s == null) return key;
     if (typeof s === 'object') s = s[plural.select(Number(vars.n))] ?? s.other;
-    return String(s).replace(/\{(\w+)\}/g, (m, k) => (k in vars ? (typeof vars[k] === 'number' ? num(vars[k]) : String(vars[k])) : m));
+    return String(s).replace(/\{(\w+)\}(\.?)/g, (m, k, dot) => {
+      if (!(k in vars)) return m;
+      const v = typeof vars[k] === 'number' ? num(vars[k]) : String(vars[k]);
+      // A value that already ends on a period, such as a short French month ("22 oct."), takes no second one.
+      return dot && v.endsWith('.') ? v : v + dot;
+    });
   };
   t.num = num;
   t.list = (items) => new Intl.ListFormat(intl, { type: 'conjunction' }).format(items.map(String));

@@ -5,6 +5,15 @@
 - The dashboard carries English and French. It opens in the plan's language, and a switch in its header changes the page's words and date formats; the browser remembers the reader's choice. The plan's own text (titles, notes, questions) stays as it was written.
 - `README.fr.md` shows the dashboard in French (`docs/dashboard.fr.png`).
 
+The scope document, reread:
+
+- The dates it gives the client are the plan's, computed from day 1 at the plan estimate as if no work had been done: they move only when the plan changes, and never show the project ahead or behind.
+- The questions the developer must answer themselves (`who` is `project.owner`) stay out of it.
+- A feature added by a request (`source: R01`) reads "requested by Harbor & Pine", never the request's id. `check` refuses a request as a source when no request carries that id.
+- `status` and the dashboard say when the estimate rests on hypotheses alone, until the real pace is judged.
+- The dashboard's risks no longer escape a name twice: "Harbor & Pine" instead of "Harbor &amp;amp; Pine".
+- A value that already ends on a period takes no second one: "vers le 22 oct." instead of "vers le 22 oct..".
+
 ## 0.2.0
 
 The first version published on npm.

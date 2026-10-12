@@ -1,13 +1,14 @@
 // The scope document for the client: what the plan commits to, what follows, what is not planned or
 // excluded, and what is expected from the client. It is built from a few chosen fields only: no lead,
-// delay, margin or projected date can reach it.
+// delay, margin or projected date can reach it, and the dates are the plan's, not the work's.
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { LATER, featureIds } from './backlog.mjs';
+import { LATER, REQUEST_ID, featureIds } from './backlog.mjs';
+import { compute } from './compute.mjs';
 
 // Each feature in one of four places: guaranteed (the core), planned next, not planned (below the
 // line), out of scope.
-export function scopeData(b, c) {
+export function scopeData(b, { today }) {
   const p = b.project;
   const area = new Map(b.areas.map((a) => [a.id, a.title]));
   const place = (f) => {
@@ -16,18 +17,26 @@ export function scopeData(b, c) {
     if (tasks.length && tasks.every((t) => t.day === LATER)) return 'later';
     return f.core ? 'core' : 'planned';
   };
+  // A feature added by a request shows who asked for it, never the request's id.
+  const requestedBy = (f) => (REQUEST_ID.test(f.source) ? b.requests.find((r) => r.id === f.source)?.who : undefined);
   const groups = { core: [], planned: [], later: [], out: [] };
-  for (const f of b.features) groups[place(f)].push({ title: f.title, source: f.source, area: area.get(f.area) ?? '', note: f.scope === 'out' ? f.note : undefined });
-  // When is it needed: the due date that follows the work, which the client can plan for. The most
-  // pressing first; those without a day last.
-  const due = new Map(c.watch.map((x) => [x.id, x.date]));
+  for (const f of b.features) {
+    const who = requestedBy(f);
+    groups[place(f)].push({ title: f.title, source: who ? undefined : f.source, requestedBy: who, area: area.get(f.area) ?? '', note: f.scope === 'out' ? f.note : undefined });
+  }
+  // When is it needed: the plan's date, computed as if no work had been done, so it moves only when
+  // the plan itself changes. Where the work stands, ahead or behind, never reaches the client.
+  const planned = compute({ ...b, tasks: b.tasks.map((t) => (t.status === 'done' ? { ...t, status: 'todo' } : t)) }, { today: String(p.start) });
+  const due = new Map(planned.watch.map((x) => [x.id, x.date]));
   const soonest = (a, z) => (a.by ?? '9999').localeCompare(z.by ?? '9999');
+  // The owner's own answers are not the client's business.
+  const ours = (x) => x.who !== p.owner;
   return {
-    name: p.name, client: p.client, goal: c.goal, target: c.target, today: c.today,
+    name: p.name, client: p.client, goal: p.goal || null, target: String(p.target), today,
     agreed: p.scope_agreed,
     groups,
-    dependencies: b.dependencies.filter((d) => d.status !== 'received').map((d) => ({ who: d.who, title: d.title, by: due.get(d.id) ?? null })).sort(soonest),
-    questions: b.questions.filter((q) => q.status !== 'answered').map((q) => ({ who: q.who, title: q.title, stake: q.stake, by: due.get(q.id) ?? null })).sort(soonest),
+    dependencies: b.dependencies.filter((d) => d.status !== 'received' && ours(d)).map((d) => ({ who: d.who, title: d.title, by: due.get(d.id) ?? null })).sort(soonest),
+    questions: b.questions.filter((q) => q.status !== 'answered' && ours(q)).map((q) => ({ who: q.who, title: q.title, stake: q.stake, by: due.get(q.id) ?? null })).sort(soonest),
     requests: b.requests.filter((r) => r.status === 'pending').map((r) => ({ title: r.title })),
   };
 }
@@ -46,10 +55,11 @@ function sections(s, t) {
   const date = (d) => t.date(String(d), { day: 'numeric', month: 'long', year: 'numeric' });
   const goal = s.goal || t('goal');
   const when = (by) => (by ? t('scope.by', { date: date(by) }) : t('scope.toSet'));
+  const aside = (x) => x.note ?? (x.requestedBy ? t('scope.sourceRequest', { who: x.requestedBy }) : x.source ? t('scope.source', { source: x.source }) : '');
   const out = [{ title: t('scope.goal'), text: t('scope.goalLine', { goal, target: date(s.target) }) }];
   const features = (key, title) => {
     if (!s.groups[key].length) return;
-    out.push({ title, sub: t(`scope.${key}Sub`), areas: byArea(s.groups[key]).map(([name, items]) => ({ name, items: items.map((x) => ({ text: x.title, aside: x.note ?? (x.source ? t('scope.source', { source: x.source }) : '') })) })) });
+    out.push({ title, sub: t(`scope.${key}Sub`), areas: byArea(s.groups[key]).map(([name, items]) => ({ name, items: items.map((x) => ({ text: x.title, aside: aside(x) })) })) });
   };
   features('core', t('scope.core', { target: date(s.target) }));
   features('planned', t('scope.planned'));

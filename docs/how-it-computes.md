@@ -40,6 +40,8 @@ The real pace is the points delivered per day of effort, against `points_per_day
 
 This is fairer to everyone: a project often starts before the client workshops, and a date drawn from day 1 would blame the client for answers the work does not need yet.
 
+The scope document for the client shows the plan's dates instead, computed from day 1 at the plan estimate as if no work had been done: they move only when the plan changes, and never show the project ahead or behind.
+
 ## Asked, waiting, to chase
 
 A question or a dependency is **asked** on the day in `asked_on`, and waits from then, in working days. It is **to chase** `chase_after` working days (5 by default) after it was asked or last reminded (`reminded_on`). An answer the work needs within two weeks, or now, that has no `asked_on` is **never asked**: the costliest case, since nobody even knows it is awaited. `status` and the digest list who to chase; the dashboard shows each answer's state and raises a risk for those never asked.

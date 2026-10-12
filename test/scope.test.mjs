@@ -28,7 +28,7 @@ function withFeatures(project = {}) {
 
 const render = (b, lang = 'en', today = '2026-01-07') => {
   const { t } = loadLocale(lang);
-  const s = scopeData(b, compute(b, { today }));
+  const s = scopeData(b, { today });
   return { s, md: scopeMarkdown(s, t), html: scopeHtml(s, t, lang) };
 };
 
@@ -45,7 +45,7 @@ test('the document carries what the client needs, sources and dates included', (
   assert.match(md, /^# Test: project scope$/m);
   assert.match(md, /## Guaranteed for January 16, 2026\n\n\*The core of the product[^\n]*\n\n### Core\n\n- Sign-in \(source: Spec, §2\.1\)/);
   assert.match(md, /## Out of scope[\s\S]*- Accounting \(Excluded in the spec\)/);
-  assert.match(md, /## What we need from you\n\n- \*\*Acme\*\*: Logo files \(needed around January \d+, 2026\)/);
+  assert.match(md, /## What we need from you\n\n- \*\*Acme\*\*: Logo files \(needed around January 9, 2026\)/);
   assert.match(md, /## Questions to settle\n\n- \*\*Acme\*\*: Who signs off\?/);
   assert.match(md, /## Pending requests[\s\S]*- Dark mode/);
   assert.match(md, /## Agreement\n\nApproved: name, date and signature\./);
@@ -59,7 +59,7 @@ test('nothing internal reaches the client: no lead, delay, margin, points or pro
   for (const lang of ['en', 'fr']) {
     const { md, html } = render(b, lang, '2026-01-14');
     for (const doc of [md, html.replace(/<style>[\s\S]*?<\/style>/, '')]) {
-      assert.doesNotMatch(doc, /margin|marge|behind|retard|ahead|avance|delay|points?\b|recommend/i);
+      assert.doesNotMatch(doc, /margin|marge|behind|retard|ahead|avance|delay|points?\b|recommend|\bR\d{2,4}\b/i);
     }
   }
 });
@@ -84,4 +84,38 @@ test('French writes the first of the month as an ordinal', () => {
   assert.equal(t.date('2026-12-01', { day: 'numeric', month: 'long' }), '1er décembre');
   assert.equal(t.date('2026-12-11', { day: 'numeric', month: 'long' }), '11 décembre');
   assert.equal(loadLocale('en').t.date('2026-12-01', { day: 'numeric', month: 'long' }), 'December 1');
+});
+
+test("the owner's own questions and dependencies stay out of the document, not off the dashboard", () => {
+  const b = withFeatures({ owner: 'Me' });
+  b.questions.push({ id: 'Q03', before: 3, status: 'open', who: 'Me', title: 'Index strategy?' });
+  b.dependencies.push({ id: 'D03', before: 3, status: 'waiting', who: 'Me', title: 'My laptop' });
+  assert.deepEqual(validate(b).errors, []);
+  const { s, md } = render(b);
+  assert.deepEqual(s.questions.map((q) => q.who), ['Acme', 'Acme']);
+  assert.deepEqual(s.dependencies.map((d) => d.who), ['Acme']);
+  assert.doesNotMatch(md, /Index strategy|My laptop/);
+  assert.ok(compute(b, { today: '2026-01-07' }).watch.some((x) => x.id === 'Q03'), 'the dashboard still lists it');
+});
+
+test('a feature added by a request reads "requested by", never the request id', () => {
+  const b = withFeatures();
+  b.features.push({ id: 'F05', area: 'core', title: 'Dark mode', source: 'R01' });
+  assert.deepEqual(validate(b).errors, []);
+  assert.match(render(b).md, /- Dark mode \(requested by Acme\)/);
+  assert.match(render(b, 'fr').md, /- Dark mode \(à la demande de Acme\)/);
+  assert.doesNotMatch(render(b).md, /\bR01\b/);
+  b.features[4].source = 'R99';
+  assert.match(validate(b).errors.join('\n'), /F05: source R99, request not found/);
+});
+
+test("the dates are the plan's: they ignore the work done, and move only when the plan changes", () => {
+  const b = withFeatures();
+  const by = (today) => render(b, 'en', today).s.dependencies[0].by;
+  assert.equal(by('2026-01-07'), '2026-01-09');
+  Object.assign(b.tasks[2], { status: 'done', done_on: '2026-01-07' });
+  assert.equal(by('2026-01-14'), '2026-01-09');
+  assert.notEqual(compute(b, { today: '2026-01-14' }).watch.find((x) => x.id === 'D02').date, '2026-01-09', 'the dashboard date follows the work');
+  b.days[0].points = 6;
+  assert.equal(by('2026-01-14'), '2026-01-12');
 });

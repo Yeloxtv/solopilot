@@ -92,6 +92,8 @@ export function statusText(b, c, t) {
     all: t('range', { from: day(1), to: day(c.planDays) }), allGap: situation(c.gap.all),
   }));
   out.push(t('status.projection', { focus, core: when(c.finish.core), all: when(c.finish.all) }));
+  // Until the real pace is judged, the projection rests on the estimate's hypotheses alone.
+  if (b.estimation?.basis === 'hypotheses' && !c.pace?.judged) out.push(t('status.hypotheses'));
   const k = c.counters;
   out.push(t('status.tasks', { done: k.tasks.done, total: k.tasks.total })
     + (k.screens.total ? t('status.screens', { done: k.screens.done, total: k.screens.total, vdone: k.views.done, vtotal: k.views.total }) : ''));

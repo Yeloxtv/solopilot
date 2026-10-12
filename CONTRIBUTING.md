@@ -42,7 +42,7 @@ npm run e2e -- first-plan     # the first plan of Kerlan, in French, about $1.20
 npm run e2e -- first-plan-en  # the first plan of Fieldbook, from its documents
 ```
 
-They spend real tokens on your account, so they stay out of `npm test`. Run the one that matches what you changed, especially after editing the skill. Each run writes a report in `e2e/results/` (not committed): the checks, the tools Claude used, the permission denials and what it said. Options: `--model`, `--effort`, `--budget` (dollars per turn).
+They spend real tokens on your account, so they stay out of `npm test`. Run the one that matches what you changed. Run all three after editing the skill, and whenever Claude Code's default model changes: the skill is prose, and only these scenarios tell whether a new model still follows it. Each run writes a report in `e2e/results/` (not committed): the checks, the tools Claude used, the permission denials and what it said. Options: `--model`, `--effort`, `--budget` (dollars per turn).
 
 ## Principles to keep
 

@@ -9,7 +9,7 @@ import { readBacklog } from '../src/backlog.mjs';
 import { compute } from '../src/compute.mjs';
 import { renderDashboard } from '../src/dashboard.mjs';
 import { loadLocale } from '../src/i18n.mjs';
-import { digestMessage, growthView, midSentence, milestoneMessage } from '../src/report.mjs';
+import { digestMessage, growthView, midSentence, milestoneMessage, statusText } from '../src/report.mjs';
 import { fixture } from './fixture.mjs';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
@@ -29,6 +29,9 @@ test('the demo checks and reports', () => {
   const status = run(['status', '--dir', DEMO, '--today', '2026-10-21']);
   assert.equal(status.status, 0);
   assert.match(status.stdout, /Launch on November 27/);
+  // By then the real pace is judged: the estimate's hypotheses are no longer the only basis.
+  assert.match(status.stdout, /Real pace/);
+  assert.doesNotMatch(status.stdout, /hypotheses/);
   assert.match(run(['status', '--dir', DEMO, '--today', '2026-10-21', '--locale', 'fr']).stdout, /le 27 novembre/);
 });
 
@@ -355,4 +358,14 @@ test('install refuses settings of an unexpected shape, before writing anything',
   assert.match(out.stderr, /shape Claude Code expects/);
   assert.equal(readFileSync(join(project, '.claude', 'settings.local.json'), 'utf8'), settings);
   assert.equal(existsSync(join(pilot, '.env')), false);
+});
+
+test('status says when the estimate rests on hypotheses alone, until the real pace is judged', () => {
+  const { t } = loadLocale('en');
+  const b = fixture({ sections: { estimation: { basis: 'hypotheses', grid: [] } } });
+  assert.match(statusText(b, compute(b, { today: '2026-01-07' }), t), /Estimate from hypotheses/);
+  for (const date of ['2026-01-07', '2026-01-08', '2026-01-09']) b.log.push({ date, type: 'session', effort: 0.5, title: 'More' });
+  const out = statusText(b, compute(b, { today: '2026-01-12' }), t);
+  assert.doesNotMatch(out, /hypotheses/);
+  assert.match(out, /Real pace/);
 });

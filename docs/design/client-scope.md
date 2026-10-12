@@ -17,8 +17,8 @@ Generated from `solopilot.yaml`, in the project's language, with no delay, margi
 | Planned next, within the budget | The other features of the plan |
 | Not planned at this stage | What is below the line: possible only if time remains, with no commitment |
 | Out of scope | The exclusions (`scope: out`), with the reason |
-| What we need from you | The dependencies: who, what, and around which date it is needed |
-| Questions to settle | The open questions: who answers, what it unblocks, by when |
+| What we need from you | The dependencies: who, what, and around which planned date it is needed |
+| Questions to settle | The open questions: who answers, what it unblocks, by which planned date. Those the developer must answer themselves stay out |
 | Pending requests | The requests not yet triaged, to be estimated separately |
 | Agreement | Name, date, signature, or a simple "approved" by email |
 
@@ -46,6 +46,12 @@ The plan agreed internally lets development start without waiting for the client
 2. **When the approval comes.** *Recommended: the plan agreed internally first, the client's approval afterwards, recorded separately.* The alternative is to wait for the client's approval to close planning, which would hold up the start.
 3. **What is authoritative.** *Recommended: the client's approval becomes the reference for the scope as soon as it exists, the plan agreed internally otherwise.*
 4. **The content.** *Recommended: the nine sections above, sources included.*
+
+## Decisions (2026-10-12), after a first reread of the document
+
+5. **The dates are the plan's, not the work's.** The dashboard dates an answer from where the work stands; a document regenerated while the project runs late would then show every date slipping, and a client comparing two versions would read the delay. The document dates each answer from day 1 at the plan estimate, as if no work had been done: the dates move only when the plan changes.
+6. **The owner's own questions stay out.** A question the developer must answer themselves (`who` is `project.owner`) is not the client's business.
+7. **A request as a source reads "requested by".** A feature added by a request keeps `source: R01` in the plan; the document shows "requested by Harbor & Pine" instead of the id.
 
 ## How it is tested
 

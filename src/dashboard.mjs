@@ -18,7 +18,7 @@ export function renderDashboard(b, c, locale) {
   const { growthView: _, ...calc } = c;
   const data = {
     project: b.project, people: b.people, sprints: b.sprints, milestones: b.milestones, meetings: b.meetings,
-    dependencies: b.dependencies, questions: b.questions, requests: b.requests, areas: b.areas, log: b.log,
+    dependencies: b.dependencies, questions: b.questions, requests: b.requests, areas: b.areas, log: b.log, estimation: b.estimation,
     calc, lang: locale.lang, locales,
   };
   const values = {

@@ -15,6 +15,7 @@ export const TASK_STATUSES = ['todo', 'doing', 'done', 'blocked', 'deferred'];
 export const TASK_KINDS = ['setup', 'logic', 'integration', 'content', 'release'];
 export const TASK_ID = /^[TS]\d{2,4}$/;
 export const FEATURE_ID = /^F\d{2,4}$/;
+export const REQUEST_ID = /^R\d{2,4}$/;
 // Task ids inside the square brackets of a commit subject: "[T024] …" or "[T025 S05] …".
 export const TAG_IDS = /[TS]\d{2,4}/g;
 
@@ -123,6 +124,8 @@ export function validate(b) {
     features.add(f.id);
     if (!f.title) err(`${f.id}: title missing`);
     if (!f.source) err(`${f.id}: source, where it comes from in the project documents`);
+    // A feature added by a request names it: the scope document then reads "requested by".
+    else if (REQUEST_ID.test(f.source) && !b.requests.some((r) => r.id === f.source)) err(`${f.id}: source ${f.source}, request not found`);
     if (areas.size && !areas.has(f.area)) err(`${f.id}: area "${f.area}" not found in areas`);
     if (f.scope !== undefined && !['in', 'out'].includes(f.scope)) err(`${f.id}: scope is in or out`);
     if (f.core !== undefined && typeof f.core !== 'boolean') err(`${f.id}: core is true or false`);

@@ -287,7 +287,7 @@ const commands = {
     const { dir, b, t, locale, today: asOf } = load(opts);
     if (isPlanning(b)) fail('The scope document comes from an agreed plan: run `solopilot baseline` first.');
     const today = asOf || localToday();
-    const generate = (backlog) => writeScope(dir, scopeData(backlog, compute(backlog, { today })), t, locale.lang);
+    const generate = (backlog) => writeScope(dir, scopeData(backlog, { today }), t, locale.lang);
     if (opts['agreed-by'] === undefined) {
       const { html, md } = generate(b);
       console.log(`Scope document, to print as PDF: ${html}`);

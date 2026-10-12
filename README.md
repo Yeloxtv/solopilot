@@ -8,20 +8,15 @@
 
 You are building a real app for a client, alone. No project manager, no ticketing tool, a spec and a deadline. Every few days, the same questions come back: *Will the core be ready on time? What is blocking me? What do I need from the client, and by when?*
 
-solopilot answers them from one YAML file you keep in git, without timesheets.
+solopilot answers them from one YAML file you keep in git, without timesheets. It costs a planning day at the start, a tag on each commit and ten minutes at the end of each session.
 
 ## What makes it different
 
-- **An honest projection.** The plan is estimated upfront in work days, each carrying load points. The projection divides what is left by the plan's own estimate times the share of your day you really give the project, never by the pace of the first days, which says nothing about the heavy days ahead.
-- **Work days are not calendar days.** If you give a project half of each day, one planned work day takes two working days of calendar. The dashboard shows both, side by side.
-- **Core and everything.** You commit to a core (day 1 to day *n*) and aim for the whole plan. Both are tracked against the target date, with the margin in working days.
-- **From the spec to a dated plan.** Claude drafts the features, screens and views, questions and estimate from your project documents, one step at a time, and you approve each one.
-- **A scope the client approves, and its growth measured.** The plan becomes a scope document the client signs off, without your delays or margins. Every request after that shows the points it adds, and the dashboard tells how far the scope has grown since, and from where.
-- **All your projects together.** Each plan assumes its own share of your day. `solopilot projects` adds them up week by week and warns when they come to more than a day: at least one projection will not hold. The skill checks it before you start planning a new project.
-- **Due dates follow the work.** A question needed before day 9 becomes urgent when the work reaches day 9, not on a date fixed at kickoff. You stop blaming a client for being "late" on something you have not reached yet.
+- **From the spec to a scope the client approves.** Claude drafts the features, screens and views, questions and estimate from your project documents, one step at a time, and you approve each one. The plan becomes a scope document the client signs off, without your delays or margins. Every request after that shows the points it adds, and the dashboard tells how far the scope has grown since, and from where.
+- **An honest projection.** The plan is estimated upfront in work days, each carrying load points. The projection divides what is left by the plan's own estimate times the share of your day you really give the project, never by the pace of the first days. If you give a project half of each day, one planned work day takes two working days of calendar: the dashboard shows both. You commit to a core (day 1 to day *n*) and aim for the whole plan; both are tracked against the target date, with the margin in working days.
+- **Questions before they block.** A question needed before day 9 becomes urgent when the work reaches day 9, not on a date fixed at kickoff: you stop blaming a client for being "late" on something you have not reached yet. Each answer shows whether it was asked, how long it has waited, who to chase, and which ones the work needs soon that nobody has asked for.
 - **Private by design.** The plan lives in its own directory, next to the project, never inside it. Your client gets a clean repository; your delays and margins stay yours. Only task ids travel with the code, in commit messages: `[T024] add search`.
-- **Claude Code native.** The `/solopilot` skill reads your tagged commits, proposes status changes, writes them once you approve, rebuilds the dashboard and posts the digest. A hook reminds you when commits are waiting to be reported.
-- **English and French**, for the dashboard, the digest and the terminal report. The dashboard opens in the plan's language, and a switch in its header changes to the other.
+- **Claude Code native.** The `/solopilot` skill reads your tagged commits, proposes status changes, writes them once you approve, rebuilds the dashboard and posts the digest. A hook reminds you when commits are waiting to be reported. `solopilot projects` adds up the share of the day every plan assumes and warns when it exceeds one. The dashboard, the digest and the terminal report read in English or in French; the dashboard opens in the plan's language, and a switch in its header changes to the other.
 
 ## What you need to start
 

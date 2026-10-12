@@ -22,6 +22,7 @@
     "calendar": { "one": "{n} working day left out of {total}", "other": "{n} working days left out of {total}" },
     "split": "Core ({core}): {coreGap}. Everything ({all}): {allGap}.",
     "projection": "At the plan estimate, {focus} d per working day: core {core}, everything {all}.",
+    "hypotheses": "Estimate from hypotheses, not yet checked against the real pace: it is judged after 5 sessions and 15% of the plan.",
     "on": "on {date}",
     "onLate": "on {date}, after the target",
     "tasks": "Tasks {done}/{total}",
@@ -85,6 +86,7 @@
     "goalClient": "<strong>The goal:</strong> {goalMid} for {client} on {target}, with at least the core of the product ({range} of the plan). The rest comes on top if it fits before.",
     "focus": "<strong>{focus} day per working day, on average.</strong> Time spent on the project varies from day to day; the plan uses the average. So one planned work day takes {ratio} working days on the calendar.",
     "work": "<strong>Work or calendar.</strong> Plan “days” are work days, estimated upfront: {planDays} days, about {points} load points per day. The dates on this page are calendar dates derived from them, never extrapolated from the first days.",
+    "hypotheses": "<strong>Estimate from hypotheses.</strong> It has not been checked against the real pace yet: that is judged after 5 sessions and 15% of the plan.",
     "workLeft": "Work left",
     "calendar": "Calendar",
     "readyBy": "Ready around",
@@ -292,6 +294,7 @@
     "by": "needed around {date}",
     "toSet": "date to be set",
     "source": "source: {source}",
+    "sourceRequest": "requested by {who}",
     "agreement": "Agreement",
     "agreementBlank": "Approved: name, date and signature.",
     "agreed": "Approved by {by} on {date}."

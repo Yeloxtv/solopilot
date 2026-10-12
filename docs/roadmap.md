@@ -15,6 +15,7 @@ The first plan comes first: from the project documents to a dated plan, in six s
 
 ## Next
 
+- **A month of real use first.** The six workstreams were validated on one real project and on fictional ones. Nothing below starts before solopilot has run a month on a real project as it is: what that month teaches outranks any planned feature.
 - **Learn to estimate from history**: the points estimated against the effort days each kind of task really took. It waits for the history of a real project far enough along.
 - **A generated view for the client**, beyond the scope document, once the need is confirmed.
 - **A page of all projects** to publish for an agency's management, once the need is confirmed.

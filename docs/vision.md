@@ -10,7 +10,7 @@ Run this way, a project almost certainly hits the wall. The date is fixed, the s
 
 This is not peculiar to small companies. Web projects sell for less and less, and AI pushes to deliver ever faster. Steering is the first thing to go: there is no longer the budget for someone to spend hours keeping a schedule, chasing the client and writing status updates. Yet it is without steering that projects go off the rails.
 
-solopilot makes steering a by-product of development. The plan is updated from the work actually done, and whoever follows the project only has to open the dashboard to know where it stands.
+solopilot makes steering cheap enough to keep doing: a day of planning at the start, a tag on each commit, ten minutes at the end of each session and the share of the day declared, in place of a meeting and a written report. The plan is updated from the work actually done, and whoever follows the project only has to open the dashboard to know where it stands.
 
 ## Who it is for
 

@@ -23,6 +23,12 @@ test('unknown keys and variables stay visible', () => {
   assert.equal(t('day', {}), 'D{n}');
 });
 
+test('a value ending on a period takes no second one: "22 oct.", not "22 oct.."', () => {
+  const { t } = loadLocale('fr');
+  assert.equal(t('risks.dependency', { who: 'Équipe design', day: 'J7', when: 'vers le 22 oct.' }), 'Équipe design, pour le J7, vers le 22 oct.');
+  assert.equal(t('risks.dependency', { who: 'Équipe design', day: 'J7', when: 'maintenant' }), 'Équipe design, pour le J7, maintenant.');
+});
+
 test('unknown languages fall back to English, tags keep their date format', () => {
   assert.equal(loadLocale('xx').lang, 'en');
   const gb = loadLocale('en-GB');

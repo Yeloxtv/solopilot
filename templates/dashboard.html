@@ -427,6 +427,7 @@ function renderExplain() {
     t(P.client ? 'explain.goalClient' : 'explain.goal', { goalMid: esc(goalMid), client: esc(P.client), target: dateShort(C.target), range: range(C.core) }),
     t('explain.focus', { focus, ratio: num(1 / C.focus) }),
     t('explain.work', { planDays: C.planDays, points: num(C.pointsPerDay) }),
+    D.estimation && D.estimation.basis === 'hypotheses' && !(C.pace && C.pace.judged) ? t('explain.hypotheses') : '',
     P.scope_agreed ? t('explain.agreed', { by: esc(P.scope_agreed.by), date: dateShort(P.scope_agreed.date) }) : '',
     L.growthView ? esc(`${L.growthView.line}${L.growthView.details ? ` ${L.growthView.details}` : ''}`) : '',
   ].filter(Boolean).map((p) => `<p>${p}</p>`).join('');
@@ -540,11 +541,12 @@ function findRisks() {
   const ahead = plan.filter((d) => !delivered(d));
   const tight = ahead.filter((d) => d.load === 'tight').length;
   if (tight * 2 > ahead.length) r.push({ level: 'medium', title: t('risks.tight', { n: tight, total: ahead.length }), detail: t('risks.tightDetail'), action: t('risks.seeCalendar'), tab: 'days' });
+  // Titles and details are plain text: the list below escapes them, so nothing here does.
   // Answers the work needs within two weeks that nobody has asked for yet.
   const never = open.filter((x) => x.unasked);
-  if (never.length) r.push({ level: never.some((x) => x.level === 'now') ? 'high' : 'medium', title: t('risks.unasked', { n: never.length }), detail: t('risks.unaskedDetail', { ids: never.map((x) => x.id).join(', '), who: esc([...new Set(never.map((x) => x.who))].join(', ')) }), action: t('risks.seeAnswers'), tab: 'answers', who: ALL });
+  if (never.length) r.push({ level: never.some((x) => x.level === 'now') ? 'high' : 'medium', title: t('risks.unasked', { n: never.length }), detail: t('risks.unaskedDetail', { ids: never.map((x) => x.id).join(', '), who: [...new Set(never.map((x) => x.who))].join(', ') }), action: t('risks.seeAnswers'), tab: 'answers', who: ALL });
   // The scope grown past +10% since it was agreed, what was removed already deducted.
-  if (L.growthView && L.growthView.level) r.push({ level: L.growthView.level, title: t('risks.growth', { pct: esc(L.growthView.pct), since: esc(L.growthView.since) }), detail: `${esc(L.growthView.details)} ${t('risks.growthAdvice')}`.trim(), action: D.requests.length ? t('risks.seeRequests') : t('risks.seeDays'), tab: D.requests.length ? 'requests' : 'days' });
+  if (L.growthView && L.growthView.level) r.push({ level: L.growthView.level, title: t('risks.growth', { pct: L.growthView.pct, since: L.growthView.since }), detail: `${L.growthView.details} ${t('risks.growthAdvice')}`.trim(), action: D.requests.length ? t('risks.seeRequests') : t('risks.seeDays'), tab: D.requests.length ? 'requests' : 'days' });
   // The real pace, once judged, durably under the estimate: the plan's own estimate may be wrong.
   if (C.pace && C.pace.risk && C.pace.finish) r.push({ level: C.pace.ratio < 0.6 ? 'high' : 'medium', title: t('risks.realPace', { n: Math.round((1 - C.pace.ratio) * 100) }), detail: t('risks.realPaceDetail', { pace: num(C.pace.value), estimate: num(C.pace.estimate), core: dateShort(C.pace.finish.core) }), action: t('risks.seeDays'), tab: 'days' });
   const order = { high: 0, medium: 1, low: 2 };
