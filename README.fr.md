@@ -2,7 +2,7 @@
 
 **Le pilotage de projet pour les développeurs solo.** Un backlog versionné, une projection honnête, un tableau de bord et un digest Slack, branchés sur [Claude Code](https://claude.com/claude-code).
 
-[English version](README.md)
+[English version](README.md) · [![Tests](https://github.com/Yeloxtv/solopilot/actions/workflows/test.yml/badge.svg)](https://github.com/Yeloxtv/solopilot/actions/workflows/test.yml)
 
 ![Le tableau de bord solopilot sur le projet de démo Fieldbook](docs/dashboard.fr.png)
 
@@ -142,7 +142,7 @@ Le format est en anglais, quelle que soit la langue de l'interface. Chaque secti
 
 solopilot vient d'un outil utilisé chaque jour sur un vrai projet client. Le format du fichier peut encore changer avant la 1.0. La suite est dans la [feuille de route](docs/roadmap.md).
 
-Les idées, les issues et les pull requests sont les bienvenues : [CONTRIBUTING.md](CONTRIBUTING.md) explique comment lancer les tests et les scénarios de bout en bout.
+**Vous l'essayez sur un projet ?** Racontez-le dans un [retour d'essai](https://github.com/Yeloxtv/solopilot/issues/new?template=trial-report.yml) : là où vous avez bloqué compte le plus. Les questions et les idées vont dans les [Discussions](https://github.com/Yeloxtv/solopilot/discussions), et [CONTRIBUTING.md](CONTRIBUTING.md) explique comment lancer les tests et les scénarios de bout en bout.
 
 ## Licence
 

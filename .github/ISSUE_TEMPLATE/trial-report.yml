@@ -1,0 +1,34 @@
+name: Trial report
+description: You tried solopilot, on the Fieldbook example or on a real project. Tell how it went.
+title: "Trial: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for trying solopilot. A few lines are enough, and leave out anything private about your client. Vous pouvez écrire en français.
+  - type: dropdown
+    id: tried
+    attributes:
+      label: What did you try?
+      options:
+        - The first plan, on the Fieldbook example (init --example)
+        - The first plan, on a real project
+        - The end-of-session updates, on a real project
+        - Only the demo dashboard
+    validations:
+      required: true
+  - type: textarea
+    id: worked
+    attributes:
+      label: What worked
+  - type: textarea
+    id: stuck
+    attributes:
+      label: Where you got stuck, or what felt wrong
+    validations:
+      required: true
+  - type: input
+    id: setup
+    attributes:
+      label: Your setup
+      placeholder: "OS, Node version, solopilot --version, Claude Code version, plan language"

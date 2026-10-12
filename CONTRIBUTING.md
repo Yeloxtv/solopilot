@@ -31,7 +31,7 @@ npm test
 
 ## Tests
 
-`npm test` runs every `test/*.test.mjs` with Node's test runner, in a few seconds. They cover the backlog checks, the calendar, the projection, the layout, the surgical edits, scope growth, the questions, the scope document, the list of projects and the commands themselves, run as a user would, in temporary directories with a home of their own.
+`npm test` runs every `test/*.test.mjs` with Node's test runner, in a few seconds. They cover the backlog checks, the calendar, the projection, the layout, the surgical edits, scope growth, the questions, the scope document, the list of projects and the commands themselves, run as a user would, in temporary directories with a home of their own. GitHub Actions runs them on Linux, macOS and Windows, with Node 22 and 24, at every push.
 
 ## End-to-end scenarios
 

@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased
+## 0.3.0
+
+The first version published on npm.
 
 - The dashboard carries English and French. It opens in the plan's language, and a switch in its header changes the page's words and date formats; the browser remembers the reader's choice. The plan's own text (titles, notes, questions) stays as it was written.
 - `README.fr.md` shows the dashboard in French (`docs/dashboard.fr.png`).
@@ -17,7 +19,7 @@ The scope document, reread:
 
 ## 0.2.0
 
-The first version published on npm.
+The version the repository went public with, tagged `v0.2.0`. It was never published on npm.
 
 The first plan, drawn up with Claude from the project documents.
 

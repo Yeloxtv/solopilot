@@ -2,7 +2,7 @@
 
 **Project steering for solo developers.** A versioned backlog, an honest projection, a dashboard and a Slack digest, wired into [Claude Code](https://claude.com/claude-code).
 
-[Version française](README.fr.md)
+[Version française](README.fr.md) · [![Tests](https://github.com/Yeloxtv/solopilot/actions/workflows/test.yml/badge.svg)](https://github.com/Yeloxtv/solopilot/actions/workflows/test.yml)
 
 ![The solopilot dashboard on the Fieldbook demo project](docs/dashboard.png)
 
@@ -169,7 +169,7 @@ Every section is described in [docs/backlog.md](docs/backlog.md), and [examples/
 
 solopilot comes from a tool used daily on a real client project. The file format may still change before 1.0. What comes next is in the [roadmap](docs/roadmap.md).
 
-Ideas, issues and pull requests are welcome: [CONTRIBUTING.md](CONTRIBUTING.md) tells how to run the tests and the end-to-end scenarios.
+**Trying it on a project?** Tell how it went in a [trial report](https://github.com/Yeloxtv/solopilot/issues/new?template=trial-report.yml): where you got stuck matters most. Questions and ideas go to the [Discussions](https://github.com/Yeloxtv/solopilot/discussions), and [CONTRIBUTING.md](CONTRIBUTING.md) tells how to run the tests and the end-to-end scenarios.
 
 ## License
 
