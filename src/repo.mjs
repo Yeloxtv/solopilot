@@ -1,9 +1,14 @@
 // The project repository: found through SOLOPILOT_REPO (set by `solopilot install` in Claude Code's
 // local settings) or PROJECT_REPO in the pilot directory's .env. solopilot only reads it.
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, realpathSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { join, resolve } from 'node:path';
 import { TAG_IDS } from './backlog.mjs';
+
+// A folder as the system itself spells it, to compare two paths. On Windows, git and a shell can
+// spell the same folder differently (the drive letter's case, short names such as RUNNER~1), and
+// only the native call settles both.
+export const canonical = (p) => (existsSync(p) ? realpathSync.native(resolve(p)) : resolve(p));
 
 export function git(args, cwd) {
   try {

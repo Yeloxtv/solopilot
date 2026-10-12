@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-import { readFileSync, realpathSync, writeFileSync } from 'node:fs';
-import { dirname, join, resolve } from 'node:path';
+import { readFileSync, writeFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { FILE, PLANNING, findPilotDir, isPlanning, readBacklog, validate } from '../src/backlog.mjs';
 import { ISO, localToday } from '../src/calendar.mjs';
@@ -12,7 +12,7 @@ import { layoutPlan } from '../src/plan.mjs';
 import { forget, overloadFor, portfolio, register, registryFile } from '../src/projects.mjs';
 import { reference, scopeGrowth } from '../src/growth.mjs';
 import { digestMessage, growthView, helpers, milestoneMessage, planningText, projectsText, statusText } from '../src/report.mjs';
-import { git, head, projectRepo, readEnv, reportedBefore, taggedCommits } from '../src/repo.mjs';
+import { canonical, git, head, projectRepo, readEnv, reportedBefore, taggedCommits } from '../src/repo.mjs';
 import { scopeData, writeScope } from '../src/scope.mjs';
 import { cliOnPath, init, install } from '../src/setup.mjs';
 
@@ -84,7 +84,7 @@ function computeAll(dir, b, t, today) {
 // The pilot directory as its own repository (never an enclosing one, such as the project's).
 function ownRepo(dir) {
   const top = git(['rev-parse', '--show-toplevel'], dir);
-  return Boolean(top) && realpathSync(resolve(top)) === realpathSync(dir);
+  return Boolean(top) && canonical(top) === canonical(dir);
 }
 
 function parse(argv) {

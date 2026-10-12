@@ -1,19 +1,20 @@
 // All of a developer's projects together: a personal registry of pilot directories, a line for each
 // project, and the share of each working day promised to all of them, week by week. Each plan assumes
 // its own share (project.focus); when they add up to more than a day, at least one projection is wrong.
-import { existsSync, mkdirSync, readFileSync, realpathSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { isPlanning, readBacklog, validate } from './backlog.mjs';
 import { localToday } from './calendar.mjs';
 import { compute } from './compute.mjs';
 import { reference, scopeGrowth } from './growth.mjs';
+import { canonical } from './repo.mjs';
 
 const EPS = 1e-9;
 
 // The registry holds paths only, never the plans, and stays on this machine.
 export const registryFile = () => join(process.env.SOLOPILOT_HOME || join(homedir(), '.solopilot'), 'projects.json');
-const canonical = (dir) => (existsSync(dir) ? realpathSync(resolve(dir)) : resolve(dir));
+
 
 export function registered() {
   try {

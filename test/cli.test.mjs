@@ -186,6 +186,15 @@ test('init starts a plan being drawn up, in a repository of its own with a first
   assert.match(build.stderr, /still being drawn up/);
 });
 
+test('init knows its own repository however Windows spells the path', { skip: process.platform !== 'win32' }, () => {
+  // git prints C:/…, a VS Code terminal may hand over c:\…: the same folder, and its own repository.
+  const dir = join(tmp(), 'acme-pilot');
+  const out = run(['init', dir[0].toLowerCase() + dir.slice(1)], GIT_ID);
+  assert.equal(out.status, 0, out.stderr);
+  assert.doesNotMatch(out.stdout, /inside the git repository/);
+  assert.equal(gitOut(dir, 'log', '--format=%s'), 'solopilot init');
+});
+
 test('init writes the goal in the language of the plan', () => {
   const dir = join(tmp(), 'kerlan-pilot');
   run(['init', dir, '--locale', 'fr'], GIT_ID);

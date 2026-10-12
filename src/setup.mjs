@@ -1,6 +1,6 @@
 // solopilot init: create a pilot directory. solopilot install: wire it into a project repository
 // for Claude Code, without committing anything there.
-import { cpSync, existsSync, mkdirSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { homedir } from 'node:os';
 import { dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 import { FILE } from './backlog.mjs';
 import { calendar, localToday } from './calendar.mjs';
 import { loadLocale } from './i18n.mjs';
-import { git } from './repo.mjs';
+import { canonical, git } from './repo.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const SKILL = join(ROOT, 'claude', 'skills', 'solopilot');
@@ -60,7 +60,7 @@ export function init(dir, { name, locale = 'en', today = localToday(), example =
     git(['init', '--quiet'], target);
     repo = git(['rev-parse', '--show-toplevel'], target);
   }
-  const own = Boolean(repo) && realpathSync(resolve(repo)) === realpathSync(target);
+  const own = Boolean(repo) && canonical(repo) === canonical(target);
   let committed = false;
   if (own) {
     git(['add', '--', FILE, '.gitignore', '.env.example', 'sources'], target);
@@ -137,8 +137,8 @@ export function install(dir, repoArg) {
   const top = git(['rev-parse', '--show-toplevel'], resolve(repoArg));
   if (!top) throw new Error(`${repoArg} is not a git repository`);
   // Real paths, so a link or a junction cannot hide a pilot directory inside the project.
-  const project = realpathSync(resolve(top));
-  const pilot = realpathSync(resolve(dir));
+  const project = canonical(top);
+  const pilot = canonical(dir);
   const rel = relative(project, pilot);
   if (!(rel === '..' || rel.startsWith(`..${sep}`) || isAbsolute(rel))) {
     throw new Error('The pilot directory is inside the project repository: move it next to it, or it would be committed with the project');

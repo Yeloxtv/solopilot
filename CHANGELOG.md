@@ -6,6 +6,7 @@ The first version published on npm.
 
 - The dashboard carries English and French. It opens in the plan's language, and a switch in its header changes the page's words and date formats; the browser remembers the reader's choice. The plan's own text (titles, notes, questions) stays as it was written.
 - `README.fr.md` shows the dashboard in French (`docs/dashboard.fr.png`).
+- On Windows, `init`, `install`, `baseline`, `scope` and `commit` know a folder however its path is spelled. Started from a terminal that writes `c:\` where git writes `C:/`, `init` took its own pilot directory for part of another repository and committed nothing.
 - A French demo, `examples/demo-fr`: the same Fieldbook, plan and documents in French (`npm run demo:fr`). `init --example --locale fr` copies its documents, and a test keeps the two demos telling the same story.
 
 The scope document, reread:
