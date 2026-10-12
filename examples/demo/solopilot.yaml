@@ -7,6 +7,9 @@
 # kickoff workshop notes, the quote and two mockups), agreed on September 25, and here it stands
 # on October 21, mid-way. `solopilot init <dir> --example` copies the same documents into a new
 # pilot directory, to draw up the first plan yourself. Everything here is made up.
+#
+# examples/demo-fr tells the same story in French: same ids, dates and points, only the text
+# changes. A test checks that the two demos stay the same story: change them together.
 
 project:
   name: Fieldbook

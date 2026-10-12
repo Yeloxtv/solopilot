@@ -1,0 +1,226 @@
+# Fieldbook, un projet fictif pour essayer solopilot.
+#
+#   solopilot build --dir examples/demo-fr --today 2026-10-21
+#
+# Fieldbook est une application mobile d'inspection, développée par un développeur solo, Alex, pour
+# Harbor & Pine, une coopérative de gestion de bâtiments. Le plan a été tiré des documents de sources/
+# (le cahier des charges, les notes de l'atelier de lancement, le devis et deux maquettes), convenu le
+# 25 septembre, et le voici le 21 octobre, à mi-parcours. `solopilot init <dossier> --example --locale fr`
+# copie les mêmes documents dans un nouveau dossier de pilotage, pour tirer soi-même le premier plan.
+# Tout est inventé.
+#
+# C'est la version française de examples/demo : mêmes identifiants, mêmes dates, mêmes points, seuls
+# les textes changent. Un test vérifie que les deux démos racontent la même histoire.
+
+project:
+  name: Fieldbook
+  client: Harbor & Pine
+  owner: Alex
+  locale: fr
+  goal: "Mise en ligne"
+  start: 2026-09-28
+  target: 2026-11-27
+  budget_days: 20
+  plan_days: 20
+  core: 14
+  points_per_day: 6.3
+  focus: 0.5
+  holidays: [2026-11-26]
+  baseline: { date: 2026-09-25, points: 126, plan_days: 20 }
+  scope_agreed: { by: "Maya Lindqvist", date: 2026-09-25 }
+
+people: ["Alex", "Harbor & Pine", "Équipe design"]
+
+sprints:
+  - { id: 1, from: 1, to: 6, title: "API" }
+  - { id: 2, from: 7, to: 14, title: "Le cœur en préproduction" }
+  - { id: 3, from: 15, to: 20, title: "Administration, suivi, mise en ligne" }
+
+milestones:
+  - { day: 5, type: checkpoint, status: reached, reached_on: 2026-10-14, title: "API des inspections terminée" }
+  - { day: 10, type: client, status: upcoming, title: "Démo du parcours d'inspection" }
+  - { day: 12, type: checkpoint, status: upcoming, title: "Fonctionne hors ligne", criterion: "Sinon, les conflits de synchronisation passent sous la ligne" }
+  - { day: 14, type: client, status: upcoming, title: "Cœur en préproduction" }
+  - { day: 18, type: checkpoint, status: upcoming, title: "Plus rien de nouveau n'entre" }
+  - { day: 20, type: client, status: upcoming, title: "Production et passation" }
+
+meetings:
+  - { date: 2026-10-23, title: "Atelier n° 2", with: "Harbor & Pine" }
+
+dependencies:
+  - { id: D01, before: 3, status: received, who: "Harbor & Pine", asked_on: 2026-09-22, title: "Liste des sites et des bâtiments", tasks: [T003] }
+  - { id: D02, before: 7, status: waiting, who: "Équipe design", asked_on: 2026-09-22, reminded_on: 2026-10-19, title: "Écrans du parcours d'inspection", tasks: [S04, S05, S06] }
+  - { id: D03, before: 11, status: waiting, who: "Harbor & Pine", asked_on: 2026-09-22, title: "Exemples de grilles des trois plus grands sites", tasks: [T020], meeting: "2026-10-23", priority: 4, stake: "De vraies grilles pour tester le stockage hors ligne" }
+  - { id: D04, before: 14, status: waiting, who: "Harbor & Pine", title: "Serveur de préproduction, domaine et certificat", tasks: [T029] }
+
+questions:
+  - { id: Q01, before: 6, status: open, who: "Harbor & Pine", asked_on: 2026-10-08, title: "Un inspecteur peut-il modifier une inspection après l'avoir soumise ?", tasks: [T014], meeting: "2026-10-23", priority: 1, stake: "Fige le modèle d'inspection avant les écrans" }
+  - { id: Q02, before: 2, status: answered, who: "Harbor & Pine", asked_on: 2026-09-22, title: "De quels rôles avons-nous besoin ?", answer: "Inspecteur, responsable et administrateur ; un responsable voit tous les sites de sa région" }
+  - { id: Q03, before: 9, status: open, who: "Harbor & Pine", asked_on: 2026-09-22, reminded_on: 2026-10-16, title: "Combien de temps garde-t-on les photos d'inspection ?", tasks: [T015, T022], meeting: "2026-10-23", priority: 2, stake: "Dimensionne le stockage et le cache hors ligne" }
+  - { id: Q04, before: 13, status: open, who: "Harbor & Pine", title: "Que doit montrer la première page du rapport PDF ?", tasks: [T026, S07], meeting: "2026-10-23", priority: 3 }
+  - { id: Q05, before: 12, status: open, who: "Alex", title: "Quelle modification l'emporte quand deux appareils changent la même inspection hors ligne ?", tasks: [T024] }
+  - { id: Q06, before: 5, status: answered, who: "Harbor & Pine", title: "Quelles gravités une constatation peut-elle avoir ?", answer: "Faible, moyenne, élevée et critique ; les constatations critiques d'abord partout (atelier de lancement)", tasks: [T012] }
+  - { id: Q07, before: 4, status: answered, who: "Harbor & Pine", title: "Une inspection passée garde-t-elle sa version de grille ?", answer: "Oui, celle avec laquelle elle a été faite : les rapports passés ne changent jamais (atelier de lancement)", tasks: [T010] }
+
+requests:
+  - { id: R01, status: accepted, title: "Signature à la fin d'une inspection", recommendation: "Accepter : une demi-journée au jour 10", decision: "Acceptée à l'atelier n° 1 : une signature, tracée à l'écran", tasks: [T019] }
+  - { id: R02, status: pending, before: 8, title: "Vue carte des sites", recommendation: "Reporter : il faut un fournisseur de cartes. Trier plutôt la liste par distance" }
+  - { id: R03, status: declined, title: "Messagerie entre inspecteurs", recommendation: "Refuser : hors périmètre", decision: "Refusée à l'atelier n° 1 : l'e-mail suffit" }
+
+areas:
+  - { id: setup, title: "Socle et design system" }
+  - { id: accounts, title: "Comptes et rôles" }
+  - { id: sites, title: "Sites et bâtiments" }
+  - { id: inspections, title: "Grilles et inspections" }
+  - { id: offline, title: "Hors ligne et synchronisation" }
+  - { id: reports, title: "Rapports et suivi" }
+  - { id: admin, title: "Administration" }
+  - { id: release, title: "Qualité et mise en production" }
+
+# Ce que l'application doit faire, chaque fonctionnalité rattachée à sa source dans sources/.
+features:
+  - { id: F01, area: accounts, core: true, priority: 1, source: "cahier-des-charges.md §3.1", title: "Connexion par un lien envoyé par e-mail" }
+  - { id: F02, area: accounts, core: true, priority: 1, source: "cahier-des-charges.md §2, §3.2", title: "Rôles et accès par région" }
+  - { id: F03, area: sites, core: true, priority: 2, source: "cahier-des-charges.md §4", title: "Sites et bâtiments, trouvés par nom ou par ville" }
+  - { id: F04, area: inspections, core: true, priority: 3, source: "cahier-des-charges.md §5.1 ; atelier-de-lancement.md", title: "Grilles d'inspection, versionnées" }
+  - { id: F05, area: inspections, core: true, priority: 4, source: "cahier-des-charges.md §5.2 ; atelier-de-lancement.md", title: "Mener une inspection : points, constatations, photos, notes" }
+  - { id: F06, area: inspections, core: true, priority: 5, source: "cahier-des-charges.md §5.3", title: "Traçabilité et corrections après soumission" }
+  - { id: F07, area: inspections, core: true, priority: 6, source: "R01", title: "Signature à la fin d'une inspection" }
+  - { id: F08, area: offline, core: true, priority: 7, source: "cahier-des-charges.md §6", title: "Une journée entière d'inspections sans réseau" }
+  - { id: F09, area: reports, core: true, priority: 8, source: "cahier-des-charges.md §7.1", title: "Rapport PDF de chaque inspection" }
+  - { id: F10, area: admin, priority: 9, source: "cahier-des-charges.md §8.1", title: "Éditeur de grilles" }
+  - { id: F11, area: admin, priority: 10, source: "cahier-des-charges.md §8.2", title: "Utilisateurs, invitations et back-office" }
+  - { id: F12, area: reports, priority: 11, source: "cahier-des-charges.md §7.2", title: "Tableau des constatations pour les responsables" }
+  - { id: F13, area: reports, priority: 12, source: "cahier-des-charges.md §7.3", title: "Export CSV et synthèse mensuelle par e-mail" }
+  - { id: F14, area: inspections, priority: 13, source: "cahier-des-charges.md §5.4", title: "Rappels des inspections en retard", note: "Souhaitable" }
+  - { id: F15, area: accounts, priority: 14, source: "cahier-des-charges.md §3.3", title: "Authentification unique avec l'annuaire des adhérents", note: "Pas nécessaire pour la mise en ligne" }
+  - { id: F16, area: release, scope: out, source: "cahier-des-charges.md §10", title: "Applications natives dans les stores" }
+  - { id: F17, area: reports, scope: out, source: "cahier-des-charges.md §10", title: "Lien avec le logiciel de maintenance" }
+  - { id: F18, area: admin, scope: out, source: "cahier-des-charges.md §10", title: "Facturation des adhérents" }
+  - { id: F19, area: setup, scope: out, source: "cahier-des-charges.md §10", title: "Autres langues que le français" }
+
+# Les tailles convenues avant d'estimer les tâches.
+estimation:
+  basis: hypotheses
+  grid:
+    - { kind: screen, size: "2 ou 3 vues simples", points: 2 }
+    - { kind: screen, size: "4 ou 5 vues, états hors ligne compris", points: 4 }
+    - { kind: logic, size: "un endpoint avec ses règles et ses tests", points: 2 }
+    - { kind: logic, size: "une règle transverse (accès, audit, versions)", points: 3 }
+    - { kind: integration, size: "un service ou une API de l'appareil (e-mail, caméra, PDF)", points: 3 }
+    - { kind: setup, size: "dépôt, CI, modèle de données, design system", points: 2 }
+    - { kind: release, size: "un environnement déployé et supervisé", points: 2 }
+
+days:
+  - { day: 1, sprint: 1, points: 5, load: normal, phase: "Fondations", title: "Dépôt et modèle de données" }
+  - { day: 2, sprint: 1, points: 7, load: tight, phase: "Fondations", title: "Connexion et rôles" }
+  - { day: 3, sprint: 1, points: 6, load: normal, phase: "API", title: "Sites et bâtiments" }
+  - { day: 4, sprint: 1, points: 7, load: tight, phase: "API", title: "Grilles" }
+  - { day: 5, sprint: 1, points: 8, load: tight, phase: "API", title: "Déroulé des inspections" }
+  - { day: 6, sprint: 1, points: 6, load: normal, phase: "API", title: "Photos, notes et modifications" }
+  - { day: 7, sprint: 2, points: 6, load: normal, phase: "Front", title: "Design system et connexion" }
+  - { day: 8, sprint: 2, points: 6, load: normal, phase: "Front", title: "Sites" }
+  - { day: 9, sprint: 2, points: 7, load: tight, phase: "Front", title: "Parcours d'inspection, grille" }
+  - { day: 10, sprint: 2, points: 8, load: tight, phase: "Front", title: "Parcours d'inspection, constatations et signature", note: "Signature ajoutée à l'atelier n° 1 (R01) : +1 point" }
+  - { day: 11, sprint: 2, points: 8, load: tight, phase: "Hors ligne", title: "Stockage hors ligne" }
+  - { day: 12, sprint: 2, points: 8, load: tight, phase: "Hors ligne", title: "Synchronisation et conflits" }
+  - { day: 13, sprint: 2, points: 6, load: normal, phase: "Rapports", title: "Rapport PDF" }
+  - { day: 14, sprint: 2, points: 5, load: normal, phase: "Mise en production", title: "Préproduction et livraison du cœur" }
+  - { day: 15, sprint: 3, points: 6, load: normal, phase: "Administration", title: "Éditeur de grilles" }
+  - { day: 16, sprint: 3, points: 6, load: normal, phase: "Administration", title: "Utilisateurs et invitations" }
+  - { day: 17, sprint: 3, points: 7, load: tight, phase: "Suivi", title: "Tableau des constatations" }
+  - { day: 18, sprint: 3, points: 5, load: normal, phase: "Suivi", title: "Exports" }
+  - { day: 19, sprint: 3, points: 5, load: normal, phase: "Qualité", title: "Accessibilité et performance" }
+  - { day: 20, sprint: 3, points: 5, load: normal, phase: "Mise en production", title: "Production et passation" }
+  - { day: later, points: 6, phase: "Sous la ligne", title: "Si le temps le permet" }
+
+tasks:
+  # J1, Dépôt et modèle de données
+  - { id: T001, day: 1, area: setup, kind: setup, points: 1.5, status: done, done_on: 2026-09-28, title: "Dépôt, CI et commande de test" }
+  - { id: T002, day: 1, area: setup, kind: setup, points: 2.5, status: done, done_on: 2026-09-29, title: "Modèle de données : sites, bâtiments, grilles, inspections" }
+  - { id: T003, day: 1, area: sites, feature: F03, kind: content, points: 1, status: done, done_on: 2026-09-29, title: "Données initiales depuis la liste des sites du client" }
+  # J2, Connexion et rôles
+  - { id: T004, day: 2, area: accounts, feature: F01, kind: integration, points: 2.5, status: done, done_on: 2026-09-30, title: "Connexion par lien magique" }
+  - { id: T005, day: 2, area: accounts, feature: F02, kind: logic, points: 2, status: done, done_on: 2026-10-01, title: "Rôles : inspecteur, responsable, administrateur" }
+  - { id: T006, day: 2, area: accounts, feature: F02, kind: logic, points: 2.5, status: done, done_on: 2026-10-01, title: "Règles d'accès par région" }
+  # J3, Sites et bâtiments
+  - { id: T007, day: 3, area: sites, feature: F03, kind: logic, points: 4, status: done, done_on: 2026-10-05, title: "API des sites et bâtiments" }
+  - { id: T008, day: 3, area: sites, feature: F03, kind: logic, points: 2, status: done, done_on: 2026-10-05, title: "Recherche des sites par nom et par ville" }
+  # J4, Grilles
+  - { id: T009, day: 4, area: inspections, feature: F04, kind: logic, points: 4, status: done, done_on: 2026-10-07, title: "API des modèles de grilles" }
+  - { id: T010, day: 4, area: inspections, feature: F04, kind: logic, points: 3, status: done, done_on: 2026-10-08, title: "Versions des grilles, pour que les inspections passées gardent la leur" }
+  # J5, Déroulé des inspections
+  - { id: T011, day: 5, area: inspections, feature: F05, kind: logic, points: 4, status: done, done_on: 2026-10-12, title: "Démarrer, enregistrer et soumettre une inspection" }
+  - { id: T012, day: 5, area: inspections, feature: F05, kind: logic, points: 2, status: done, done_on: 2026-10-13, title: "Constatations avec une gravité" }
+  - { id: T013, day: 5, area: inspections, feature: F06, kind: logic, points: 2, status: done, done_on: 2026-10-14, title: "Historique de chaque modification" }
+  # J6, Photos, notes et modifications
+  - { id: T014, day: 6, area: inspections, feature: F06, kind: logic, points: 2, status: blocked, note: "Attend Q01", title: "Règles de modification d'une inspection soumise" }
+  - { id: T015, day: 6, area: inspections, feature: F05, kind: integration, points: 2.5, status: done, done_on: 2026-10-16, title: "Envoi des photos, redimensionnées sur le serveur" }
+  - { id: T016, day: 6, area: inspections, feature: F05, kind: logic, points: 1.5, status: done, done_on: 2026-10-20, title: "Notes sur les constatations" }
+  # J7, Design system et connexion
+  - { id: T017, day: 7, area: setup, kind: setup, points: 4, status: doing, title: "Design system : couleurs, typographie, composants" }
+  - { id: S01, day: 7, area: accounts, feature: F01, points: 2, status: todo, views: [par défaut, erreur, chargement], design: "maquettes/connexion.svg", title: "Écran de connexion" }
+  # J8, Sites
+  - { id: S02, day: 8, area: sites, feature: F03, points: 3.5, status: todo, views: [par défaut, recherche vide, chargement, hors ligne], design: "maquettes/liste-des-sites.svg", title: "Liste des sites" }
+  - { id: S03, day: 8, area: sites, feature: F03, points: 2.5, status: todo, views: [par défaut, chargement, erreur], title: "Fiche site" }
+  # J9, Parcours d'inspection, grille
+  - { id: S04, day: 9, area: inspections, feature: F05, points: 5, status: todo, views: [par défaut, en cours, point non conforme, hors ligne, erreur], title: "Inspection : grille" }
+  - { id: T018, day: 9, area: inspections, feature: F05, kind: logic, points: 2, status: todo, title: "Garder l'état d'une inspection en changeant d'application" }
+  # J10, Parcours d'inspection, constatations et signature
+  - { id: S05, day: 10, area: inspections, feature: F05, points: 4, status: todo, views: [par défaut, ajout de photos, envoi en attente, hors ligne], title: "Inspection : constatation avec photos" }
+  - { id: S06, day: 10, area: inspections, feature: F05, points: 3, status: todo, views: [par défaut, signature, soumise], title: "Récapitulatif d'inspection" }
+  - { id: T019, day: 10, area: inspections, feature: F07, kind: logic, points: 1, status: todo, title: "Signature à la fin d'une inspection" }
+  # J11, Stockage hors ligne
+  - { id: T020, day: 11, area: offline, feature: F08, kind: logic, points: 5, status: todo, title: "Stocker sites et grilles sur l'appareil" }
+  - { id: T021, day: 11, area: offline, feature: F08, kind: logic, points: 3, status: todo, title: "File des envois en attente" }
+  # J12, Synchronisation et conflits
+  - { id: T022, day: 12, area: offline, feature: F08, kind: integration, points: 4, status: todo, title: "Synchronisation en arrière-plan, photos comprises" }
+  - { id: T023, day: 12, area: offline, feature: F08, kind: logic, points: 1, status: todo, title: "État de synchronisation à l'écran" }
+  - { id: T024, day: 12, area: offline, feature: F08, kind: logic, points: 3, status: todo, title: "Résolution des conflits" }
+  # J13, Rapport PDF
+  - { id: T025, day: 13, area: reports, feature: F09, kind: integration, points: 3, status: todo, title: "Génération du rapport PDF" }
+  - { id: T026, day: 13, area: reports, feature: F09, kind: content, points: 1.5, status: todo, title: "Mise en page du rapport, première page d'abord" }
+  - { id: S07, day: 13, area: reports, feature: F09, points: 1.5, status: todo, views: [par défaut, génération], title: "Aperçu du rapport" }
+  # J14, Préproduction et livraison du cœur
+  - { id: T027, day: 14, area: release, kind: release, points: 2, status: todo, title: "Déploiement en préproduction" }
+  - { id: T028, day: 14, area: release, kind: release, points: 2, status: todo, title: "Sauvegardes et supervision" }
+  - { id: T029, day: 14, area: release, kind: release, points: 1, status: todo, title: "Domaine et certificat" }
+  # J15, Éditeur de grilles
+  - { id: S08, day: 15, area: admin, feature: F10, points: 4.5, status: todo, views: [par défaut, vide, modification d'un point, publication], title: "Éditeur de grilles" }
+  - { id: T030, day: 15, area: admin, feature: F10, kind: logic, points: 1.5, status: todo, title: "Publier une nouvelle version de grille" }
+  # J16, Utilisateurs et invitations
+  - { id: T031, day: 16, area: admin, feature: F11, kind: integration, points: 2, status: todo, title: "Invitations par e-mail" }
+  - { id: S09, day: 16, area: admin, feature: F11, points: 3, status: todo, views: [par défaut, vide, invitation envoyée], title: "Utilisateurs et rôles" }
+  - { id: S10, day: 16, area: admin, feature: F11, points: 1, status: todo, views: [liste, édition], admin: true, title: "Back-office, fourni par le framework" }
+  # J17, Tableau des constatations
+  - { id: S11, day: 17, area: reports, feature: F12, points: 4.5, status: todo, views: [par défaut, vide, filtré, chargement], title: "Tableau des constatations" }
+  - { id: T032, day: 17, area: reports, feature: F12, kind: logic, points: 2.5, status: todo, title: "Constatations par site et par gravité" }
+  # J18, Exports
+  - { id: T033, day: 18, area: reports, feature: F13, kind: logic, points: 2, status: todo, title: "Export CSV" }
+  - { id: T034, day: 18, area: reports, feature: F13, kind: integration, points: 3, status: todo, title: "Rapport mensuel par e-mail" }
+  # J19, Accessibilité et performance
+  - { id: T035, day: 19, area: release, kind: release, points: 3, status: todo, title: "Passe d'accessibilité" }
+  - { id: T036, day: 19, area: release, kind: release, points: 2, status: todo, title: "Budget de performance sur un téléphone milieu de gamme" }
+  # J20, Production et passation
+  - { id: T037, day: 20, area: release, kind: release, points: 2.5, status: todo, title: "Déploiement en production" }
+  - { id: T038, day: 20, area: release, kind: content, points: 2.5, status: todo, title: "Passation : documentation et accès" }
+  # Sous la ligne
+  - { id: T039, day: later, area: inspections, feature: F14, kind: integration, points: 3, status: todo, title: "Notifications des inspections en retard" }
+  - { id: T040, day: later, area: accounts, feature: F15, kind: integration, points: 3, status: todo, title: "Authentification unique" }
+
+log:
+  - { date: 2026-09-25, type: baseline, title: "Plan convenu", note: "126 points sur 20 jours de plan, cœur jusqu'au J14." }
+  - { date: 2026-09-25, type: agreed, title: "Périmètre validé par le client", note: "Validé par Maya Lindqvist." }
+  - { date: 2026-09-28, type: session, effort: 0.5, title: "Dépôt et modèle de données", note: "Dépôt, CI et commande de test ; premier jet du modèle de données" }
+  - { date: 2026-09-29, type: session, effort: 0.5, title: "J1 terminé", note: "Modèle de données complet ; données initiales depuis la liste des sites (D01 reçue)" }
+  - { date: 2026-09-30, type: session, effort: 0.5, title: "Connexion", note: "Connexion par lien magique, avec limitation de débit" }
+  - { date: 2026-10-01, type: session, effort: 1, title: "J2 terminé", note: "Rôles et règles d'accès par région ; Q02 répondue" }
+  - { date: 2026-10-05, type: session, effort: 0.5, title: "J3 terminé", note: "API des sites et bâtiments, recherche par nom et par ville" }
+  - { date: 2026-10-06, type: replan, title: "Atelier n° 1 : signature ajoutée", note: "Harbor & Pine a demandé une signature à la fin d'une inspection (R01, acceptée) : T019 au jour 10, +1 point, sans compensation. Vue carte (R02) laissée en attente jusqu'à ce que la liste soit entre leurs mains ; messagerie (R03) refusée" }
+  - { date: 2026-10-07, type: session, effort: 0.5, title: "Modèles de grilles", note: "API des modèles de grilles" }
+  - { date: 2026-10-08, type: session, effort: 0.5, title: "J4 terminé", note: "Versions des grilles : une inspection passée garde la version avec laquelle elle a été faite. Q01 envoyée à Harbor & Pine, avant les règles de modification du jour 6" }
+  - { date: 2026-10-12, type: session, effort: 1, title: "Déroulé des inspections", note: "Démarrer, enregistrer et soumettre une inspection" }
+  - { date: 2026-10-13, type: session, effort: 0.5, title: "Constatations", note: "Constatations avec une gravité, validées côté serveur" }
+  - { date: 2026-10-14, type: session, effort: 0.5, title: "J5 terminé", note: "Historique de chaque modification ; jalon J5 atteint" }
+  - { date: 2026-10-16, type: session, effort: 0.5, title: "Photos", note: "Envoi des photos, redimensionnées et sans données de localisation côté serveur. Relance de Harbor & Pine sur Q03" }
+  - { date: 2026-10-20, type: session, effort: 0.5, title: "Notes ; T014 bloquée", note: "Notes sur les constatations. T014 bloquée jusqu'à la réponse à Q01 à l'atelier n° 2" }

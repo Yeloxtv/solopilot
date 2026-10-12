@@ -12,8 +12,8 @@ import { git } from './repo.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const SKILL = join(ROOT, 'claude', 'skills', 'solopilot');
-// The documents of the Fieldbook demo, for `init --example`.
-const EXAMPLE = join(ROOT, 'examples', 'demo', 'sources');
+// The documents of the Fieldbook demo, for `init --example`, in French for a French plan.
+const exampleSources = (locale) => join(ROOT, 'examples', /^fr\b/i.test(locale) ? 'demo-fr' : 'demo', 'sources');
 const LOCAL_SETTINGS = '.claude/settings.local.json';
 const slash = (p) => p.replace(/\\/g, '/');
 
@@ -49,7 +49,7 @@ export function init(dir, { name, locale = 'en', today = localToday(), example =
   writeIfMissing(join(target, '.env.example'), '# Copy to .env (never committed). `solopilot install` adds PROJECT_REPO.\nSLACK_WEBHOOK_URL=https://hooks.slack.com/services/XXX/YYY/ZZZ\n');
   // The project documents the first plan is drawn from, versioned with it: features point to them.
   mkdirSync(join(target, 'sources'), { recursive: true });
-  if (example) cpSync(EXAMPLE, join(target, 'sources'), { recursive: true });
+  if (example) cpSync(exampleSources(locale), join(target, 'sources'), { recursive: true });
   else writeIfMissing(join(target, 'sources', '.gitkeep'), '');
 
   // Its own repository, with a first commit: the skill records each update with `commit -am`, and the

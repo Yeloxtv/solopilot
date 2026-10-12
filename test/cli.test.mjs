@@ -15,6 +15,7 @@ import { fixture } from './fixture.mjs';
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const BIN = join(ROOT, 'bin', 'solopilot.mjs');
 const DEMO = join(ROOT, 'examples', 'demo');
+const DEMO_FR = join(ROOT, 'examples', 'demo-fr');
 const tmp = () => mkdtempSync(join(tmpdir(), 'solopilot-'));
 // A home of its own: init and install copy the skill there, and the machine's git settings (global
 // excludes, identity) cannot hide a mistake.
@@ -35,18 +36,35 @@ test('the demo checks and reports', () => {
   assert.match(run(['status', '--dir', DEMO, '--today', '2026-10-21', '--locale', 'fr']).stdout, /le 27 novembre/);
 });
 
-test('the demo tells one story: each feature points to a document of its sources/', () => {
-  const b = readBacklog(DEMO);
-  assert.ok(b.features.length > 0 && b.tasks.every((t) => typeof t.points === 'number'), 'features and points per task');
-  for (const f of b.features) {
-    const files = String(f.source).match(/[\w-]+\.(md|svg)/g) ?? [];
-    assert.ok(files.length || /^R\d+$/.test(f.source), `${f.id}: ${f.source}`);
-    for (const file of files) assert.ok(existsSync(join(DEMO, 'sources', file)), `${f.id}: ${file} in sources/`);
-  }
-  for (const t of b.tasks.filter((x) => x.design)) assert.ok(existsSync(join(DEMO, 'sources', t.design)), `${t.id}: ${t.design}`);
+for (const demo of [DEMO, DEMO_FR]) {
+  test(`the demo tells one story: each feature points to a document of its sources/ (${demo.split(/[\\/]/).pop()})`, () => {
+    const b = readBacklog(demo);
+    assert.ok(b.features.length > 0 && b.tasks.every((t) => typeof t.points === 'number'), 'features and points per task');
+    for (const f of b.features) {
+      const files = String(f.source).match(/[\w-]+\.(md|svg)/g) ?? [];
+      assert.ok(files.length || /^R\d+$/.test(f.source), `${f.id}: ${f.source}`);
+      for (const file of files) assert.ok(existsSync(join(demo, 'sources', file)), `${f.id}: ${file} in sources/`);
+    }
+    for (const t of b.tasks.filter((x) => x.design)) assert.ok(existsSync(join(demo, 'sources', t.design)), `${t.id}: ${t.design}`);
+  });
+}
+
+test('the French demo tells the same story: only its text differs', () => {
+  // Free text (titles, notes, names, sources, views) is masked: ids, dates, statuses, points, days and
+  // links must match, so a change to one demo that is not made to the other fails here.
+  const mask = (v) => {
+    if (Array.isArray(v)) return v.map(mask);
+    if (v && typeof v === 'object') return Object.fromEntries(Object.entries(v).filter(([k]) => k !== 'locale').map(([k, x]) => [k, k === 'view_names' ? x.length : mask(x)]));
+    return typeof v === 'string' && !/^(\d{4}-\d{2}-\d{2}|[A-Z]{1,2}\d{1,4}|[a-z_]+)$/.test(v) ? '…' : v;
+  };
+  const fr = readBacklog(DEMO_FR);
+  assert.equal(fr.project.locale, 'fr');
+  assert.deepEqual(mask(fr), mask(readBacklog(DEMO)));
+  assert.equal(run(['check', '--dir', DEMO_FR]).status, 0);
+  assert.match(run(['status', '--dir', DEMO_FR, '--today', '2026-10-21']).stdout, /^Mise en ligne le 27 novembre/);
 });
 
-test('init --example starts a plan from the Fieldbook documents', () => {
+test('init --example starts a plan from the Fieldbook documents, in French for a French plan', () => {
   const dir = join(tmp(), 'fieldbook-pilot');
   const out = run(['init', dir, '--example'], GIT_ID);
   assert.equal(out.status, 0, out.stderr);
@@ -54,6 +72,11 @@ test('init --example starts a plan from the Fieldbook documents', () => {
   assert.ok(['spec.md', 'kickoff-workshop.md', 'quote.md', 'mockups/sign-in.svg'].every((f) => existsSync(join(dir, 'sources', f))));
   assert.equal(readBacklog(dir).project.name, 'Fieldbook');
   assert.match(gitOut(dir, 'ls-files'), /sources\/spec\.md/);
+  const fr = join(tmp(), 'fieldbook-pilot');
+  assert.equal(run(['init', fr, '--example', '--locale', 'fr'], GIT_ID).status, 0);
+  assert.ok(['cahier-des-charges.md', 'atelier-de-lancement.md', 'devis.md', 'maquettes/connexion.svg'].every((f) => existsSync(join(fr, 'sources', f))));
+  assert.ok(!existsSync(join(fr, 'sources', 'spec.md')), 'the English documents stay out');
+  assert.equal(readBacklog(fr).project.locale, 'fr');
 });
 
 test('slack --dry-run prints Block Kit JSON', () => {

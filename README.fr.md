@@ -28,7 +28,7 @@ solopilot y répond à partir d'un seul fichier YAML versionné dans git, sans f
 
 ## L'essayer
 
-Tirez le premier plan de Fieldbook, un projet fictif, de ses documents : un cahier des charges, les notes d'un atelier de lancement, un devis et deux maquettes. Ils sont en anglais ; le plan peut être en français.
+Tirez le premier plan de Fieldbook, un projet fictif, de ses documents : un cahier des charges, les notes d'un atelier de lancement, un devis et deux maquettes. Avec `--locale fr`, ils sont en français.
 
 ```bash
 npm install -g solopilot
@@ -41,11 +41,10 @@ Ou voyez où en est Fieldbook à mi-parcours, avec son tableau de bord :
 ```bash
 git clone https://github.com/Yeloxtv/solopilot && cd solopilot
 npm install
-node bin/solopilot.mjs build --dir examples/demo --today 2026-10-21 --locale fr
-# puis ouvrir examples/demo/build/index.html
+npm run demo:fr                            # puis ouvrir examples/demo-fr/build/index.html
 ```
 
-[examples/demo](examples/demo) contient les deux : les documents dans `sources/`, et le plan tel qu'il est le 21 octobre, au bout d'un mois.
+[examples/demo-fr](examples/demo-fr) contient les deux : les documents dans `sources/`, et le plan tel qu'il est le 21 octobre, au bout d'un mois. [examples/demo](examples/demo) raconte la même histoire en anglais.
 
 ## Démarrage rapide
 
@@ -132,7 +131,7 @@ Options : `--dir <chemin>` (sinon `SOLOPILOT_DIR`, ou le `solopilot.yaml` le plu
 
 ## Le backlog
 
-Le format est en anglais, quelle que soit la langue de l'interface. Chaque section est décrite dans [docs/backlog.md](docs/backlog.md), et [examples/demo/solopilot.yaml](examples/demo/solopilot.yaml) montre un projet complet. Le calcul de l'écart et de la projection est expliqué dans [docs/how-it-computes.md](docs/how-it-computes.md). Les raisons de ces choix sont dans la [vision produit](docs/vision.md) et les [notes de conception](docs/design/). Toute la documentation est en anglais.
+Le format est en anglais, quelle que soit la langue de l'interface. Chaque section est décrite dans [docs/backlog.md](docs/backlog.md), et [examples/demo-fr/solopilot.yaml](examples/demo-fr/solopilot.yaml) montre un projet complet, ses clés en anglais et ses textes en français. Le calcul de l'écart et de la projection est expliqué dans [docs/how-it-computes.md](docs/how-it-computes.md). Les raisons de ces choix sont dans la [vision produit](docs/vision.md) et les [notes de conception](docs/design/). Toute la documentation est en anglais.
 
 ## Slack et hébergement
 

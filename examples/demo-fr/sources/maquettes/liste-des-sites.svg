@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="390" height="760" viewBox="0 0 390 760" font-family="Helvetica, Arial, sans-serif">
+  <title>Fieldbook, liste des sites (téléphone, état par défaut). Maquette fictive de l'équipe design de Harbor &amp; Pine.</title>
+  <rect width="390" height="760" fill="#f5f6f2"/>
+  <rect width="390" height="64" fill="#2f5d50"/>
+  <text x="20" y="40" font-size="20" fill="#fff" font-weight="bold">Sites · Région Nord</text>
+  <rect x="16" y="80" width="358" height="46" rx="8" fill="#fff" stroke="#c9cfc8"/>
+  <text x="32" y="109" font-size="15" fill="#9aa39e">Rechercher par nom ou par ville</text>
+  <g font-size="14" fill="#1e2a26">
+    <rect x="16" y="142" width="358" height="84" rx="8" fill="#fff" stroke="#dde2dc"/>
+    <text x="32" y="172" font-weight="bold" font-size="16">École primaire de Brookside</text>
+    <text x="32" y="196" fill="#5e6b66">Ashford · 2 bâtiments</text>
+    <text x="32" y="216" fill="#b4472f" font-size="12">Inspection en retard</text>
+    <rect x="16" y="238" width="358" height="84" rx="8" fill="#fff" stroke="#dde2dc"/>
+    <text x="32" y="268" font-weight="bold" font-size="16">Bureaux du Quai</text>
+    <text x="32" y="292" fill="#5e6b66">Ashford · 1 bâtiment</text>
+    <text x="32" y="312" fill="#5e6b66" font-size="12">Prochaine inspection : 12 novembre</text>
+    <rect x="16" y="334" width="358" height="84" rx="8" fill="#fff" stroke="#dde2dc"/>
+    <text x="32" y="364" font-weight="bold" font-size="16">Entrepôt de Millbank</text>
+    <text x="32" y="388" fill="#5e6b66">Corfield · 3 bâtiments</text>
+    <text x="32" y="408" fill="#5e6b66" font-size="12">Prochaine inspection : 3 décembre</text>
+    <rect x="16" y="430" width="358" height="84" rx="8" fill="#fff" stroke="#dde2dc"/>
+    <text x="32" y="460" font-weight="bold" font-size="16">Salle communale d'Orchard Lane</text>
+    <text x="32" y="484" fill="#5e6b66">Corfield · 1 bâtiment</text>
+    <text x="32" y="504" fill="#5e6b66" font-size="12">Prochaine inspection : 9 décembre</text>
+  </g>
+  <rect y="696" width="390" height="64" fill="#fff" stroke="#dde2dc"/>
+  <g font-size="12" fill="#5e6b66" text-anchor="middle">
+    <text x="65" y="734" fill="#2f5d50" font-weight="bold">Sites</text>
+    <text x="195" y="734">Inspections</text>
+    <text x="325" y="734">Compte</text>
+  </g>
+</svg>

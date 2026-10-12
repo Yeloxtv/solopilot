@@ -44,7 +44,7 @@ npm install
 npm run demo                               # then open examples/demo/build/index.html
 ```
 
-[examples/demo](examples/demo) holds both: the documents in `sources/`, and the plan as it stands on October 21, a month in.
+[examples/demo](examples/demo) holds both: the documents in `sources/`, and the plan as it stands on October 21, a month in. [examples/demo-fr](examples/demo-fr) tells the same story in French.
 
 ## Quick start
 

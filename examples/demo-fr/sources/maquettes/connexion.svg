@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="390" height="760" viewBox="0 0 390 760" font-family="Helvetica, Arial, sans-serif">
+  <title>Fieldbook, connexion (téléphone, état par défaut). Maquette fictive de l'équipe design de Harbor &amp; Pine.</title>
+  <rect width="390" height="760" fill="#f5f6f2"/>
+  <rect x="155" y="120" width="80" height="80" rx="18" fill="#2f5d50"/>
+  <text x="195" y="172" font-size="34" fill="#fff" text-anchor="middle" font-weight="bold">F</text>
+  <text x="195" y="250" font-size="26" fill="#1e2a26" text-anchor="middle" font-weight="bold">Fieldbook</text>
+  <text x="195" y="280" font-size="15" fill="#5e6b66" text-anchor="middle">Inspections sur place, même hors ligne</text>
+  <text x="32" y="372" font-size="14" fill="#1e2a26" font-weight="bold">E-mail professionnel</text>
+  <rect x="32" y="384" width="326" height="52" rx="8" fill="#fff" stroke="#c9cfc8"/>
+  <text x="48" y="416" font-size="16" fill="#9aa39e">nom@harborandpine.example</text>
+  <rect x="32" y="460" width="326" height="56" rx="8" fill="#2f5d50"/>
+  <text x="195" y="494" font-size="17" fill="#fff" text-anchor="middle" font-weight="bold">Recevoir un lien de connexion</text>
+  <text x="195" y="552" font-size="13" fill="#5e6b66" text-anchor="middle">Sans mot de passe : le lien vaut 15 minutes.</text>
+  <text x="195" y="720" font-size="12" fill="#9aa39e" text-anchor="middle">Harbor &amp; Pine · aide : service des bâtiments</text>
+</svg>

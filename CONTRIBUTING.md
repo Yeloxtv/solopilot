@@ -13,7 +13,7 @@ npm link          # the skill calls `solopilot` by name: this makes it the one o
 npm test
 ```
 
-`npm run demo` builds the dashboard of the Fieldbook demo in `examples/demo/build/index.html`.
+`npm run demo` builds the dashboard of the Fieldbook demo in `examples/demo/build/index.html`, and `npm run demo:fr` the French one in `examples/demo-fr/build/index.html`.
 
 ## Where things are
 
@@ -25,6 +25,7 @@ npm test
 | `locales/` | Every string the user reads, in English and in French |
 | `claude/skills/solopilot/` | The `/solopilot` skill, its first-plan guide and the reminder hook |
 | `examples/demo/` | Fieldbook: its documents in `sources/`, and its plan mid-way |
+| `examples/demo-fr/` | The same Fieldbook in French, documents included |
 | `docs/` | The backlog format, how it computes, the vision, the roadmap and the design notes |
 | `e2e/` | End-to-end scenarios that drive real Claude Code sessions |
 
@@ -51,6 +52,7 @@ They spend real tokens on your account, so they stay out of `npm test`. Run the 
 - **The plan stays out of the project's repository.** Only task ids travel with the code, in commit messages.
 - **Commands that write `solopilot.yaml` keep the rest of the file as it is**, comments included, or refuse to write.
 - **Every string exists in English and in French**, in `locales/`.
+- **The two demos tell the same story.** A change to `examples/demo` goes to `examples/demo-fr` too: a test fails as soon as their ids, dates, statuses or points differ.
 - **The developer decides.** solopilot proposes, measures and alerts; it never changes the plan on its own.
 
 ## Proposing a change

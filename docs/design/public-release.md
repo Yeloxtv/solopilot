@@ -94,6 +94,10 @@ A `CONTRIBUTING.md` file:
 3. **The published version.** *Recommended: 0.2.0.* The alternative, folding everything into 0.1.0, would rewrite the CHANGELOG.
 4. **A code of conduct.** *Recommended: not for now.* It can come with the first contributors.
 
+## Decision (2026-10-12)
+
+5. **A French demo.** Built with `--locale fr`, the English demo showed a French interface around English content, which is not what a French project looks like. `examples/demo-fr` tells the same story in French, documents included, and `init --example --locale fr` copies them. A test keeps the two demos identical except for their text. Kerlan stays a test fixture.
+
 ## How it is tested
 
 - **Unit tests**:
