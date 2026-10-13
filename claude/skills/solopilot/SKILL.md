@@ -28,7 +28,7 @@ Two commands write `solopilot.yaml`, and only while the first plan is drawn up: 
 
 Run each of these commands on its own, as written here, never chained with `;` or `&&` and never mixed with another command, and use them rather than git: `solopilot install` allows `solopilot …` and edits of `solopilot.yaml`, so they run without a prompt. Read the backlog with the file tools, not with shell commands on `"$SOLOPILOT_DIR"`: Claude Code asks before any command that expands a variable. Write it with the file tools too, one targeted edit at a time, never with a script (Python, Node, sed): a script asks the developer, and can lose the file's comments. Anything else asks the developer.
 
-Write every title and note in the language of `project.locale`.
+Write every title and note in the language of `project.locale`. Talk to the developer in the language they write in; until they have written anything, as after a bare `/solopilot`, in the language of `project.locale`.
 
 ## Keep the pilot out of the project
 

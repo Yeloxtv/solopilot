@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- The skill talks to the developer in the language they write in, and in the plan's language until they have written anything: a bare `/solopilot` on a French plan no longer answers in English.
+- End-to-end scenarios in French: `first-plan-fr`, the first plan from the French documents of Fieldbook, and `daily-fr`, an end-of-session update on the French demo, with commits written in French. `daily-en` runs the update with a developer typing in English; `daily` keeps a developer typing in French on an English plan, on purpose.
+
 ## 0.3.0
 
 The first version published on npm.

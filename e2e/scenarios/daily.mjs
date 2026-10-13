@@ -1,5 +1,8 @@
 // The end-of-session update, on Fieldbook: two days of tagged commits not reported yet (T017 and
 // S01 finished, tests green) and S02 started ahead of its day, in a file not committed.
+//
+// This file holds the scenario on the English demo, and `fieldbookDaily` for the French one
+// (daily-fr.mjs): the developer types in French in both, and the plan is written in its own language.
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { readBacklog, validate } from '../../src/backlog.mjs';
@@ -8,15 +11,18 @@ import { buildFieldbook, git } from '../fixtures.mjs';
 const task = (b, id) => b.tasks.find((t) => t.id === id);
 const english = (s) => !/[éèêàâçùûôî]|\b(les|des|une|avec|pour|est|sur)\b/i.test(s);
 
-export default {
-  name: 'daily',
-  title: 'End-of-session update on Fieldbook',
-  build: buildFieldbook,
+// language: { label, test }, the language of the plan and the test its log entry must pass.
+// prompts: what the developer types once the update is proposed, French by default.
+const FRENCH = { approve: 'Je valide tout. Charge du jour : 0,5.', reminded: "J'ai relancé Harbor & Pine pour Q01 aujourd'hui, par e-mail." };
+export const fieldbookDaily = ({ name, title, build, language, prompts = FRENCH }) => ({
+  name,
+  title,
+  build,
   // The project's own test command, which a developer allows once in their project. Claude Code
   // ignores a project's committed settings until the folder is trusted interactively.
   allow: ['Bash(npm test)', 'Bash(npm test *)'],
 
-  // What the developer types. French on purpose: the skill writes in the language of the plan.
+  // What the developer types. In `daily`, French on purpose: the skill writes in the language of the plan.
   turns: [
     {
       prompt: '/solopilot',
@@ -34,7 +40,7 @@ export default {
       },
     },
     {
-      prompt: 'Je valide tout. Charge du jour : 0,5.',
+      prompt: prompts.approve,
       checks(fx, run, ctx) {
         const b = readBacklog(fx.pilot);
         const session = b.log.find((e) => e.type === 'session' && String(e.date) === ctx.today);
@@ -45,7 +51,7 @@ export default {
           ['S01 done today', task(b, 'S01').status === 'done' && String(task(b, 'S01').done_on) === ctx.today, `${task(b, 'S01').status} ${task(b, 'S01').done_on ?? ''}`],
           ['S02 not done', task(b, 'S02').status !== 'done', task(b, 'S02').status],
           ['session logged today with effort 0.5', session?.effort === 0.5, JSON.stringify(session ?? null)],
-          ['log written in English, the language of the plan', session ? english(`${session.title} ${session.note ?? ''}`) : false, session ? `${session.title} / ${session.note ?? ''}` : ''],
+          [`log written in ${language.label}, the language of the plan`, session ? language.test(`${session.title} ${session.note ?? ''}`) : false, session ? `${session.title} / ${session.note ?? ''}` : ''],
           ['last_commit is the project head', String(b.project.last_commit ?? '').startsWith(fx.head.slice(0, 7)), String(b.project.last_commit)],
           ['committed in the pilot directory', /update/i.test(pilotLog), pilotLog.replace(/\n/g, ' | ')],
           ['pilot directory clean', git(fx.pilot, ['status', '--porcelain']) === '', git(fx.pilot, ['status', '--porcelain'])],
@@ -56,7 +62,7 @@ export default {
       },
     },
     {
-      prompt: "J'ai relancé Harbor & Pine pour Q01 aujourd'hui, par e-mail.",
+      prompt: prompts.reminded,
       checks(fx, run, ctx) {
         const b = readBacklog(fx.pilot);
         const q = b.questions.find((x) => x.id === 'Q01');
@@ -73,4 +79,6 @@ export default {
     ctx.initialPlan = readFileSync(join(fx.pilot, 'solopilot.yaml'), 'utf8');
     ctx.initialPilotHead = git(fx.pilot, ['rev-parse', 'HEAD']);
   },
-};
+});
+
+export default fieldbookDaily({ name: 'daily', title: 'End-of-session update on Fieldbook', build: buildFieldbook, language: { label: 'English', test: english } });

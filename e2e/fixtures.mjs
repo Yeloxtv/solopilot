@@ -120,21 +120,31 @@ ${loading ? "test('loading view: the button is disabled while the link is sent',
   started: { 'src/screens/site-list.mjs': "import { card } from '../design/components.mjs';\n\n// Site list, sorted by name. Work in progress: empty and loading views to come.\nexport const siteListScreen = ({ sites = [] } = {}) => card(sites.map((s) => ({ kind: 'row', label: `${s.name}, ${s.city}` })));\n" },
 };
 
-export function buildFieldbook(root, { today }) {
+// The commit subjects, in the language of the developer of each demo.
+const SUBJECTS = {
+  demo: ['[T016] Notes on findings', '[T017] Start the design system: color tokens', '[T017] Type scale and spacing tokens', '[T017] Button, input and card components',
+    '[S01] Sign-in screen: default and error views', '[S01] Sign-in screen: loading view', 'Document where screens live'],
+  'demo-fr': ['[T016] Notes sur les constatations', '[T017] Début du design system : couleurs', '[T017] Échelle typographique et espacements', '[T017] Composants bouton, champ et carte',
+    '[S01] Écran de connexion : vues par défaut et erreur', '[S01] Écran de connexion : vue de chargement', 'Documenter où vivent les écrans'],
+};
+
+// demo: `demo` (English) or `demo-fr` (French), the plan the pilot directory starts from.
+export function buildFieldbook(root, { today }, { demo = 'demo' } = {}) {
   let wednesday = addDays(today, -2);
   while (weekday(wednesday) !== 3) wednesday = addDays(wednesday, -1);
   const shift = daysBetween(DEMO_DAY, wednesday);
   const at = (offset, time) => `${addDays(wednesday, offset)}T${time}:00`;
+  const s = SUBJECTS[demo];
 
   const project = join(root, 'fieldbook');
   newRepo(project);
-  commit(project, '[T016] Notes on findings', at(-1, '18:00'), FILES.base);
-  const lastCommit = commit(project, '[T017] Start the design system: color tokens', at(0, '17:30'), FILES.colors);
-  commit(project, '[T017] Type scale and spacing tokens', at(1, '10:15'), FILES.type);
-  commit(project, '[T017] Button, input and card components', at(1, '16:40'), FILES.components);
-  commit(project, '[S01] Sign-in screen: default and error views', at(2, '11:05'), FILES.signin(false));
-  commit(project, '[S01] Sign-in screen: loading view', at(2, '15:20'), FILES.signin(true));
-  const head = commit(project, 'Document where screens live', at(2, '17:45'), FILES.readme);
+  commit(project, s[0], at(-1, '18:00'), FILES.base);
+  const lastCommit = commit(project, s[1], at(0, '17:30'), FILES.colors);
+  commit(project, s[2], at(1, '10:15'), FILES.type);
+  commit(project, s[3], at(1, '16:40'), FILES.components);
+  commit(project, s[4], at(2, '11:05'), FILES.signin(false));
+  commit(project, s[5], at(2, '15:20'), FILES.signin(true));
+  const head = commit(project, s[6], at(2, '17:45'), FILES.readme);
   writeFiles(project, FILES.started);
 
   // The pilot directory, as `solopilot init` makes it, holding the demo plan moved in time. The
@@ -144,7 +154,7 @@ export function buildFieldbook(root, { today }) {
   solopilot(['init', pilot, '--name', 'Fieldbook'], root);
   let meeting = addDays(today, 1);
   while (weekday(meeting) !== 2) meeting = addDays(meeting, 1);
-  const plan = readFileSync(join(ROOT, 'examples', 'demo', 'solopilot.yaml'), 'utf8')
+  const plan = readFileSync(join(ROOT, 'examples', demo, 'solopilot.yaml'), 'utf8')
     .replaceAll('2026-10-23', '__MEETING__')
     .replace(/\b20\d\d-\d\d-\d\d\b/g, (d) => addDays(d, shift))
     .replaceAll('__MEETING__', meeting)
@@ -158,6 +168,9 @@ export function buildFieldbook(root, { today }) {
   solopilot(['install', project, '--dir', pilot], root);
   return { project, pilot, lastCommit, head, wednesday, meeting, cwd: project };
 }
+
+// The same week of work, on the French demo: its plan, and a developer who writes in French.
+export const buildFieldbookFr = (root, ctx) => buildFieldbook(root, ctx, { demo: 'demo-fr' });
 
 // ---------------------------------------------------------------- Kerlan
 
@@ -177,10 +190,12 @@ export function buildKerlan(root) {
 
 // Fieldbook before its first plan, as `solopilot init --example` starts it: the documents of the
 // demo in sources/ (a spec with deliberate gaps and explicit exclusions, kickoff workshop notes, the
-// quote and two mockups showing default states only), in English.
-export function buildFieldbookDocs(root) {
+// quote and two mockups showing default states only), in English, or in French with `--locale fr`.
+export function buildFieldbookDocs(root, ctx, { locale = 'en' } = {}) {
   const pilot = join(root, 'fieldbook-pilot');
   newRepo(pilot);
-  solopilot(['init', pilot, '--example'], root);
+  solopilot(['init', pilot, '--example', '--locale', locale], root);
   return { pilot, cwd: pilot };
 }
+
+export const buildFieldbookDocsFr = (root, ctx) => buildFieldbookDocs(root, ctx, { locale: 'fr' });
