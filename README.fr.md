@@ -4,7 +4,9 @@
 
 [English version](README.md) · [![Tests](https://github.com/Yeloxtv/solopilot/actions/workflows/test.yml/badge.svg)](https://github.com/Yeloxtv/solopilot/actions/workflows/test.yml)
 
-![Le tableau de bord solopilot sur le projet de démo Fieldbook](docs/dashboard.fr.png)
+![solopilot : des documents du projet au premier plan dans Claude Code, puis le tableau de bord](docs/demo.gif)
+
+<sub>Rejoué depuis une vraie session des tests de bout en bout, en version condensée : les mots de Claude sont les siens. Le tableau de bord apparaît en anglais, puis en français.</sub>
 
 Vous développez seul une vraie application pour un client. Pas de chef de projet, pas d'outil de tickets : un cahier des charges et une échéance. Tous les trois jours, les mêmes questions reviennent : *le cœur sera-t-il prêt à temps ? Qu'est-ce qui me bloque ? Qu'est-ce que j'attends du client, et pour quand ?*
 
@@ -43,6 +45,8 @@ git clone https://github.com/Yeloxtv/solopilot && cd solopilot
 npm install
 npm run demo:fr                            # puis ouvrir examples/demo-fr/build/index.html
 ```
+
+![Le tableau de bord de la démo Fieldbook, à mi-parcours](docs/dashboard.fr.png)
 
 [examples/demo-fr](examples/demo-fr) contient les deux : les documents dans `sources/`, et le plan tel qu'il est le 21 octobre, au bout d'un mois. [examples/demo](examples/demo) raconte la même histoire en anglais.
 

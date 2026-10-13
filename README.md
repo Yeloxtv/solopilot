@@ -4,7 +4,9 @@
 
 [Version française](README.fr.md) · [![Tests](https://github.com/Yeloxtv/solopilot/actions/workflows/test.yml/badge.svg)](https://github.com/Yeloxtv/solopilot/actions/workflows/test.yml)
 
-![The solopilot dashboard on the Fieldbook demo project](docs/dashboard.png)
+![solopilot: from a project's documents to a first plan in Claude Code, then its dashboard](docs/demo.gif)
+
+<sub>Replayed from a real session of the end-to-end tests, condensed: Claude's words are its own. The dashboard is shown in English, then in French.</sub>
 
 You are building a real app for a client, alone. No project manager, no ticketing tool, a spec and a deadline. Every few days, the same questions come back: *Will the core be ready on time? What is blocking me? What do I need from the client, and by when?*
 
@@ -43,6 +45,8 @@ git clone https://github.com/Yeloxtv/solopilot && cd solopilot
 npm install
 npm run demo                               # then open examples/demo/build/index.html
 ```
+
+![The dashboard of the Fieldbook demo, mid-way](docs/dashboard.png)
 
 [examples/demo](examples/demo) holds both: the documents in `sources/`, and the plan as it stands on October 21, a month in. [examples/demo-fr](examples/demo-fr) tells the same story in French.
 
