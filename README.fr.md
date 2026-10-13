@@ -4,9 +4,9 @@
 
 [English version](README.md) · [![Tests](https://github.com/Yeloxtv/solopilot/actions/workflows/test.yml/badge.svg)](https://github.com/Yeloxtv/solopilot/actions/workflows/test.yml)
 
-![solopilot : des documents du projet au premier plan dans Claude Code, puis le tableau de bord](docs/demo.gif)
+![Le premier plan dans Claude Code : les fonctionnalités rattachées à leurs sources, les écrans et leurs vues, les questions](docs/plan.fr.gif)
 
-<sub>Rejoué depuis une vraie session des tests de bout en bout, en version condensée : les mots de Claude sont les siens. Le tableau de bord apparaît en anglais, puis en français.</sub>
+<sub>Rejoué depuis de vraies sessions des tests de bout en bout, en version condensée : les mots de Claude sont les siens.</sub>
 
 Vous développez seul une vraie application pour un client. Pas de chef de projet, pas d'outil de tickets : un cahier des charges et une échéance. Tous les trois jours, les mêmes questions reviennent : *le cœur sera-t-il prêt à temps ? Qu'est-ce qui me bloque ? Qu'est-ce que j'attends du client, et pour quand ?*
 
@@ -46,7 +46,7 @@ npm install
 npm run demo:fr                            # puis ouvrir examples/demo-fr/build/index.html
 ```
 
-![Le tableau de bord de la démo Fieldbook, à mi-parcours](docs/dashboard.fr.png)
+![Le tableau de bord de la démo Fieldbook, à mi-parcours : la projection, le calendrier, chaque jour, les réponses attendues](docs/dashboard.fr.gif)
 
 [examples/demo-fr](examples/demo-fr) contient les deux : les documents dans `sources/`, et le plan tel qu'il est le 21 octobre, au bout d'un mois. [examples/demo](examples/demo) raconte la même histoire en anglais.
 
@@ -99,11 +99,15 @@ Un projet signé arrive souvent avec un cahier des charges, quelques ateliers et
 
 `solopilot baseline` enregistre alors le plan convenu, et `solopilot scope` écrit le document de périmètre pour le client : ce qui est garanti à la date, ce qui suit, ce qui n'est pas prévu ou exclu, et ce que vous attendez de lui, sans le moindre retard ni la moindre marge. Une fois qu'il l'a validé par écrit, `solopilot scope --agreed-by` enregistre son accord : toute demande ultérieure se mesure à lui. `layout` et `baseline` sont les seules commandes qui écrivent `solopilot.yaml` ; elles ne changent que leurs propres valeurs, et gardent vos commentaires et votre mise en forme.
 
+![Le plan convenu face aux jours vendus, puis le document de périmètre pour le client](docs/promise.fr.gif)
+
 ## Au quotidien
 
 1. Dans le projet, chaque commit qui fait avancer une tâche commence par son identifiant : `[T024] recherche par ville`, ou `[T025 S05] brancher la liste des sites`.
 2. En fin de session, dans Claude Code : `/solopilot`. Le skill liste les commits taggés et propose un tableau des changements de statut avec leurs preuves, puis attend votre validation.
 3. Une fois validé, il écrit `solopilot.yaml`, note la session au journal, régénère le tableau de bord, poste le digest et commite dans le dossier de pilotage.
+
+![Un point de fin de session : les commits taggés, les changements proposés avec leurs preuves, puis le plan à jour](docs/daily.fr.gif)
 
 Après un atelier client, demandez-lui de replanifier : il chiffre l'impact de chaque changement sur le cœur et sur la totalité avant d'écrire quoi que ce soit.
 

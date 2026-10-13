@@ -4,9 +4,9 @@
 
 [Version française](README.fr.md) · [![Tests](https://github.com/Yeloxtv/solopilot/actions/workflows/test.yml/badge.svg)](https://github.com/Yeloxtv/solopilot/actions/workflows/test.yml)
 
-![solopilot: from a project's documents to a first plan in Claude Code, then its dashboard](docs/demo.gif)
+![The first plan in Claude Code: the features traced to their sources, the screens and their views, the questions](docs/plan.gif)
 
-<sub>Replayed from a real session of the end-to-end tests, condensed: Claude's words are its own. The dashboard is shown in English, then in French.</sub>
+<sub>Replayed from real sessions of the end-to-end tests, condensed: Claude's words are its own.</sub>
 
 You are building a real app for a client, alone. No project manager, no ticketing tool, a spec and a deadline. Every few days, the same questions come back: *Will the core be ready on time? What is blocking me? What do I need from the client, and by when?*
 
@@ -46,7 +46,7 @@ npm install
 npm run demo                               # then open examples/demo/build/index.html
 ```
 
-![The dashboard of the Fieldbook demo, mid-way](docs/dashboard.png)
+![The dashboard of the Fieldbook demo, mid-way: the projection, the calendar, each day, the answers awaited](docs/dashboard.gif)
 
 [examples/demo](examples/demo) holds both: the documents in `sources/`, and the plan as it stands on October 21, a month in. [examples/demo-fr](examples/demo-fr) tells the same story in French.
 
@@ -99,11 +99,15 @@ A signed project often comes with a spec, a few workshops and a date, but no agr
 
 `solopilot baseline` then records the agreed plan, and `solopilot scope` writes the scope document for the client: what is guaranteed on the date, what follows, what is not planned or excluded, and what you expect from them, without a single delay or margin. Once the client approves it in writing, `solopilot scope --agreed-by` records the approval: every later request is measured against it. `layout` and `baseline` are the only commands that write `solopilot.yaml`; they change their own values and keep your comments and layout.
 
+![The plan agreed against the days sold, then the scope document for the client](docs/promise.gif)
+
 ## Day to day
 
 1. In the project, start every commit that moves a task with its id: `[T024] search by city`, or `[T025 S05] wire the site list`.
 2. At the end of a session, in Claude Code: `/solopilot`. The skill lists the tagged commits, proposes a table of status changes with their evidence, and waits for your approval.
 3. Once you approve, it writes `solopilot.yaml`, logs the session, rebuilds the dashboard, posts the digest and commits in the pilot directory.
+
+![An end-of-session update: tagged commits, the changes proposed with their evidence, then the plan up to date](docs/daily.gif)
 
 After a client meeting, ask it to replan: it measures the impact of every change on the core and on the whole plan before writing anything.
 
