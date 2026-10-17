@@ -105,7 +105,7 @@ How the tasks spread (which sprint, which column, which order, which rows open b
 4. **The open rows.** *The sprint of the current day, and any row with work in progress.* The draft also opened past sprints not delivered; there are none, since the current day is the first one not finished.
 5. **Moving the cards.** *None: the board is read only.*
 6. **The tab it opens on.** *"Pending answers" stays the first tab, and the board comes second.* A link to `…#board` opens the board directly, to share it.
-7. **The tab's name.** *"Board" in English, "Tableau" in French.* "Kanban" speaks to a developer, less to a PO.
+7. **The tab's name.** *"Board" in English, "Vue Kanban" in French.* The draft proposed "Tableau", which reads too close to "tableau de bord", the dashboard the tab lives in; "Kanban" is the word French project tools use.
 
 ## How it is tested
 

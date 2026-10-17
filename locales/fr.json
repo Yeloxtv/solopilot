@@ -179,7 +179,7 @@
   "tabs": {
     "label": "Détail",
     "answers": "Réponses attendues",
-    "board": "Tableau",
+    "board": "Vue Kanban",
     "days": "Jour par jour",
     "areas": "Backlog par domaine",
     "requests": "Demandes",
