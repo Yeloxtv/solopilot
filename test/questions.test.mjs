@@ -37,6 +37,18 @@ test('an answer needed within two weeks that was never asked stands out', () => 
   assert.deepEqual(compute(later, { today: TODAY }).unasked, [], 'no day set: nothing is due yet');
 });
 
+test("the owner's own questions are asked of nobody: never to chase, never unasked", () => {
+  const b = asked();
+  b.project.owner = 'Alex';
+  b.questions[1].who = 'Alex';
+  const c = compute(b, { today: TODAY });
+  assert.deepEqual([item(c, 'Q02').asks, item(c, 'Q02').unasked], [false, false]);
+  assert.deepEqual(c.unasked, []);
+  const text = statusText(b, c, loadLocale('en').t);
+  assert.match(text, /Q02 .*\(Alex\)\n/, 'no "not asked yet" on its line');
+  assert.doesNotMatch(text, /never asked/);
+});
+
 test('the dates are checked: a reminder comes after the question', () => {
   assert.deepEqual(validate(asked({ reminded_on: '2026-01-05' })).errors, []);
   const e = validate(asked({ asked_on: 'monday', reminded_on: '2025-12-01' })).errors.join('\n');
