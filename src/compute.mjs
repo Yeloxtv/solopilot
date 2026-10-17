@@ -13,6 +13,7 @@
 // is the share of those points done; otherwise each task counts for an equal share of the day.
 import { calendar, localToday, nextDay } from './calendar.mjs';
 import { LATER, dayLoad } from './backlog.mjs';
+import { board } from './board.mjs';
 
 const EPS = 1e-9;
 
@@ -163,5 +164,6 @@ export function compute(b, { today = localToday(), now = new Date() } = {}) {
     chase: watch.filter((x) => x.chase),
     unasked: watch.filter((x) => x.unasked),
     days: [...plan, ...later],
+    board: board(b.sprints, { plan, later, currentDay }),
   };
 }

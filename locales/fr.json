@@ -179,6 +179,7 @@
   "tabs": {
     "label": "Détail",
     "answers": "Réponses attendues",
+    "board": "Tableau",
     "days": "Jour par jour",
     "areas": "Backlog par domaine",
     "requests": "Demandes",
@@ -203,6 +204,18 @@
     "chaseFor": "à relancer : {n} j sans réponse",
     "unasked": "jamais posée",
     "none": "Aucune réponse attendue."
+  },
+  "board": {
+    "plan": "Le plan entier",
+    "out": "Hors sprint",
+    "core": "cœur",
+    "waits": "Attend {id}",
+    "waiting": "Attend une réponse",
+    "area": "Domaine",
+    "allAreas": "Tous les domaines",
+    "more": { "one": "Afficher {n} de plus", "other": "Afficher les {n} autres" },
+    "deferred": { "one": "{n} tâche reportée", "other": "{n} tâches reportées" },
+    "none": "Aucune tâche dans le plan."
   },
   "days": {
     "hideDone": "Masquer les jours terminés",
