@@ -48,6 +48,10 @@ npm run demo                               # then open examples/demo/build/index
 
 ![The dashboard of the Fieldbook demo, mid-way: the projection, the calendar, each day, the answers awaited](docs/dashboard.gif)
 
+Its **Board** tab shows the tasks as cards, in columns by status (to do, in progress, blocked, done), one row per sprint: the sprint under way open, the others folded, each card with its points and the answer it waits on. It only reads the plan: a status changes through `/solopilot`, from your commits.
+
+![The Board tab of the Fieldbook demo: sprint 1 with its blocked task and its done cards, sprint 2 below](docs/board.png)
+
 [examples/demo](examples/demo) holds both: the documents in `sources/`, and the plan as it stands on October 21, a month in. [examples/demo-fr](examples/demo-fr) tells the same story in French.
 
 ## Quick start

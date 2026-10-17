@@ -179,6 +179,7 @@
   "tabs": {
     "label": "Detail",
     "answers": "Pending answers",
+    "board": "Board",
     "days": "Day by day",
     "areas": "Backlog by area",
     "requests": "Requests",
@@ -203,6 +204,18 @@
     "chaseFor": "to chase: {n} d without an answer",
     "unasked": "never asked",
     "none": "No answer pending."
+  },
+  "board": {
+    "plan": "The whole plan",
+    "out": "Outside sprints",
+    "core": "core",
+    "waits": "Waits on {id}",
+    "waiting": "Waiting on an answer",
+    "area": "Area",
+    "allAreas": "All areas",
+    "more": { "one": "Show {n} more", "other": "Show {n} more" },
+    "deferred": { "one": "{n} deferred task", "other": "{n} deferred tasks" },
+    "none": "No task in the plan."
   },
   "days": {
     "hideDone": "Hide finished days",

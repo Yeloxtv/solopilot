@@ -23,7 +23,7 @@
 body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.45; -webkit-font-smoothing: antialiased; }
 a { color: var(--link); text-decoration: none; }
 a:hover { color: var(--link-hover); }
-button, input { font: inherit; color: inherit; }
+button, input, select { font: inherit; color: inherit; }
 button { cursor: pointer; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .mono { font-family: var(--font-mono); }
@@ -175,7 +175,8 @@ h2 { margin: 0; font: 700 22px/1.1 var(--font-title); text-wrap: balance; }
 .filter { border: 1px solid var(--line-strong); background: transparent; color: var(--text-2); border-radius: 99px; padding: 7px 12px; font-size: 13px; font-weight: 600; display: inline-flex; gap: 6px; }
 .filter[aria-pressed="true"] { background: var(--text); border-color: var(--text); color: var(--bg); }
 .filter span { opacity: 0.7; }
-.search { border: 1px solid var(--line-strong); background: var(--card); border-radius: 6px; padding: 7px 10px; font-size: 13px; width: 240px; max-width: 100%; min-width: 0; }
+.search, .select { border: 1px solid var(--line-strong); background: var(--card); border-radius: 6px; padding: 7px 10px; font-size: 13px; width: 240px; max-width: 100%; min-width: 0; }
+.select { width: auto; }
 .check { display: flex; gap: 8px; align-items: center; font-size: 13px; color: var(--text-2); cursor: pointer; }
 .list { background: var(--card); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
 .lede { font-size: 14px; color: var(--muted); margin: 0; }
@@ -272,6 +273,40 @@ h2 { margin: 0; font: 700 22px/1.1 var(--font-title); text-wrap: balance; }
 .entry-text { font-size: 13px; line-height: 1.55; color: var(--text-2); text-wrap: pretty; }
 .entry-text.clamped { display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
+/* Board: the tasks as cards, in columns by status, one row per sprint */
+.board-tools { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; }
+.row-board { grid-template-columns: minmax(0, 1fr) minmax(80px, 200px) 56px 16px; }
+.board-body { padding: 4px 18px 18px; display: flex; flex-direction: column; gap: 12px; }
+.lanes { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; align-items: start; }
+.lane { background: var(--bg); border: 1px solid var(--line-soft); border-radius: 8px; padding: 10px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.lane-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); list-style: none; }
+.lane-head::-webkit-details-marker { display: none; }
+.lane-head .n { font: 500 12px var(--font-mono); letter-spacing: 0; }
+.lane-doing .lane-head > span:first-child { color: var(--accent); }
+.lane-blocked .lane-head > span:first-child { color: var(--urgent); }
+.lane-done .lane-head > span:first-child { color: var(--ok); }
+details.lane { gap: 0; }
+details.lane > .lane-head { cursor: pointer; }
+details.lane[open] > .lane-head { margin-bottom: 8px; }
+.lane-empty { color: var(--muted); font-size: 13px; margin: 0; }
+.cards { display: flex; flex-direction: column; gap: 8px; }
+.kcard { background: var(--card-2); border: 1px solid var(--line); border-left: 3px solid var(--line-strong); border-radius: 6px; padding: 8px 10px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.kcard.doing { border-left-color: var(--accent); }
+.kcard.blocked { border-left-color: var(--urgent-solid); }
+.kcard.done { border-left-color: var(--ok-line); }
+.kcard-head { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+.kcard-head .id { font: 500 12px var(--font-mono); color: var(--muted); }
+.kcard-head .kpts { font-size: 11px; color: var(--muted); white-space: nowrap; }
+.core-mark { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); margin-left: 6px; }
+.kcard-title { font-size: 13px; line-height: 1.4; overflow-wrap: anywhere; }
+.kcard.done .kcard-title { color: var(--muted); }
+.kcard-note { font-size: 12px; line-height: 1.4; color: var(--urgent); }
+.badge { align-self: flex-start; font-size: 11px; font-weight: 600; padding: 2px 6px; border-radius: 4px; background: var(--line); color: var(--muted); }
+.badge.soon { background: var(--warn-bg); color: var(--warn); }
+.badge.now { background: var(--urgent-bg); color: var(--urgent); }
+.deferred-fold summary { font-size: 13px; color: var(--muted); cursor: pointer; }
+.deferred-fold .task:first-child { margin-top: 6px; }
+
 /* Phone */
 @media (max-width: 720px) {
   .page { padding: 20px 16px 72px; gap: 22px; }
@@ -280,6 +315,10 @@ h2 { margin: 0; font: 700 22px/1.1 var(--font-title); text-wrap: balance; }
   .row-btn { padding: 12px 14px; }
   .row-day { grid-template-columns: 40px minmax(0, 1fr) 48px 14px; }
   .row-area { grid-template-columns: minmax(0, 1fr) 48px 14px; }
+  .row-board { grid-template-columns: minmax(0, 1fr) 48px 14px; }
+  .row-board .bar { display: none; }
+  .board-body { padding: 4px 14px 16px; }
+  .lanes { grid-template-columns: minmax(0, 1fr); gap: 8px; }
   .row-day .points, .row-day .bar, .row-area .bar, .row-area .waiting-chip { display: none; }
   .day-body { padding: 4px 14px 16px; }
   .area-body { padding: 0 14px 12px; }
@@ -563,7 +602,8 @@ function renderRisks() {
 
 /* Detail tabs */
 const tabs = () => [
-  ['answers', t('tabs.answers'), open.length], ['days', t('tabs.days'), plan.length],
+  ['answers', t('tabs.answers'), open.length], ['board', t('tabs.board'), allTasks.filter((x) => x.status !== 'deferred').length],
+  ['days', t('tabs.days'), plan.length],
   ['areas', t('tabs.areas'), allTasks.filter((x) => x.status !== 'deferred').length],
   ...(D.requests.length ? [['requests', t('tabs.requests'), D.requests.length]] : []),
   ['log', t('tabs.log'), D.log.length],
@@ -572,6 +612,7 @@ const anchor = (typeof location !== 'undefined' && location.hash.slice(1)) || ''
 const state = {
   tab: tabs().some(([id]) => id === anchor) ? anchor : 'answers', who: ALL, sprint: ALL, hideDone: false,
   openDay: C.currentDay, request: ALL, openEntries: new Set(), areaFilter: 'all', search: '', openAreas: new Set(),
+  boardSprint: ALL, boardArea: ALL, boardWaiting: false, boardSearch: '', allDone: new Set(), openRows: new Set(C.board.filter((r) => r.open).map((r) => r.id)),
 };
 
 function taskLine(x) {
@@ -602,6 +643,66 @@ function viewAnswers() {
   }).join('');
   $('view').innerHTML = `<div class="chips">${chips}</div>${html || `<p class="empty">${t('answers.none')}</p>`}`;
 }
+
+// Columns side by side from a tablet's width; on a phone they stack, and fold but for what moves or sticks.
+const narrowQuery = typeof matchMedia === 'function' ? matchMedia('(max-width: 720px)') : null;
+const DONE_SHOWN = 5;
+const taskById = new Map(allTasks.map((x) => [x.id, x]));
+const areaTitle = new Map(D.areas.map((a) => [a.id, a.title]));
+function card(x) {
+  const meta = [x.area && areaTitle.has(x.area) ? esc(areaTitle.get(x.area)) : '', dayLabel(x.day), x.views ? t('units.views', { n: Number(x.views) }) : '',
+    x.admin ? t('tasks.admin') : '', x.done_on ? t('tasks.doneOn', { date: dateShort(x.done_on) }) : ''].filter(Boolean).join(' · ');
+  const core = x.day !== LATER && x.day <= C.core;
+  const w = waits(x).map((y) => `<span class="badge ${y.level}" title="${esc(t('tasks.waits', { id: y.id, who: y.who, when: when(y), title: y.title }))}">${t('board.waits', { id: y.id })}</span>`).join('');
+  return `<div class="kcard ${x.status}"><div class="kcard-head"><span><span class="id">${x.id}</span>${core ? `<span class="core-mark">${t('board.core')}</span>` : ''}</span>${x.points !== undefined ? `<span class="kpts">${t('days.points', { n: x.points })}</span>` : ''}</div>
+    <div class="kcard-title">${esc(x.title)}</div>${meta ? `<div class="task-meta">${meta}</div>` : ''}${x.status === 'blocked' && x.note ? `<div class="kcard-note">${esc(x.note)}</div>` : ''}${w}</div>`;
+}
+const rowTitle = (r) => (r.kind === 'sprint' ? `${esc(t('sprint', { id: r.id }))}${r.title ? ' · ' + esc(r.title) : ''}` : r.kind === LATER ? t('later.long') : t('board.' + r.kind));
+function viewBoard() {
+  const chips = [[ALL, t('filters.all')], ...C.board.map((r) => [r.id, r.kind === 'sprint' ? t('sprint', { id: r.id }) : r.kind === LATER ? t('later.long') : t('board.' + r.kind)])]
+    .map(([v, l]) => `<button type="button" class="filter" aria-pressed="${state.boardSprint === v}" data-board-sprint="${esc(v)}">${esc(l)}</button>`).join('');
+  const areas = D.areas.length ? `<select class="select" id="board-area" aria-label="${esc(t('board.area'))}">${[[ALL, t('board.allAreas')], ...D.areas.map((a) => [a.id, a.title])]
+    .map(([v, l]) => `<option value="${esc(v)}"${state.boardArea === v ? ' selected' : ''}>${esc(l)}</option>`).join('')}</select>` : '';
+  $('view').innerHTML = `<div class="tools"><div class="chips">${chips}</div><div class="board-tools">${areas}
+    <label class="check"><input type="checkbox" id="board-waiting" ${state.boardWaiting ? 'checked' : ''}> ${t('board.waiting')}</label>
+    <input type="search" class="search" id="board-search" placeholder="${esc(t('areas.search'))}" aria-label="${esc(t('areas.search'))}" value="${esc(state.boardSearch)}"></div></div>
+    <div class="list" id="board-rows"></div>`;
+  listBoard();
+}
+function listBoard() {
+  const q = state.boardSearch.trim().toLowerCase();
+  const filtered = Boolean(q) || state.boardArea !== ALL || state.boardWaiting;
+  const keep = (x) => (state.boardArea === ALL || x.area === state.boardArea) && (!state.boardWaiting || waits(x).length > 0)
+    && (!q || `${x.id} ${x.title}`.toLowerCase().includes(q));
+  const narrow = Boolean(narrowQuery?.matches);
+  let html = '';
+  for (const r of C.board) {
+    if (state.boardSprint !== ALL && state.boardSprint !== r.id) continue;
+    const lanes = Object.entries(r.columns).map(([status, ids]) => [status, ids.map((id) => taskById.get(id)).filter(keep)]);
+    const deferred = filtered ? [] : r.deferred.map((id) => taskById.get(id));
+    if (filtered && !lanes.some(([, xs]) => xs.length)) continue;
+    const isOpen = filtered || state.boardSprint === r.id || state.openRows.has(r.id);
+    const sub = [r.from !== undefined ? t('range', { from: dayLabel(r.from), to: dayLabel(r.to) }) : '',
+      r.delivered && r.active ? t('days.delivered') : r.when === 'current' ? t('days.inProgress') : ''].filter(Boolean).join(' · ');
+    const lane = ([status, xs]) => {
+      const head = `<span>${t('task.' + status)}</span><span class="n">${xs.length}</span>`;
+      // What is done matters less as it piles up: the most recent first, the rest on demand.
+      const shown = status === 'done' && !filtered && !state.allDone.has(r.id) ? xs.slice(0, DONE_SHOWN) : xs;
+      const more = xs.length > shown.length ? `<button type="button" class="link-btn lane-more" data-all-done="${esc(r.id)}">${t('board.more', { n: xs.length - shown.length })}</button>` : '';
+      const body = `<div class="cards">${shown.map(card).join('') || '<p class="lane-empty">—</p>'}${more}</div>`;
+      return narrow ? `<details class="lane lane-${status}"${status === 'doing' || status === 'blocked' || filtered ? ' open' : ''}><summary class="lane-head">${head}</summary>${body}</details>`
+        : `<div class="lane lane-${status}"><div class="lane-head">${head}</div>${body}</div>`;
+    };
+    html += `<div class="fold ${r.when === 'current' ? 'current' : ''}"><button type="button" class="row-btn row-board" data-board-row="${esc(r.id)}" aria-expanded="${isOpen}">
+      <span class="row-title"><span>${rowTitle(r)}</span>${sub ? `<small>${sub}</small>` : ''}</span>
+      <span class="bar"><span style="width:${pct(r.pointsDone, r.points)}"></span></span><span class="ratio">${r.done}/${r.active}</span>
+      <span class="chevron" aria-hidden="true">${isOpen ? '▾' : '▸'}</span></button>
+      ${isOpen ? `<div class="board-body"><div class="lanes">${lanes.map(lane).join('')}</div>
+        ${deferred.length ? `<details class="deferred-fold"><summary>${t('board.deferred', { n: deferred.length })}</summary>${deferred.map(taskLine).join('')}</details>` : ''}</div>` : ''}</div>`;
+  }
+  $('board-rows').innerHTML = html || `<p class="empty">${t(filtered ? 'areas.noMatch' : 'board.none')}</p>`;
+}
+narrowQuery?.addEventListener?.('change', () => { if (state.tab === 'board') listBoard(); });
 
 function viewDays() {
   const chips = [[ALL, t('filters.all')], ...D.sprints.map((s) => [String(s.id), t('sprint', { id: s.id })]), ...(later ? [[LATER, t('later.long')]] : [])]
@@ -685,7 +786,7 @@ function viewLog() {
   }).join('') || `<p class="empty">${t('log.none')}</p>`}</div>`;
 }
 
-const VIEWS = { answers: viewAnswers, days: viewDays, areas: viewAreas, requests: viewRequests, log: viewLog };
+const VIEWS = { answers: viewAnswers, board: viewBoard, days: viewDays, areas: viewAreas, requests: viewRequests, log: viewLog };
 function renderDetail() {
   $('tabs').innerHTML = tabs().map(([id, name, n]) => `<button type="button" role="tab" class="tab" aria-selected="${state.tab === id}" data-tab="${id}">${name}<span>${n}</span></button>`).join('');
   VIEWS[state.tab]();
@@ -735,6 +836,12 @@ document.addEventListener('click', (e) => {
   if (d.tab) return keepFocus(() => { state.tab = d.tab; renderDetail(); });
   if (d.who !== undefined) return keepFocus(() => { state.who = d.who; viewAnswers(); });
   if (d.sprint) return keepFocus(() => { state.sprint = d.sprint; viewDays(); });
+  if (d.boardSprint) return keepFocus(() => { state.boardSprint = d.boardSprint; viewBoard(); });
+  if (d.allDone !== undefined) { state.allDone.add(d.allDone); return listBoard(); }
+  if (d.boardRow !== undefined) {
+    if (!state.openRows.delete(d.boardRow)) state.openRows.add(d.boardRow);
+    return keepFocus(listBoard);
+  }
   if (d.openDay !== undefined) {
     const day = dayValue(d.openDay);
     return keepFocus(() => { state.openDay = state.openDay === day ? null : day; listDays(); });
@@ -757,9 +864,12 @@ document.addEventListener('click', (e) => {
 });
 document.addEventListener('change', (e) => {
   if (e.target.id === 'hide-done') { state.hideDone = e.target.checked; listDays(); }
+  if (e.target.id === 'board-waiting') { state.boardWaiting = e.target.checked; listBoard(); }
+  if (e.target.id === 'board-area') { state.boardArea = e.target.value; listBoard(); }
 });
 document.addEventListener('input', (e) => {
   if (e.target.id === 'search') { state.search = e.target.value; listAreas(); }
+  if (e.target.id === 'board-search') { state.boardSearch = e.target.value; listBoard(); }
 });
 renderPage();
 </script>
