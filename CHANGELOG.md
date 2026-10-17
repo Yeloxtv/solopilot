@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.4.0
 
 - The dashboard has two pages, chosen from a menu in its header: **Overview**, the steering page as before, and the **Board**: the tasks as cards, in columns by status (to do, in progress, blocked, done), one row per sprint, then what sits below the line. The sprint of the current day and any row with work in progress open; the others fold. A card carries its area, points, views, day, the note of a blocked task and the answers it waits on; tasks of the core are marked. Filters by sprint, area, waiting on an answer, and a search. "Done" shows its five most recent cards first. Read only: a status still changes through `/solopilot`. `…#board` opens it directly ([design](docs/design/board.md)).
 - The skill talks to the developer in the language they write in, and in the plan's language until they have written anything: a bare `/solopilot` on a French plan no longer answers in English.
