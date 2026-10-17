@@ -15,7 +15,7 @@ The first plan comes first: from the project documents to a dated plan, in six s
 
 Then solopilot went public, on October 12, 2026: the repository is open, 0.3.0 is on npm, the tests run on Linux, macOS and Windows at every push, and testers have a trial report to tell how it went ([design](design/public-release.md)).
 
-The first need from real use followed: a **board** of the tasks by sprint, in columns by status, as a tab of the dashboard rather than a project management tool to keep in sync ([design](design/board.md)).
+The first need from real use followed: a **board** of the tasks by sprint, in columns by status, as a page of the dashboard, reached from its header, rather than a project management tool to keep in sync ([design](design/board.md)).
 
 ## Next
 

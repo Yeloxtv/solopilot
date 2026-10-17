@@ -38,6 +38,12 @@ h2 { margin: 0; font: 700 22px/1.1 var(--font-title); text-wrap: balance; }
 .brand b { font: 700 15px/1 var(--font); letter-spacing: -0.01em; }
 .brand i { width: 1px; height: 14px; background: var(--line-strong); }
 .brand span { color: var(--muted); }
+.nav { display: inline-flex; gap: 4px; padding: 3px; border: 1px solid var(--line-strong); border-radius: 8px; }
+.nav button { min-height: 40px; border: 0; background: transparent; color: var(--muted); border-radius: 6px; padding: 0 16px; font: 600 14px/1 var(--font); }
+.nav button:hover { color: var(--text); }
+.nav button[aria-current="page"] { background: var(--card-2); color: var(--text); }
+.screen { display: flex; flex-direction: column; gap: 28px; }
+.screen[hidden] { display: none; }
 .today { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; font-size: 13px; color: var(--muted); }
 .today .pill { display: inline-flex; align-items: center; gap: 8px; }
 .today .pill::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
@@ -334,40 +340,49 @@ details.lane[open] > .lane-head { margin-bottom: 8px; }
 <div class="page">
   <header class="top">
     <h1 class="brand" id="brand"></h1>
+    <nav class="nav" id="nav"></nav>
     <div class="today" id="today"></div>
   </header>
 
-  <section class="card explain" aria-labelledby="thesis">
-    <h2 class="thesis" id="thesis"></h2>
-    <div class="explain-grid">
-      <div class="explain-text" id="explain-text"></div>
-      <div class="scroll"><table class="calc-table" id="calc-table"></table><p class="calc-note" id="calc-note"></p></div>
-    </div>
-  </section>
+  <!-- Two pages, chosen in the header: the steering overview, and the board on its own. -->
+  <div class="screen" id="screen-overview">
+    <section class="card explain" aria-labelledby="thesis">
+      <h2 class="thesis" id="thesis"></h2>
+      <div class="explain-grid">
+        <div class="explain-text" id="explain-text"></div>
+        <div class="scroll"><table class="calc-table" id="calc-table"></table><p class="calc-note" id="calc-note"></p></div>
+      </div>
+    </section>
 
-  <section class="hero" id="hero">
-    <article class="card projection" id="card-core"></article>
-    <article class="card projection" id="card-all"></article>
-    <div class="kpis" id="kpis"></div>
-  </section>
+    <section class="hero" id="hero">
+      <article class="card projection" id="card-core"></article>
+      <article class="card projection" id="card-all"></article>
+      <div class="kpis" id="kpis"></div>
+    </section>
 
-  <section class="card timeline-card" aria-labelledby="timeline-title">
-    <div class="title-row">
-      <h2 id="timeline-title"></h2>
-      <div class="legend" id="legend"></div>
-    </div>
-    <div class="scroll"><div class="timeline" id="timeline"></div></div>
-    <div class="milestones" id="milestones"></div>
-  </section>
+    <section class="card timeline-card" aria-labelledby="timeline-title">
+      <div class="title-row">
+        <h2 id="timeline-title"></h2>
+        <div class="legend" id="legend"></div>
+      </div>
+      <div class="scroll"><div class="timeline" id="timeline"></div></div>
+      <div class="milestones" id="milestones"></div>
+    </section>
 
-  <section class="duo">
-    <div class="card panel" id="urgent"></div>
-    <div class="card panel"><h2 id="risks-title"></h2><div id="risks"></div></div>
-  </section>
+    <section class="duo">
+      <div class="card panel" id="urgent"></div>
+      <div class="card panel"><h2 id="risks-title"></h2><div id="risks"></div></div>
+    </section>
 
-  <section class="detail" id="detail">
-    <div class="tabs" role="tablist" id="tabs"></div>
-    <div class="view" id="view" role="tabpanel"></div>
+    <section class="detail" id="detail">
+      <div class="tabs" role="tablist" id="tabs"></div>
+      <div class="view" id="view" role="tabpanel"></div>
+    </section>
+  </div>
+
+  <section class="screen" id="screen-board" aria-labelledby="board-title" hidden>
+    <h2 id="board-title"></h2>
+    <div class="view" id="board-view"></div>
   </section>
 </div>
 
@@ -445,8 +460,19 @@ const byWho = (xs) => [...new Set([...(D.people || []), ...xs.map((x) => x.who)]
   .map((who) => [who, xs.filter((x) => x.who === who)]).filter(([, l]) => l.length);
 const ALL = '*';
 
-/* Header, with the language switch */
+/* Header, with the menu of pages and the language switch */
 const sprint = sprintOf(C.currentDay);
+const PAGES = ['overview', 'board'];
+function renderNav() {
+  $('nav').setAttribute('aria-label', t('nav.label'));
+  $('nav').innerHTML = PAGES.map((p) => `<button type="button" data-page="${p}"${state.page === p ? ' aria-current="page"' : ''}>${t('nav.' + p)}</button>`).join('');
+}
+function showPage() {
+  renderNav();
+  $('screen-overview').hidden = state.page !== 'overview';
+  $('screen-board').hidden = state.page !== 'board';
+  if (state.page === 'board') viewBoard();
+}
 function renderHeader() {
   $('brand').innerHTML = `<b>${esc(P.name)}</b><i aria-hidden="true"></i><span>${esc(P.client ? t('header.subtitleClient', { client: P.client }) : t('header.subtitle'))}</span>`;
   const langs = LANGS.length > 1 ? `<span class="lang" role="group" aria-label="${esc(t('header.language'))}">${LANGS.map((l) => `<button type="button" lang="${l}" data-lang="${l}" aria-pressed="${l === lang}">${l.toUpperCase()}</button>`).join('')}</span>` : '';
@@ -602,7 +628,7 @@ function renderRisks() {
 
 /* Detail tabs */
 const tabs = () => [
-  ['answers', t('tabs.answers'), open.length], ['board', t('tabs.board'), allTasks.filter((x) => x.status !== 'deferred').length],
+  ['answers', t('tabs.answers'), open.length],
   ['days', t('tabs.days'), plan.length],
   ['areas', t('tabs.areas'), allTasks.filter((x) => x.status !== 'deferred').length],
   ...(D.requests.length ? [['requests', t('tabs.requests'), D.requests.length]] : []),
@@ -610,6 +636,7 @@ const tabs = () => [
 ];
 const anchor = (typeof location !== 'undefined' && location.hash.slice(1)) || '';
 const state = {
+  page: anchor === 'board' ? 'board' : 'overview',
   tab: tabs().some(([id]) => id === anchor) ? anchor : 'answers', who: ALL, sprint: ALL, hideDone: false,
   openDay: C.currentDay, request: ALL, openEntries: new Set(), areaFilter: 'all', search: '', openAreas: new Set(),
   boardSprint: ALL, boardArea: ALL, boardWaiting: false, boardSearch: '', allDone: new Set(), openRows: new Set(C.board.filter((r) => r.open).map((r) => r.id)),
@@ -663,7 +690,8 @@ function viewBoard() {
     .map(([v, l]) => `<button type="button" class="filter" aria-pressed="${state.boardSprint === v}" data-board-sprint="${esc(v)}">${esc(l)}</button>`).join('');
   const areas = D.areas.length ? `<select class="select" id="board-area" aria-label="${esc(t('board.area'))}">${[[ALL, t('board.allAreas')], ...D.areas.map((a) => [a.id, a.title])]
     .map(([v, l]) => `<option value="${esc(v)}"${state.boardArea === v ? ' selected' : ''}>${esc(l)}</option>`).join('')}</select>` : '';
-  $('view').innerHTML = `<div class="tools"><div class="chips">${chips}</div><div class="board-tools">${areas}
+  $('board-title').textContent = t('nav.board');
+  $('board-view').innerHTML = `<div class="tools"><div class="chips">${chips}</div><div class="board-tools">${areas}
     <label class="check"><input type="checkbox" id="board-waiting" ${state.boardWaiting ? 'checked' : ''}> ${t('board.waiting')}</label>
     <input type="search" class="search" id="board-search" placeholder="${esc(t('areas.search'))}" aria-label="${esc(t('areas.search'))}" value="${esc(state.boardSearch)}"></div></div>
     <div class="list" id="board-rows"></div>`;
@@ -702,7 +730,7 @@ function listBoard() {
   }
   $('board-rows').innerHTML = html || `<p class="empty">${t(filtered ? 'areas.noMatch' : 'board.none')}</p>`;
 }
-narrowQuery?.addEventListener?.('change', () => { if (state.tab === 'board') listBoard(); });
+narrowQuery?.addEventListener?.('change', () => { if (state.page === 'board') listBoard(); });
 
 function viewDays() {
   const chips = [[ALL, t('filters.all')], ...D.sprints.map((s) => [String(s.id), t('sprint', { id: s.id })]), ...(later ? [[LATER, t('later.long')]] : [])]
@@ -817,6 +845,7 @@ function renderPage() {
   renderRisks();
   $('detail').setAttribute('aria-label', t('tabs.label'));
   renderDetail();
+  showPage();
 }
 
 document.addEventListener('click', (e) => {
@@ -826,6 +855,13 @@ document.addEventListener('click', (e) => {
   if (d.lang) {
     try { localStorage.setItem(LANG_KEY, d.lang); } catch { /* no storage: the choice lasts as long as the page */ }
     return keepFocus(() => { setLang(d.lang); renderPage(); });
+  }
+  if (d.page) {
+    state.page = d.page;
+    // The address keeps the page, so a shared link or a reload opens the board again.
+    try { history.replaceState(null, '', d.page === 'board' ? '#board' : location.pathname + location.search); } catch { /* sandboxed host: the page still switches */ }
+    keepFocus(showPage);
+    return window.scrollTo({ top: 0, behavior: 'auto' });
   }
   if (d.risk !== undefined) {
     const r = RISKS[Number(d.risk)];

@@ -176,10 +176,14 @@
     "seeCalendar": "See the calendar",
     "filter": "Show {who}"
   },
+  "nav": {
+    "label": "Pages",
+    "overview": "Overview",
+    "board": "Board"
+  },
   "tabs": {
     "label": "Detail",
     "answers": "Pending answers",
-    "board": "Board",
     "days": "Day by day",
     "areas": "Backlog by area",
     "requests": "Requests",

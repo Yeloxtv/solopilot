@@ -8,7 +8,7 @@ Project management tools all have a view solopilot lacked: a board where each ta
 
 The dashboard showed the tasks in two ways: day by day, where each day has to be unfolded, and by area, as lists. Neither answers fast the question the developer asks when starting their day, or the PO when opening the page: *in this sprint, what is done, what is moving, what is left, and what is stuck?*
 
-This work adds a **Board** tab to the dashboard: the tasks as cards, in columns by status, one row per sprint.
+This work adds a **Board** page to the dashboard: the tasks as cards, in columns by status, one row per sprint. A menu in the header switches between it and the steering overview.
 
 ## Why not an existing tool
 
@@ -104,8 +104,8 @@ How the tasks spread (which sprint, which column, which order, which rows open b
 3. **A task waiting on an answer.** *It stays in its column, with the "Waits on Q03" badge.* Only the `blocked` status, set by the developer with its note, puts it in "Blocked".
 4. **The open rows.** *The sprint of the current day, and any row with work in progress.* The draft also opened past sprints not delivered; there are none, since the current day is the first one not finished.
 5. **Moving the cards.** *None: the board is read only.*
-6. **The tab it opens on.** *"Pending answers" stays the first tab, and the board comes second.* A link to `…#board` opens the board directly, to share it.
-7. **The tab's name.** *"Board" in English, "Vue Kanban" in French.* The draft proposed "Tableau", which reads too close to "tableau de bord", the dashboard the tab lives in; "Kanban" is the word French project tools use.
+6. **Where it lives.** *A page of its own, chosen from a menu in the header: "Overview" ("Pilotage") and "Board" ("Vue Kanban").* It was first a second tab under the overview, at the bottom of a long page: the first real user found it too far down to read, and asked for the header to carry a menu. The overview opens by default; a link to `…#board` opens the board directly, to share it, and switching pages keeps that address up to date.
+7. **The page's name.** *"Board" in English, "Vue Kanban" in French.* The draft proposed "Tableau", which reads too close to "tableau de bord", the dashboard the page lives in; "Kanban" is the word French project tools use.
 
 ## How it is tested
 

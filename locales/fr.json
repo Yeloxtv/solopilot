@@ -176,10 +176,14 @@
     "seeCalendar": "Voir le calendrier",
     "filter": "Filtrer {who}"
   },
+  "nav": {
+    "label": "Pages",
+    "overview": "Pilotage",
+    "board": "Vue Kanban"
+  },
   "tabs": {
     "label": "Détail",
     "answers": "Réponses attendues",
-    "board": "Vue Kanban",
     "days": "Jour par jour",
     "areas": "Backlog par domaine",
     "requests": "Demandes",
