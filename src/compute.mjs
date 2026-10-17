@@ -129,13 +129,14 @@ export function compute(b, { today = localToday(), now = new Date() } = {}) {
     .map((x) => {
       const date = x.before ? dueDate(x.before) : null;
       // Questions and dependencies go to someone: asked on a day, chased after chase_after working
-      // days without an answer, or never asked although the work needs them within two weeks.
-      const asks = x.kind !== 'request';
+      // days without an answer, or never asked although the work needs them within two weeks. The
+      // owner's own ones are asked of nobody.
+      const asks = x.kind !== 'request' && !(p.owner && x.who === p.owner);
       const asked = asks && x.asked_on !== undefined;
       const waiting = asked ? cal.between(String(x.asked_on), today) : null;
       const chase = asked && cal.between(String(x.reminded_on ?? x.asked_on), today) >= chaseAfter;
       const unasked = asks && !asked && date !== null && date <= horizon;
-      return { ...x, date, left: date ? cal.between(today, date) : null, level: level(date), asked, waiting, chase, unasked };
+      return { ...x, date, left: date ? cal.between(today, date) : null, level: level(date), asks, asked, waiting, chase, unasked };
     })
     .sort((a, c) => (a.before ?? Infinity) - (c.before ?? Infinity));
 

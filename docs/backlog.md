@@ -14,7 +14,7 @@ Dates are written `YYYY-MM-DD`. Only `project`, `days` and `tasks` are required;
 | --- | --- | --- |
 | `name` | yes | Project name, shown on the dashboard and in the digest |
 | `client` | | Who the project is for. Pending requests are attributed to them by default |
-| `owner` | | You. Excluded when looking for the party most answers depend on, and your own questions stay out of the scope document |
+| `owner` | | You. Excluded when looking for the party most answers depend on, your own questions stay out of the scope document, and your own questions and dependencies are never counted as asked, to chase or never asked |
 | `locale` | | `en` (default) or `fr`, or a tag such as `en-GB` to change date formats too. The dashboard opens in it, and its reader can switch to the other language |
 | `goal` | | What happens on the target date, e.g. `"Launch"` or `"Demo"` |
 | `start` | yes | Date of day 1 |

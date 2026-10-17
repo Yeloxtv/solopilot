@@ -125,7 +125,7 @@ export function statusText(b, c, t) {
     out.push('', t('status.watch'));
     for (const x of alerts) {
       const due = x.level === 'now' ? t('status.now') : t('status.around', { date: date(x.date) });
-      const asked = x.kind === 'request' ? '' : ` · ${x.asked ? t('status.askedFor', { date: date(x.asked_on), n: x.waiting }) : t('status.notAsked')}`;
+      const asked = !x.asks ? '' : ` · ${x.asked ? t('status.askedFor', { date: date(x.asked_on), n: x.waiting }) : t('status.notAsked')}`;
       out.push(`  ${x.id}  ${t('status.before', { day: day(x.before) }).padEnd(12)}  ${due.padEnd(22)}  ${x.title} (${x.who})${asked}`);
     }
   }
