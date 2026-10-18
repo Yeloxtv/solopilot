@@ -115,6 +115,42 @@ test('a sprint left with a blocked task stays the current one, and open', () => 
   assert.deepEqual(c.board.slice(0, 2).map((r) => [r.id, r.when, r.open]), [['1', 'current', true], ['2', 'upcoming', false]]);
 });
 
+test('to do gathers by plan day: the next two days open, the others fold', () => {
+  const b = sprints();
+  b.tasks.push(
+    { id: 'S03', day: 4, area: 'core', status: 'todo', views: 2, title: 'Screen of day 4' },
+    { id: 'T011', day: 5, area: 'core', status: 'todo', title: 'Day 5' },
+    { id: 'T012', day: 6, area: 'core', status: 'todo', title: 'Day 6' },
+    { id: 'T013', day: 4, area: 'core', status: 'doing', title: 'Under way on day 4' },
+  );
+  const [first, second] = compute(b, { today }).board;
+  assert.deepEqual(second.todoDays, [
+    { day: 4, tasks: ['T006', 'S03'], open: true },
+    { day: 5, tasks: ['T011'], open: true },
+    { day: 6, tasks: ['T012'], open: false },
+  ]);
+  // Sprint 1 has one task to do, on day 2: the current day, never one before it.
+  assert.deepEqual(first.todoDays, [{ day: 2, tasks: ['T002'], open: true }]);
+});
+
+test("a day of to do adds up its tasks' points, when the plan estimates each task", () => {
+  const b = sprints();
+  b.tasks.find((x) => x.id === 'T006').points = 0.1;
+  b.tasks.push({ id: 'T011', day: 4, area: 'core', status: 'todo', points: 0.2, title: 'Day 4 too' });
+  const second = compute(b, { today }).board[1];
+  assert.deepEqual(second.todoDays, [{ day: 4, tasks: ['T006', 'T011'], points: 0.3, open: true }]);
+});
+
+test('below the line has no days, nor a row with nothing to do', () => {
+  const b = sprints();
+  b.tasks.find((x) => x.id === 'T002').status = 'done';
+  b.tasks.find((x) => x.id === 'T002').done_on = '2026-01-06';
+  const rows = compute(b, { today }).board;
+  assert.deepEqual(rows[0].todoDays, []);
+  assert.deepEqual(rows[2].columns.todo, ['T007']);
+  assert.deepEqual(rows[2].todoDays, []);
+});
+
 test('the progress of a row is the points of its days delivered', () => {
   const [first, second] = compute(sprints(), { today }).board;
   assert.equal(first.points, 12);

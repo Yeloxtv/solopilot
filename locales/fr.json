@@ -219,6 +219,7 @@
     "allAreas": "Tous les domaines",
     "more": { "one": "Afficher {n} de plus", "other": "Afficher les {n} autres" },
     "deferred": { "one": "{n} tâche reportée", "other": "{n} tâches reportées" },
+    "tasks": { "one": "{n} tâche", "other": "{n} tâches" },
     "none": "Aucune tâche dans le plan."
   },
   "days": {

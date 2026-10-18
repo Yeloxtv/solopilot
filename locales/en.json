@@ -219,6 +219,7 @@
     "allAreas": "All areas",
     "more": { "one": "Show {n} more", "other": "Show {n} more" },
     "deferred": { "one": "{n} deferred task", "other": "{n} deferred tasks" },
+    "tasks": { "one": "{n} task", "other": "{n} tasks" },
     "none": "No task in the plan."
   },
   "days": {
