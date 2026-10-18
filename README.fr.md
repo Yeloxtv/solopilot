@@ -48,9 +48,9 @@ npm run demo:fr                            # puis ouvrir examples/demo-fr/build/
 
 ![Le tableau de bord de la démo Fieldbook, à mi-parcours : la projection, le calendrier, chaque jour, les réponses attendues](docs/dashboard.fr.gif)
 
-Un menu dans son en-tête mène à une seconde page, la **Vue Kanban** : les tâches en cartes, en colonnes par statut (à faire, en cours, bloqué, fait), une rangée par sprint : le sprint en cours ouvert, les autres repliés, chaque carte avec ses points et la réponse qu'elle attend. Il ne fait que lire le plan : un statut change par `/solopilot`, à partir de vos commits.
+Un menu dans son en-tête mène à une seconde page, la **Vue Kanban** : les tâches en cartes, en colonnes par statut (à faire, en cours, bloqué, fait), une rangée par sprint : le sprint en cours ouvert, les autres repliés, chaque carte avec ses points et la réponse qu'elle attend. Ce qui reste à faire se range sous ses jours du plan, les deux prochains ouverts. Il ne fait que lire le plan : un statut change par `/solopilot`, à partir de vos commits.
 
-![La page Vue Kanban de la démo Fieldbook : le sprint 1 avec sa tâche bloquée et ses cartes faites, le sprint 2 en dessous](docs/board.fr.png)
+![La page Vue Kanban de la démo Fieldbook : le sprint 1 avec sa tâche bloquée et ses cartes faites, le sprint 2 en dessous avec ses tâches à faire par jour, J7 et J8 ouverts](docs/board.fr.png)
 
 [examples/demo-fr](examples/demo-fr) contient les deux : les documents dans `sources/`, et le plan tel qu'il est le 21 octobre, au bout d'un mois. [examples/demo](examples/demo) raconte la même histoire en anglais.
 

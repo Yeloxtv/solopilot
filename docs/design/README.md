@@ -13,4 +13,4 @@ The behaviour itself is documented in the [README](../../README.md), the [backlo
 | [The life of questions](life-of-questions.md) | Asked, waiting, to chase, never asked |
 | [All projects](all-projects.md) | The share of the day promised to all your projects, week by week |
 | [Going public](public-release.md) | What the repository needed before opening |
-| [The board](board.md) | The tasks as cards, in columns by status, one row per sprint |
+| [The board](board.md) | The tasks as cards, in columns by status, one row per sprint; what is left to do by day |

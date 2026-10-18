@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- The board reads on a real project. In "To do", the cards gather under their plan day: the next two days open, the others fold to a line with their count of tasks and points, and open with a click. A filter opens every day it keeps. Every card is compact: the id and the title, cut after two lines, then one line for the core mark, the day, the date done, the views, the area, the answers awaited and the points; hovering reads the card whole, and on a phone nothing is cut. On the Fieldbook demo, at 1,024 px wide, the board goes from 3,260 to 1,196 px high ([design](docs/design/board.md#to-do-by-day)).
+
 ## 0.4.0
 
 - The dashboard has two pages, chosen from a menu in its header: **Overview**, the steering page as before, and the **Board**: the tasks as cards, in columns by status (to do, in progress, blocked, done), one row per sprint, then what sits below the line. The sprint of the current day and any row with work in progress open; the others fold. A card carries its area, points, views, day, the note of a blocked task and the answers it waits on; tasks of the core are marked. Filters by sprint, area, waiting on an answer, and a search. "Done" shows its five most recent cards first. Read only: a status still changes through `/solopilot`. `…#board` opens it directly ([design](docs/design/board.md)).
