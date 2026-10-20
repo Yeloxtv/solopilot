@@ -10,6 +10,7 @@
 - The skill talks to the developer in the language they write in, and in the plan's language until they have written anything: a bare `/solopilot` on a French plan no longer answers in English.
 - End-to-end scenarios in French: `first-plan-fr`, the first plan from the French documents of Fieldbook, and `daily-fr`, an end-of-session update on the French demo, with commits written in French. `daily-en` runs the update with a developer typing in English; `daily` keeps a developer typing in French on an English plan, on purpose.
 - Your own questions and dependencies (`who` is `project.owner`) are asked of nobody: they no longer show as never asked, nor as to chase.
+- The risk of a grown scope reads "grew by 13%", no longer "grew by +13%".
 - The READMEs show four GIFs in each language, replayed from those real sessions: the first plan, the plan agreed and the scope document for the client, an end-of-session update, and the dashboard.
 
 ## 0.3.0
