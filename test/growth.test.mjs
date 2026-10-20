@@ -69,3 +69,11 @@ test('the movement reads in one line, in English and in French', () => {
   assert.equal(fr.details, '+1,5 par la demande R02, +1 ajouté sans demande, +1 par réestimation, −2 retirés.');
   assert.equal(growthView(scopeGrowth(agreedOn(agreedPlan()), agreedPlan()), loadLocale('en').t).line, "Scope since the client's approval (March 2): unchanged.");
 });
+
+test('the risk says how much the scope grew without a second sign: "grew by 25%", not "grew by +25%"', () => {
+  const g = scopeGrowth(agreedOn(agreedPlan()), grownPlan());
+  const en = loadLocale('en').t;
+  const fr = loadLocale('fr').t;
+  assert.equal(en('risks.growth', { pct: growthView(g, en).size, since: 'March 2' }), 'The scope grew by 25% since March 2');
+  assert.equal(fr('risks.growth', { pct: growthView(g, fr).size, since: '2 mars' }), 'Le périmètre a grossi de 25 % depuis 2 mars');
+});

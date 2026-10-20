@@ -50,7 +50,7 @@ export function growthView(g, t) {
   if (!g) return null;
   const since = t(g.basis === 'agreed' ? 'growth.sinceAgreed' : 'growth.sinceBaseline', { date: t.date(g.date, { day: 'numeric', month: 'long' }) });
   const moved = Math.abs(g.net) > 0.005 || (g.detailed && [g.requests, g.unrequested, g.reestimated, g.removed].some((x) => Math.abs(x) > 0.005));
-  if (!moved) return { line: t('growth.unchanged', { since }), details: '', since, pct: t('growth.percent', { n: '0' }), level: null };
+  if (!moved) return { line: t('growth.unchanged', { since }), details: '', since, pct: t('growth.percent', { n: '0' }), size: t('growth.percent', { n: '0' }), level: null };
   const pct = t('growth.percent', { n: `${g.ratio > 0.005 ? '+' : g.ratio < -0.005 ? '−' : ''}${Math.round(Math.abs(g.ratio) * 100)}` });
   const parts = g.detailed ? [
     g.requests ? t('growth.requests', { n: g.requestIds.length, points: signed(g.requests, t), ids: t.list(g.requestIds) }) : '',
@@ -61,7 +61,8 @@ export function growthView(g, t) {
   return {
     line: t('growth.line', { since, net: t('growth.points', { n: Math.abs(g.net), signed: signed(g.net, t) }), pct }),
     details: parts.length ? `${parts.join(', ')}.` : '',
-    since, pct, level: g.level,
+    // size: the same share without its sign, for a sentence whose verb already says which way ("grew by 13 %").
+    since, pct, size: t('growth.percent', { n: Math.round(Math.abs(g.ratio) * 100) }), level: g.level,
   };
 }
 
