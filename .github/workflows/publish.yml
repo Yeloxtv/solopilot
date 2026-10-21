@@ -1,14 +1,17 @@
 name: Publish
 
-# Publishes to npm the version a tag names, `git tag v0.4.0 && git push origin v0.4.0`, through npm's
-# trusted publishing: npm trusts this workflow of this repository, so no token is stored anywhere. The
-# trusted publisher is declared once in the package settings on npmjs.com (workflow: publish.yml).
+# Publishes to npm the version of package.json, through npm's trusted publishing: npm trusts this
+# workflow of this repository, so no token is stored anywhere. The trusted publisher is declared
+# once in the package settings on npmjs.com (workflow: publish.yml). Two ways to start it:
+# - push a tag naming the version, `git tag v0.4.0 && git push origin v0.4.0`;
+# - run it by hand on main (Actions > Publish > Run workflow): it tags the version once published.
 on:
   push:
     tags: ['v*']
+  workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   id-token: write
 
 jobs:
@@ -22,9 +25,22 @@ jobs:
           registry-url: https://registry.npmjs.org
       # Trusted publishing needs npm 11.5.1 or later.
       - run: npm install -g npm@^11.5.1
-      # The tag and package.json must name the same version, or npm would publish another one.
-      - run: test "v$(node -p "require('./package.json').version")" = "$GITHUB_REF_NAME"
+      - id: version
+        run: echo "version=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
+      # A tag and package.json must name the same version, or npm would publish another one.
+      - if: github.event_name == 'push'
+        run: test "v${{ steps.version.outputs.version }}" = "$GITHUB_REF_NAME"
+      # By hand, only from main, and only a version npm does not have yet.
+      - if: github.event_name == 'workflow_dispatch'
+        run: |
+          test "$GITHUB_REF" = refs/heads/main
+          ! npm view "solopilot@${{ steps.version.outputs.version }}" version --silent | grep -q .
       - run: git config --global user.name "CI" && git config --global user.email "ci@example.com"
       - run: npm ci
       - run: npm test
       - run: npm publish
+      # A tag pushed by this workflow starts no other run: the version is not published twice.
+      - if: github.event_name == 'workflow_dispatch'
+        run: |
+          git tag -a "v${{ steps.version.outputs.version }}" -m "solopilot ${{ steps.version.outputs.version }}"
+          git push origin "v${{ steps.version.outputs.version }}"
