@@ -61,3 +61,7 @@ They spend real tokens on your account, so they stay out of `npm test`. Run the 
 ## Proposing a change
 
 Open an issue first for a change of behaviour or of the file format, to agree on it before the code. For a fix or a small improvement, a pull request is enough: keep it focused, add or update the tests, and update the docs and both locales when the change shows.
+
+## Releasing
+
+Set the version in `package.json` (and `package-lock.json`), turn the "Unreleased" section of the CHANGELOG into that version, and merge. Then tag the merge on `main` and push the tag: `git tag v0.4.0 && git push origin v0.4.0`. The `Publish` workflow checks that the tag and `package.json` agree, runs the tests and publishes to npm, through npm's trusted publishing: the package's settings on npmjs.com name this repository and `publish.yml`, so no token is stored anywhere.

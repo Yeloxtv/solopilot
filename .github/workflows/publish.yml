@@ -1,0 +1,30 @@
+name: Publish
+
+# Publishes to npm the version a tag names, `git tag v0.4.0 && git push origin v0.4.0`, through npm's
+# trusted publishing: npm trusts this workflow of this repository, so no token is stored anywhere. The
+# trusted publisher is declared once in the package settings on npmjs.com (workflow: publish.yml).
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+      # Trusted publishing needs npm 11.5.1 or later.
+      - run: npm install -g npm@^11.5.1
+      # The tag and package.json must name the same version, or npm would publish another one.
+      - run: test "v$(node -p "require('./package.json').version")" = "$GITHUB_REF_NAME"
+      - run: git config --global user.name "CI" && git config --global user.email "ci@example.com"
+      - run: npm ci
+      - run: npm test
+      - run: npm publish
