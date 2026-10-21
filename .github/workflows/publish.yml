@@ -1,8 +1,10 @@
 name: Publish
 
-# Publishes to npm the version of package.json, through npm's trusted publishing: npm trusts this
+# Stages on npm the version of package.json, through npm's trusted publishing: npm trusts this
 # workflow of this repository, so no token is stored anywhere. The trusted publisher is declared
-# once in the package settings on npmjs.com (workflow: publish.yml). Two ways to start it:
+# once in the package settings on npmjs.com (workflow: publish.yml). A staged version goes live only
+# once a maintainer approves it, with 2FA, in the Staged Packages tab on npmjs.com, or with
+# `npm stage approve <stage-id>`. Two ways to start it:
 # - push a tag naming the version, `git tag v0.4.0 && git push origin v0.4.0`;
 # - run it by hand on main (Actions > Publish > Run workflow): it tags the version once published.
 on:
@@ -23,8 +25,8 @@ jobs:
         with:
           node-version: 24
           registry-url: https://registry.npmjs.org
-      # Trusted publishing needs npm 11.5.1 or later.
-      - run: npm install -g npm@^11.5.1
+      # Staged publishing needs npm 11.15.0 or later.
+      - run: npm install -g npm@^11.15.0
       - id: version
         run: echo "version=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
       # A tag and package.json must name the same version, or npm would publish another one.
@@ -38,8 +40,9 @@ jobs:
       - run: git config --global user.name "CI" && git config --global user.email "ci@example.com"
       - run: npm ci
       - run: npm test
-      - run: npm publish
-      # A tag pushed by this workflow starts no other run: the version is not published twice.
+      # Staged, not published: a trusted publisher may stage by default, and the release waits on a person.
+      - run: npm stage publish
+      # A tag pushed by this workflow starts no other run: the version is not staged twice.
       - if: github.event_name == 'workflow_dispatch'
         run: |
           git tag -a "v${{ steps.version.outputs.version }}" -m "solopilot ${{ steps.version.outputs.version }}"
