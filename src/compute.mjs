@@ -12,7 +12,7 @@
 // When every active task of a day carries its own points, the day weighs their sum and its progress
 // is the share of those points done; otherwise each task counts for an equal share of the day.
 import { calendar, localToday, nextDay } from './calendar.mjs';
-import { LATER, dayLoad } from './backlog.mjs';
+import { LATER, dayLoad, isScreen } from './backlog.mjs';
 import { board } from './board.mjs';
 
 const EPS = 1e-9;
@@ -142,7 +142,7 @@ export function compute(b, { today = localToday(), now = new Date() } = {}) {
     .sort((a, c) => (a.before ?? Infinity) - (c.before ?? Infinity));
 
   const inPlan = (t) => t.day !== LATER;
-  const screens = b.tasks.filter((t) => t.id.startsWith('S') && inPlan(t));
+  const screens = b.tasks.filter((t) => isScreen(t.id) && inPlan(t));
   const tasks = b.tasks.filter((t) => t.id.startsWith('T') && inPlan(t) && t.status !== 'deferred');
   const nextMilestone = b.milestones.filter((m) => m.status !== 'reached').sort((a, c) => a.day - c.day)[0] || null;
 

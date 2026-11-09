@@ -785,7 +785,7 @@ function listDays() {
     const done = delivered(d), current = d.day === C.currentDay, isOpen = state.openDay === d.day, dates = C.dayDates[d.day];
     const required = open.filter((x) => x.before === d.day);
     const status = done ? ['done', t('days.finished')] : current ? ['current', t('days.inProgress')] : required.length ? ['waiting', t('days.required', { n: required.length })] : null;
-    const tasks = [...d.tasks.filter((x) => x.id.startsWith('T')), ...d.tasks.filter((x) => x.id.startsWith('S'))];
+    const tasks = [...d.tasks.filter((x) => x.id.startsWith('T')), ...d.tasks.filter((x) => !x.id.startsWith('T'))];
     return `<div class="fold ${current ? 'current' : ''}"><button type="button" class="row-btn row-day" data-open-day="${d.day}" aria-expanded="${isOpen}">
       <span class="day-num ${current ? 'current' : done ? 'done' : ''}">${dayLabel(d.day)}</span>
       <span class="row-title"><span>${esc(d.title)}${status ? `<span class="day-status ${status[0]}">${status[1]}</span>` : ''}</span>

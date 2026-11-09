@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- A screen may be named `E01` ("écran") as well as `S01`, so a plan whose screens were already named so, in its documents and in its commits (`[T042 E07]`), keeps them. It counts as a screen everywhere: its views, the counters, the commit tags and the reminder.
+
 ## 0.4.0
 
 - The board reads on a real project. In "To do", the cards gather under their plan day: the next two days open, the others fold to a line with their count of tasks and points, and open with a click. A filter opens every day it keeps. Every card is compact: the id and the title, cut after two lines, then one line for the core mark, the day, the date done, the views, the area, the answers awaited and the points; hovering reads the card whole, and on a phone nothing is cut. On the Fieldbook demo, at 1,024 px wide, the board goes from 3,260 to 1,196 px high ([design](docs/design/board.md#to-do-by-day)).

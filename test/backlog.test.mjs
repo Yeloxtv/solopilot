@@ -2,6 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { validate } from '../src/backlog.mjs';
 import { tagIds } from '../src/repo.mjs';
+import { compute } from '../src/compute.mjs';
 import { fixture } from './fixture.mjs';
 
 const errorsOf = (b) => validate(b).errors;
@@ -59,6 +60,16 @@ test('screens need their views', () => {
   assert.match(errorsOf(b).join('\n'), /S01: screen without its number of views/);
 });
 
+test('a screen may be named E01 ("écran") as well as S01', () => {
+  const b = fixture();
+  b.tasks.push({ id: 'E07', day: 3, area: 'core', status: 'done', done_on: '2026-01-07', views: 3, title: 'Home' });
+  assert.deepEqual(errorsOf(b), []);
+  assert.deepEqual(compute(b, { today: '2026-01-08' }).counters.screens, { done: 1, total: 1 });
+  delete b.tasks.at(-1).views;
+  assert.match(errorsOf(b).join('\n'), /E07: screen without its number of views/);
+  assert.match(errorsOf(fixture({ sections: { tasks: [{ id: 'X01', day: 1, area: 'core', status: 'todo', title: 'X' }] } })).join('\n'), /X01: invalid id/);
+});
+
 test('numbers meant for the page are checked: views and priority', () => {
   const b = fixture();
   b.tasks[3].views = '<img src=x onerror=alert(1)>';
@@ -88,6 +99,8 @@ test('too many tasks in progress is a warning, not an error', () => {
 test('commit tags are read inside square brackets only', () => {
   assert.deepEqual(tagIds('[T024] add search'), ['T024']);
   assert.deepEqual(tagIds('[T025 S05] wire the list'), ['T025', 'S05']);
+  assert.deepEqual(tagIds('[T042 E07] brancher la liste'), ['T042', 'E07']);
+  assert.deepEqual(tagIds('[E2E] parcours'), []);
   assert.deepEqual(tagIds('fix T024 without brackets'), []);
   assert.deepEqual(tagIds('[wip] T001'), []);
 });

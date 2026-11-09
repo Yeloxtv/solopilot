@@ -41,7 +41,7 @@ else {
 }
 
 const subjects = (git(['log', ...range, '--format=%s'], project) || '').split('\n');
-const ids = new Set(subjects.flatMap((s) => [...s.matchAll(/\[([^\]]+)\]/g)].flatMap((m) => m[1].match(/[TS]\d{2,4}/g) || [])));
+const ids = new Set(subjects.flatMap((s) => [...s.matchAll(/\[([^\]]+)\]/g)].flatMap((m) => m[1].match(/[TSE]\d{2,4}/g) || [])));
 if (!ids.size) process.exit(0);
 
 const mark = join(tmpdir(), `solopilot-reminder-${input.session_id || 'session'}-${ids.size}`);

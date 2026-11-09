@@ -92,7 +92,7 @@ When the developer reports that the client approved the scope in writing, run `s
 - `done` takes `done_on`, today's date as YYYY-MM-DD.
 - `blocked` takes a `note` saying what it waits for and from whom, with the id of the dependency or question if there is one.
 - Keep one line per item, in the existing format, and leave comments alone. Edit with targeted replacements (`id: T024, day: 5, area: search, status: todo` → `id: T024, day: 5, area: search, status: done, done_on: 2026-10-08`), never by rewriting the file.
-- A new task takes the next free number: the highest existing `T` or `S`, plus one. It takes an `area` from `areas`; a new area is decided with the user. When the plan estimates each task, a new task also takes its `feature`, its `kind` and its `points`, from the grid in `estimation`.
+- A new task takes the next free number: the highest existing `T`, or for a screen the highest `S` (or `E`, when the plan names its screens so), plus one. It takes an `area` from `areas`; a new area is decided with the user. When the plan estimates each task, a new task also takes its `feature`, its `kind` and its `points`, from the grid in `estimation`.
 - After the plan is agreed, days move by hand, with a `replan` entry in the log. `solopilot layout` is for the first plan only.
 - An open question, dependency or request lists in `tasks` the tasks waiting for its answer: that is what shows "Waits on Q…" on the task in the dashboard. When creating a question, propose these links along with it.
 - A log entry takes a `title` of a few words, shown above its note.

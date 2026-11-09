@@ -1,5 +1,5 @@
 // The first plan: where its drawing-up stands, and the layout of estimated tasks on plan days.
-import { LATER, featureIds } from './backlog.mjs';
+import { LATER, featureIds, isScreen } from './backlog.mjs';
 
 const EPS = 1e-9;
 const round = (n) => Math.round(n * 100) / 100;
@@ -10,7 +10,7 @@ const sum = (xs) => xs.reduce((s, x) => s + x, 0);
 // from the first step not done; the developer may reopen any.
 export function planningProgress(b) {
   const active = b.tasks.filter((t) => t.status !== 'deferred');
-  const screens = active.filter((t) => String(t.id).startsWith('S'));
+  const screens = active.filter((t) => isScreen(t.id));
   const estimated = active.filter((t) => typeof t.points === 'number');
   const placed = active.filter((t) => t.day !== undefined);
   // Below the line is not promised: it stays out of the points weighed against the days sold.

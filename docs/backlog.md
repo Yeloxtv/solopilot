@@ -61,7 +61,7 @@ A day with no active task does not count in the plan.
 
 | Key | Meaning |
 | --- | --- |
-| `id` | `T001` for a task, `S01` for a screen. Ids never change |
+| `id` | `T001` for a task, `S01` for a screen, or `E01` ("écran") for a plan that already names its screens so. Ids never change |
 | `day` | The plan day it belongs to, or `later`. May wait for `solopilot layout` while planning |
 | `feature` | The feature, or the list of features, the task delivers |
 | `area` | An id from `areas`, required when `areas` is not empty |

@@ -13,11 +13,13 @@ export const PLANNING = 'planning';
 export const TASK_STATUSES = ['todo', 'doing', 'done', 'blocked', 'deferred'];
 // What a task is, for learning what each kind of work costs. A screen (S…) is of kind "screen".
 export const TASK_KINDS = ['setup', 'logic', 'integration', 'content', 'release'];
-export const TASK_ID = /^[TS]\d{2,4}$/;
+// A screen's id starts with S, or with E ("écran") for a plan that already names its screens so.
+export const TASK_ID = /^[TSE]\d{2,4}$/;
+export const isScreen = (id) => /^[SE]/.test(String(id));
 export const FEATURE_ID = /^F\d{2,4}$/;
 export const REQUEST_ID = /^R\d{2,4}$/;
 // Task ids inside the square brackets of a commit subject: "[T024] …" or "[T025 S05] …".
-export const TAG_IDS = /[TS]\d{2,4}/g;
+export const TAG_IDS = /[TSE]\d{2,4}/g;
 
 const LISTS = ['people', 'sprints', 'milestones', 'meetings', 'dependencies', 'questions', 'requests', 'areas', 'features', 'days', 'tasks', 'log'];
 const EPS = 1e-9;
@@ -156,8 +158,8 @@ export function validate(b) {
 
   const ids = new Set();
   for (const t of b.tasks) {
-    const screen = String(t.id).startsWith('S');
-    if (!TASK_ID.test(t.id)) err(`${t.id}: invalid id (T001 for a task, S01 for a screen)`);
+    const screen = isScreen(t.id);
+    if (!TASK_ID.test(t.id)) err(`${t.id}: invalid id (T001 for a task, S01 or E01 for a screen)`);
     if (ids.has(t.id)) err(`${t.id}: duplicate id`);
     ids.add(t.id);
     if (!t.title) err(`${t.id}: title missing`);
