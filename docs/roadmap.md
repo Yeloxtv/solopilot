@@ -20,6 +20,7 @@ The first need from real use followed: a **board** of the tasks by sprint, in co
 ## Next
 
 - **A month of real use first.** The six workstreams were validated on one real project and on fictional ones. Nothing below starts before solopilot has run a month on a real project as it is: what that month teaches outranks any planned feature.
+- **A recap of each plan day**, a page of the dashboard beside the board, for those who follow without reading the diff: what works now with a screenshot, who can do what, the obstacles lifted and their proof, what remains. It follows the day from its first work delivered, a blocked task included. The second need from nearly a month of real use; agreed on November 9, to build ([design](design/day-recaps.md)).
 - **Learn to estimate from history**: the points estimated against the effort days each kind of task really took. It waits for the history of a real project far enough along.
 - **A generated view for the client**, beyond the scope document, once the need is confirmed.
 - **A page of all projects** to publish for an agency's management, once the need is confirmed.
