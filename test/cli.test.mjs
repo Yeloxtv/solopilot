@@ -30,6 +30,9 @@ test('the demo checks and reports', () => {
   const status = run(['status', '--dir', DEMO, '--today', '2026-10-21']);
   assert.equal(status.status, 0);
   assert.match(status.stdout, /Launch on November 27/);
+  // Where the core stands is a projected date and a margin in working days, never a lead in plan days.
+  assert.match(status.stdout, /Core \(D1 to D14\) ready around November 13, 9 working days to spare\. Everything \(D1 to D20\) around December 1, 2 working days after the target\./);
+  assert.doesNotMatch(status.stdout, /d ahead|d behind/);
   // By then the real pace is judged: the estimate's hypotheses are no longer the only basis.
   assert.match(status.stdout, /Real pace/);
   assert.doesNotMatch(status.stdout, /hypotheses/);

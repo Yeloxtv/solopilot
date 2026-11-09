@@ -421,7 +421,6 @@ const YEAR = String(C.today).slice(0, 4);
 const dateShort = (s) => t.date(String(s), { day: 'numeric', month: 'short', ...(String(s).slice(0, 4) !== YEAR && { year: 'numeric' }) });
 const LATER = 'later';
 const dayLabel = (d) => (d === LATER ? t('later.short') : t('day', { n: d }));
-const situation = (g) => cap(Math.abs(g) < 0.25 ? t('situation.onTime') : g > 0 ? t('situation.behind', { n: g }) : t('situation.ahead', { n: -g }));
 const workingDays = (n) => t('units.workingDays', { n });
 const reduced = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 const pct = (a, b) => `${b ? Math.max(0, Math.min(100, (a / b) * 100)) : 0}%`;
@@ -526,8 +525,8 @@ function renderCore() {
   const m = C.margin.core;
   $('card-core').classList.toggle('late', m < 0);
   $('card-core').innerHTML = `<div class="eyebrow"><span class="caps">${t('hero.core', { from: dayLabel(1), to: dayLabel(C.core) })}</span><span class="chip ${m < 0 ? 'urgent' : 'ok'}">${t(m < 0 ? 'hero.offTarget' : 'hero.onSchedule')}</span></div>
-    <div class="figure">${situation(C.gap.core)}</div>
-    <div class="sentence">${t('hero.coreSentence', { end: dateShort(C.finish.core), target: dateShort(C.target), margin: m >= 0 ? t('hero.margin', { n: workingDays(m) }) : t('hero.afterTarget', { n: workingDays(-m) }) })}</div>
+    <div class="figure">${dateShort(C.finish.core)}</div>
+    <div class="sentence">${t('hero.coreSentence', { target: dateShort(C.target), margin: m >= 0 ? t('hero.margin', { n: workingDays(m) }) : t('hero.afterTarget', { n: workingDays(-m) }) })}</div>
     <div class="gauge"><div class="gauge-track"><span style="width:${pct(C.planDone, C.core)}"></span><i style="left:${pct(C.expected.core, C.core)}"></i></div>
       <div class="gauge-legend"><span>${t('hero.doneExpected', { done: dayLabel(num(C.planDone)), expected: dayLabel(num(C.expected.core)) })}</span><span>${t('hero.daysOf', { done: Math.min(C.planDone, C.core), total: C.core })}</span></div></div>`;
 }
@@ -536,7 +535,7 @@ function renderAll() {
   $('card-all').classList.toggle('off-target', m < 0);
   $('card-all').innerHTML = `<div class="eyebrow"><span class="caps">${t('hero.all', { from: dayLabel(1), to: dayLabel(C.planDays) })}</span><span class="chip ${m < 0 ? 'warn' : 'ok'}">${t(m < 0 ? 'hero.offTarget' : 'hero.withinTarget')}</span></div>
     <div class="figure">${dateShort(C.finish.all)}</div>
-    <div class="sentence">${t('hero.allSentence', { situation: situation(C.gap.all), target: dateShort(C.target) })} ${m < 0 ? t('hero.endsAfter', { n: workingDays(-m) }) : t('hero.endsBefore', { n: workingDays(m) })}</div>
+    <div class="sentence">${t('hero.allSentence', { target: dateShort(C.target) })} ${m < 0 ? t('hero.endsAfter', { n: workingDays(-m) }) : t('hero.endsBefore', { n: workingDays(m) })}</div>
     <div class="gauge"><div class="gauge-track"><span style="width:${pct(C.planDone, C.planDays)}"></span>${m < 0 ? `<i class="warn" style="left:${pct(C.planAtTarget, C.planDays)}"></i>` : ''}</div>
       <div class="gauge-legend"><span>${m < 0 ? t('hero.atTarget', { day: dayLabel(Math.floor(C.planAtTarget)) }) : t('hero.allFits')}</span><span>${t('hero.daysOf', { done: C.planDone, total: C.planDays })}</span></div></div>`;
 }

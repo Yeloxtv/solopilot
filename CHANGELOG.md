@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Where the core stands reads as a date: the dashboard's core card shows the date it is projected ready, like the card of everything, and `status` reads "Core (D1 to D14) ready around November 13, 9 working days to spare", with no more "7.1 d ahead". A lead in plan days had to be translated into a date by whoever reads it; the projection itself does not change.
 - A screen may be named `E01` ("écran") as well as `S01`, so a plan whose screens were already named so, in its documents and in its commits (`[T042 E07]`), keeps them. It counts as a screen everywhere: its views, the counters, the commit tags and the reminder.
 
 ## 0.4.0

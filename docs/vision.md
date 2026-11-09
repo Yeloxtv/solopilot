@@ -36,7 +36,7 @@ This work is done with Claude, step by step, and the developer approves each ste
 
 ### 2. Track progress and the real pace
 
-Know at any time where the project stands against the plan: what is done, the lead or delay of the core and of everything, and the date each one should finish. Compare the real pace, the points delivered per day of declared effort, with the plan's estimate, and raise an alert when the gap lasts.
+Know at any time where the project stands against the plan: what is done, and the date the core and everything should finish, with the margin left against the target. Compare the real pace, the points delivered per day of declared effort, with the plan's estimate, and raise an alert when the gap lasts.
 
 ### 3. Ask the blocking questions before they block
 

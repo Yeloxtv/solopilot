@@ -67,7 +67,7 @@ test('the overview says when at least one projection will not hold', () => {
   assert.match(text, /\n! October 26 to November 13: 1\.25 d per working day \(A and B\)\n/);
   assert.match(text, /\nOver one day: at least one projection will not hold\.$/);
   const fr = projectsText(projects, ranges, loadLocale('fr').t, TODAY);
-  assert.match(fr, /cœur le 6 novembre, 10 j ouvrés d'avance · 1 à relancer · 2 jamais posées · périmètre en hausse/);
+  assert.match(fr, /cœur le 6 novembre, 10 j ouvrés de marge · 1 à relancer · 2 jamais posées · périmètre en hausse/);
   assert.match(fr, /\n! Du 26 octobre au 13 novembre : 1,25 j par jour ouvré \(A et B\)\n/);
   assert.match(projectsText([projects[1]], loadRanges(weeklyLoad([B], TODAY)), loadLocale('en').t, TODAY), /Never over one day/);
 });

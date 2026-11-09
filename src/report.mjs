@@ -72,11 +72,9 @@ const dateOf = (t, today) => (s) => t.date(String(s), { day: 'numeric', month: '
 export function helpers(c, t) {
   const date = dateOf(t, c.today);
   const day = (n) => t('day', { n });
-  // The gap is counted in plan days: "2 d behind" means two plan days to catch up.
-  const situation = (g) => (Math.abs(g) < 0.25 ? t('situation.onTime') : g > 0 ? t('situation.behind', { n: g }) : t('situation.ahead', { n: -g }));
   const goal = c.goal || t('goal');
   const focus = t.num(c.focus, 2);
-  return { date, day, situation, goal, goalMid: midSentence(goal), focus };
+  return { date, day, goal, goalMid: midSentence(goal), focus };
 }
 
 // The goal after a colon, as French typography wants it: "Kerlan : mise en ligne le…". A word that
@@ -84,15 +82,18 @@ export function helpers(c, t) {
 export const midSentence = (s) => (/^\p{Lu}\p{Ll}/u.test(s) ? s[0].toLocaleLowerCase() + s.slice(1) : s);
 
 export function statusText(b, c, t) {
-  const { date, day, situation, goal, focus } = helpers(c, t);
+  const { date, day, goal, focus } = helpers(c, t);
   const out = [];
   const when = (d) => (d > c.target ? t('status.onLate', { date: date(d) }) : t('status.on', { date: date(d) }));
   out.push(t('status.lead', { goal, target: date(c.target), calendar: t('status.calendar', { n: c.remaining, total: c.workingDays }), day: day(c.planDone) }));
+  // The projected date and the margin in working days, never a lead in plan days: a date is what
+  // whoever follows the project reads.
+  const margin = (m) => t(m >= 0 ? 'status.margin' : 'status.late', { n: t('units.workingDays', { n: Math.abs(m) }) });
   out.push(t('status.split', {
-    core: t('range', { from: day(1), to: day(c.core) }), coreGap: situation(c.gap.core),
-    all: t('range', { from: day(1), to: day(c.planDays) }), allGap: situation(c.gap.all),
+    core: t('range', { from: day(1), to: day(c.core) }), coreEnd: date(c.finish.core), coreMargin: margin(c.margin.core),
+    all: t('range', { from: day(1), to: day(c.planDays) }), allEnd: date(c.finish.all), allMargin: margin(c.margin.all),
   }));
-  out.push(t('status.projection', { focus, core: when(c.finish.core), all: when(c.finish.all) }));
+  out.push(t('status.projection', { focus }));
   // Until the real pace is judged, the projection rests on the estimate's hypotheses alone.
   if (b.estimation?.basis === 'hypotheses' && !c.pace?.judged) out.push(t('status.hypotheses'));
   const k = c.counters;

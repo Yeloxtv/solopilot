@@ -13,7 +13,7 @@ The calendar runs from `project.start` to `project.target`, in working days: Mon
 - the **core** (day 1 to `project.core`) delivered on the target date: the minimum commitment;
 - **everything** (day 1 to `plan_days`) delivered on the target date: the goal.
 
-The expected positions are computed in points, spread over the calendar, then placed back on the plan. The difference between plan done and each expected position, in plan days, is the lead or the delay.
+The expected positions are computed in points, spread over the calendar, then placed back on the plan. The dashboard's gauges show plan done against the expected position. The difference, in plan days, is not shown as a lead or a delay: whoever follows the project reads a date, so the dashboard and `status` give the projected finish and the margin in working days (see below).
 
 ## Projection
 
